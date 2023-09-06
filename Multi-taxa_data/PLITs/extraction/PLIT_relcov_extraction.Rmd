@@ -1,0 +1,44 @@
+# SECTION 1: PLIT data extraction to obtain the relative benthic coverage matrix at different sites
+
+```{r}
+library(readxl) #read xlsx files
+library(tidyverse) #aggregate fc et al.
+library(tidyverse)
+library(dplyr)
+library(MASS)
+```
+
+# SUNABE
+
+## D1
+
+```{r}
+SN_D1<- read_excel("PLIT_SN.xlsx", sheet = "D1")
+class(SN_D1)
+SN_D1<- SN_D1[-c(1:2),c(1:5)]
+colnames(SN_D1) <-SN_D1[1,]
+SN_D1<- SN_D1[-1,]
+str(SN_D1)
+SN_D1$Point <-as.numeric(SN_D1$Point)
+SN_D1$Cat_tot <-as.numeric(SN_D1$Cat_tot)
+SN_D1$Func_tot <-as.numeric(SN_D1$Func_tot)
+SN_D1$Category<- factor(SN_D1$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+SN_D1$Functional_group<-as.factor(SN_D1$Functional_group)
+
+str(SN_D1)
+```
+```{r}
+SN_D1_cov <- SN_D1 %>%
+  group_by(Category) %>% 
+  summarise(Abs_cov=sum(Cat_tot)) %>%
+  complete(Category)
+
+SN_D1_cov <- SN_D1_cov[!is.na(SN_D1_cov$Category),]
+
+SN_D1_cov$Rel_cov <- round(SN_D1_cov$Abs_cov/sum(SN_D1_cov$Abs_cov,na.rm = TRUE),3)
+str(SN_D1_cov)
+```
+## D2
+
+## TOTAL
