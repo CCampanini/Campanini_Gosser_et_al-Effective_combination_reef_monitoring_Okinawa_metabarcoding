@@ -39,6 +39,108 @@ SN_D1_cov <- SN_D1_cov[!is.na(SN_D1_cov$Category),]
 SN_D1_cov$Rel_cov <- round(SN_D1_cov$Abs_cov/sum(SN_D1_cov$Abs_cov,na.rm = TRUE),3)
 str(SN_D1_cov)
 ```
+```{r}
+mysheetlist <- excel_sheets(path="C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx")
+
+mysheetlist <- as.factor(mysheetlist)
+levels(mysheetlist)
+mysheetlist <- mysheetlist[-"METADATA"]
+mysheetlist <- mysheetlist[! mysheetlist %in% "METADATA"]
+
+
+for (i in mysheetlist) {
+ assign(paste0("SN",i),
+        read_excel(path="C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx", sheet = i),)
+}
+
+sn <- sapply (excel_sheets("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx"), read_excel, 
+              path= "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx", 
+              simplify = F, USE.NAMES = T)
+
+
+SN <- lapply (sn,function(SN) {
+  SN <- SN[-c(1:2),c(1:5)]
+  colnames(SN) <-SN[1,]
+  SN<- SN[-1,]
+  SN$Point <-as.numeric(SN$Point)
+  SN$Cat_tot <-as.numeric(SN$Cat_tot)
+  SN$Func_tot <-as.numeric(SN$Func_tot)
+  SN$Category<- factor(SN$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+  SN$Functional_group<-as.factor(SN$Functional_group)
+  str(SN)
+  SN
+})
+
+```
+
+```{r}
+
+cov_exc <- function(cov_exc) {
+  cov_exc <- cov_exc %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  cov_exc <- cov_exc[!is.na(cov_exc$Category),]
+  cov_exc$Rel_cov <- round(cov_exc$Abs_cov/sum(cov_exc$Abs_cov,na.rm = TRUE),3)
+  str(cov_exc)
+}
+
+SN_EXC <- lapply(SN, cov_exc)
+list2env(SN_EXC, .GlobalEnv)
+
+
+SN_EXC3 <- lapply(names(SN), cov_exc)
+
+
+
+SN_EXC_list <- list()
+SN_EXC <- sapply(SN, function(cov_exc)) {
+  SN_EXC_list[[cov_exc]] <- data.frame(c(1,2,3,4), "1")
+  }
+
+
+
+SN_EXC[[1]]
+
+lapply(SN_EXC, head, 6)
+
+for (i in seq(SN_EXC)){
+  assign(paste0("SN", i), SN_EXC[[i]])
+  }
+ 
+  SNCOVD1 <- SN$D1 %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  SNCOVD1 <- SNCOVD1[!is.na(SNCOVD1$Category),]
+  SNCOVD1$Rel_cov <- round(SNCOVD1$Abs_cov/sum(SNCOVD1$Abs_cov,na.rm = TRUE),3)
+  str(SNCOVD1) 
+  SNCOVD1
+
+  class(SN$D1)
+```
+
+```{r}
+SN_EXC_2 <- list()
+for (i in seq_along(SN)) {
+  SN_EXC_2[[i]] <- list(cov_exc(SN[[i]]))
+}
+SN_EXC_2
+
+do.call(rbind,SN_EXC)
+```
+
+lapply (sn,function(SNCOV) {
+  SNCOV <- SNCOV %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  SNCOV <- SNCOV[!is.na(SNCOV$Category),]
+  SNCOV$Rel_cov <- round(SNCOV$Abs_cov/sum(SNCOV$Abs_cov,na.rm = TRUE),3)
+  str(SNCOV)
+})
+
 ## D2
 
 ## TOTAL
