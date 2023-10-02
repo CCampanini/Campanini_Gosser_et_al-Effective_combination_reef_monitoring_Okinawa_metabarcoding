@@ -302,9 +302,16 @@ prova <- sapply (excel_sheets(files), read_excel,
 https://www.geeksforgeeks.org/how-to-read-a-xlsx-file-with-multiple-sheets-in-r/
 
 ```{r}
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", pattern=".xlsx")
+files
+files <- files[-5]
+class(files)
+# Concat the directory to the file names
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", files)
+class(files)
 
 ###
-install.packages("rio")
+#install.packages("rio")
 library(rio)
 
 sites <- import_list("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_YO.xlsx" )
@@ -389,7 +396,15 @@ prova4 <- lapply (prova3, extraction, x = prova3[[1]])
 
 # IMPORT DATASHEETS IN A BIG ASS LIST
 ```{r}
-install.packages("rio")
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", pattern=".xlsx")
+files
+files <- files[-5]
+class(files)
+# Concat the directory to the file names
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", files)
+class(files)
+
+#install.packages("rio")
 library(rio)
 
 sites <- import_list("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_YO.xlsx" )
@@ -423,7 +438,146 @@ for (i in 1:12) {
 }
 ```
 
+
 # extract all
+
+```{r}
+for (i in 1:6) {
+  prova2[[1]][[i]] <- data.frame(aggregate(Cat_tot ~ Category, prova2[[1]][[i]], sum))
+  names(prova2[[1]][[i]][2]) <-"Abs_cov"
+  prova2[[1]][[i]]$Rel_cov <- as.numeric(round(prova2[[1]][[i]]$Abs_cov/sum(prova2[[1]][[i]]$Abs_cov),3))
+  str(prova2[[1]][[i]])
+  sum(prova2[[1]][[i]]$Rel_cov)
+  prova2[[1]][[i]] <- prova2[[1]][[i]] %>% complete(Category)
+}
+
+awa <- prova2[[1]]
+g1 <- prova2[[2]]
+g2 <- prova2[[3]]
+hi <- prova2[[4]]
+mi <- prova2[[5]]
+s1 <- prova2[[6]]
+s2 <- prova2[[7]]
+sk <- prova2[[8]]
+sn <- prova2[[9]]
+yo <- prova2[[10]]
+za <- prova2[[11]]
+zp <- prova2[[12]]
+
+
+awa_exc <-list()
+
+for (i in 1:6) {
+  awa_exc[[i]] <- data.frame(aggregate(Cat_tot ~ Category, awa[[i]], sum))
+  names(awa_exc) <- c("D1","D2","D3","S1","S2","S3")
+  colnames(awa_exc[[i]]) <- c("Category","Abs_cov")
+  awa_exc[[i]]$Rel_cov <- as.numeric(round(awa_exc[[i]]$Abs_cov/sum(awa_exc[[i]]$Abs_cov),3))
+  str(awa_exc[[i]])
+  sum(awa_exc[[i]]$Rel_cov)
+  awa_exc[[i]] <- awa_exc[[i]] %>% complete(Category)
+}
+
+
+  
+
+  names(awa_exc) <- c("D1","D2","D3","S1","S2","S3")
+
+### FUNZIONA
+for (i in 1:6) {
+  awa_exc[[i]] <- data.frame(aggregate(Cat_tot ~ Category, awa[[i]], sum))
+  names(awa_exc[[i]][2]) <-"Abs_cov"
+  awa_exc[[i]]$Rel_cov <- as.numeric(round(awa_exc[[i]]$Abs_cov/sum(awa_exc[[i]]$Abs_cov),3))
+  str(awa_exc[[i]])
+  sum(awa_exc[[i]]$Rel_cov)
+  awa_exc[[i]] <- awa_exc[[i]] %>% complete(Category)
+}
+### fine
+
+all <- list(awa, g1, g2, hi, mi, s1, s2, sk, sn, yo, za, zp)
+
+for (item in all)
+
+ext3 <- vector('list', length(prova2))
+
+for (i in 1:12) {
+  for (j in 1:6) {
+    ext[[i]][[j]] <- data.frame(aggregate(Cat_tot ~ Category, prova2[[i]][[j]], sum))
+    names(ext[[i]][[j]][2]) <-"Abs_cov"
+    ext[[i]][[j]]$Rel_cov <- as.numeric(round(ext[[i]]$Abs_cov/sum(ext[[i]][[j]]$Abs_cov),3))
+    str(ext[[i]][[j]])
+    sum(ext[[i]][[j]]$Rel_cov)
+    ext[[i]][[j]] <- ext[[i]][[j]] %>% complete(Category)
+  }
+}
+
+
+https://stackoverflow.com/questions/31561238/lapply-function-loops-on-list-of-lists-r 
+ext3 <- vector('list', length(prova2))
+
+for (i in seq_along(prova2)) {
+  for (j in seq_along(prova2[[i]])) {
+    ext3[[i]][[j]] <- data.frame(aggregate(Cat_tot ~ Category, prova2[[i]][[j]], sum))
+
+  }
+}
+
+ext3 <- vector('list', length(prova2))
+
+ext4 <- list(ext3,ext3,ext3)
+
+for (i in seq_along(prova2)) {
+  for (j in seq_along(prova2[[i]])) {
+    ext3[[i]][[j]] <- data.frame(aggregate(Cat_tot ~ Category, prova2[[i]][[j]], sum))
+
+  }
+}
+
+
+    names(ext3[[i]][[j]][2]) <-"Abs_cov"
+    ext3[[i]][[j]]$Rel_cov <- as.numeric(round(ext3[[i]]$Abs_cov/sum(ext3[[i]][[j]]$Abs_cov),3))
+    str(ext3[[i]][[j]])
+    sum(ext3[[i]][[j]]$Rel_cov)
+    ext3[[i]][[j]] <- ext3[[i]][[j]] %>% complete(Category)
+
+
+extraction <- function(x) {
+    x <- data.frame(aggregate(Cat_tot ~ Category, x, sum))
+    names(x[2]) <-"Abs_cov"
+    x$Rel_cov <- as.numeric(round(x$Abs_cov/sum(x$Abs_cov),3))
+    str(x)
+    sum(x$Rel_cov)
+    x <- x %>% complete(Category)
+}
+
+for (i in 1:6) {
+  awa[[i]] <- lapply (awa[[i]], extraction)
+}
+
+awa <- lapply (awa, ext1)
+
+ext1 <- function(x) {
+    x <- data.frame(aggregate(Cat_tot ~ Category, x, sum))
+    names(x[2]) <-"Abs_cov"
+}
+
+ext2 <- function(x) {
+    for (i in 1:6) {
+    x[[i]] <- data.frame(aggregate(Cat_tot ~ Category, x[[i]], sum))
+    names(x[[i]][2]) <-"Abs_cov"
+    x[[i]]$Rel_cov <- as.numeric(round(x[[i]]$Abs_cov/sum(x[[i]]$Abs_cov),3))
+    str(x[[i]])
+    sum(x[[i]]$Rel_cov)
+    x[[i]] <- x[[i]] %>% complete(Category)
+  }
+}
+
+awa_ext2 <- lapply (prova2, ext2)
+
+
+```
+
+
+
 
 ```{r}
 extraction <- function(x,y) {
@@ -431,23 +585,195 @@ extraction <- function(x,y) {
     group_by(Category) %>% 
     summarise(Abs_cov=sum(Cat_tot)) %>%
     complete(Category)
-  y <- y[!is.na(x$Category),]
   y$Rel_cov <- round(y$Abs_cov/sum(y$Abs_cov,na.rm = TRUE),3)
-  str(y)
+  str(y)  }
+  
+extraction2 <- function(x) {
+  x <- x %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  x$Rel_cov <- round(y$Abs_cov/sum(x$Abs_cov,na.rm = TRUE),3)
+  str(x)  }
+
+prova4 <- lapply (prova2[[2]],extraction)
+
+
+
+exc <- prova2
+
+excawa <- lapply (exc[[1]],extraction2)
+
+class(exc[[1]][[1]])
+
+for (i in 1:12) {
+  exc[[i]] <- lapply (exc[[i]],extraction2)
+}
+
+
+
+for (i in 1:12) {
+  exc[[i]] <- lapply (exc[[i]],extraction)
+  }
+
+
+
+names(prova2) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+
+awa <- lapply (prova2[[1]],extraction)
+g1 <- lapply (prova2[[2]],extraction)
+g2 <- lapply (prova2[[3]],extraction)
+hi <- lapply (prova2[[4]],extraction)
+mi <- lapply (prova2[[5]],extraction)
+s1 <- lapply (prova2[[6]],extraction)
+s2 <- lapply (prova2[[7]],extraction)
+sk <- lapply (prova2[[8]],extraction)
+sn <- lapply (prova2[[9]],extraction)
+yo <- lapply (prova2[[10]],extraction)
+za <- lapply (prova2[[11]],extraction)
+zp <- lapply (prova2[[12]],extraction)
+
+
+awa <- prova2[[1]]
+g1 <- prova2[[2]]
+g2 <- prova2[[3]]
+hi <- prova2[[4]]
+mi <- prova2[[5]]
+s1 <- prova2[[6]]
+s2 <- prova2[[7]]
+sk <- prova2[[8]]
+sn <- prova2[[9]]
+yo <- prova2[[10]]
+za <- prova2[[11]]
+zp <- prova2[[12]]
+
+
+sites_clean <- c(awa, g1, g2, hi, mi, s1, s2, sk, sn, yo, za, zp)
+
+
+awa_exc <- list()
+
+for (i in seq(awa)) {
+  awa_exc[[i]] <- awa[[i]] %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  awa_exc[[i]] <- awa_exc[[i]][!is.na(awa_exc[[i]]$Category),]
+  awa_exc[[i]]$Rel_cov <- round(awa_exc[[i]]$Abs_cov/sum(awa_exc[[i]]$Abs_cov,na.rm = TRUE),3)
+  str(awa_exc)
+}
+
+names(SN_EXC) <- c("D1","D2","D3","S1","S2","S3")
+
+
+SN_EXC <- list()
+
+for (i in seq(SN)) {
+  SN_EXC[[i]] <- SN[[i]] %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  SN_EXC[[i]] <- SN_EXC[[i]][!is.na(SN_EXC[[i]]$Category),]
+  SN_EXC[[i]]$Rel_cov <- round(SN_EXC[[i]]$Abs_cov/sum(SN_EXC[[i]]$Abs_cov,na.rm = TRUE),3)
+  str(SN_EXC)
+}
+names(SN_EXC) <- c("D1","D2","D3","S1","S2","S3")
+
+
+
+for (i in 1:12) {
+  sum22 <- lapply (prova2[[i]],extraction)
+  }
+ 
+exc <- prova2
+
+for (i in 1:12) {
+  exc[[i]] <- lapply (exc[[i]],extraction)
   }
 
 sum2 <- prova2[[1]][[1]] %>%
     group_by(Category) %>% 
     summarise(Abs_cov=sum(Cat_tot)) %>%
     complete(Category)
-  sum2 <- sum2[!is.na(x$Category),]
+  sum2 <- sum2[!is.na(sum2$Category),]
   sum2$Rel_cov <- round(sum2$Abs_cov/sum(sum2$Abs_cov,na.rm = TRUE),3)
   str(sum2)
 
+
+
 for (i in 1:12) {
-  for (j in 1:6) {  
-  sum22 <- lapply (prova2[[i]][[j]],extraction)
+  sum22[[i]] <- lapply (prova2[[i]],extraction)
   }
-}  
+} 
+
+
+for (i in 1:12) {
+  for (j in 1:3) {  
+  sum22[[i]][[j]] <- lapply (prova2[[i]][[j]],extraction)
+  }
+} 
+
+
+for (i in seq(prova2[1])) {
+  sum22[1][[i]] <- prova2[1][[i]] %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  sum22[1][[i]] <- sum22[1][[i]][!is.na(sum22[1][[i]]$Category),]
+  sum22[1][[i]]$Rel_cov <- round(sum22[1][[i]]$Abs_cov/sum(sum22[1][[i]]$Abs_cov,na.rm = TRUE),3)
+  str(sum22[1][[i]])
+}
+ 
+library(plyr)
+exc1 <- lapply(prova2[[1]], FUN= extraction)
+
+
+for (i in seq(SN)) {
+  SN_EXC[[i]] <- SN[[i]] %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  SN_EXC[[i]] <- SN_EXC[[i]][!is.na(SN_EXC[[i]]$Category),]
+  SN_EXC[[i]]$Rel_cov <- round(SN_EXC[[i]]$Abs_cov/sum(SN_EXC[[i]]$Abs_cov,na.rm = TRUE),3)
+  str(SN_EXC)
+}
+names(SN_EXC) <- c("D1","D2","D3","S1","S2","S3")
+
+```
+
+# 28/09/2023
+
+```{r}
+awa_exc <- list()
+
+awa1_exc <- lapply (awa[[1]],extraction2)
+
+awa1_exc
+
+for (i in seq(awa)) {
+  awa_exc[[i]] <- lapply (awa[[i]],extraction2)
+  }
+
+
+str(awa[[1]])
+
+
+  awa1_exc <- awa[[1]] %>%
+    group_by(awa[[1]]$Category) %>% 
+    summarise(awa[[1]]$Abs_cov=sum(awa[[1]]$Cat_tot)) %>%
+    complete(awa[[1]]$Category)
+    
+  awa1_exc <- awa1_exc[!is.na(awa1_exc$Category),]
+  awa1_exc$Rel_cov <- round(awa1_exc$Abs_cov/sum(awa1_exc$Abs_cov,na.rm = TRUE),3)
+  str(awa1_exc)
+  
+  
+```
+
+
+
+```{r}
+
+
 ```
 
