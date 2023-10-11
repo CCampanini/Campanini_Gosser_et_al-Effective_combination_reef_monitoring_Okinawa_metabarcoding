@@ -1,0 +1,179 @@
+---
+title: "PLIT_relcov_extraction_notes"
+author: "Claudia Campanini"
+date: "`r Sys.Date()`"
+output: html_document
+---
+# SECTION 1: PLIT data extraction to obtain the relative benthic coverage matrix at different sites
+
+```{r}
+library(readxl) #read xlsx files
+library(tidyverse) #aggregate fc et al.
+library(tidyverse)
+library(dplyr)
+library(MASS)
+```
+
+# SUNABE
+
+## D1
+
+```{r}
+SN_D1<- read_excel("PLIT_SN.xlsx", sheet = "D1")
+class(SN_D1)
+SN_D1<- SN_D1[-c(1:2),c(1:5)]
+colnames(SN_D1) <-SN_D1[1,]
+SN_D1<- SN_D1[-1,]
+str(SN_D1)
+SN_D1$Point <-as.numeric(SN_D1$Point)
+SN_D1$Cat_tot <-as.numeric(SN_D1$Cat_tot)
+SN_D1$Func_tot <-as.numeric(SN_D1$Func_tot)
+SN_D1$Category<- factor(SN_D1$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+SN_D1$Functional_group<-as.factor(SN_D1$Functional_group)
+
+str(SN_D1)
+```
+```{r}
+SN_D1_cov <- SN_D1 %>%
+  group_by(Category) %>% 
+  summarise(Abs_cov=sum(Cat_tot)) %>%
+  complete(Category)
+
+SN_D1_cov <- SN_D1_cov[!is.na(SN_D1_cov$Category),]
+
+SN_D1_cov$Rel_cov <- round(SN_D1_cov$Abs_cov/sum(SN_D1_cov$Abs_cov,na.rm = TRUE),3)
+str(SN_D1_cov)
+```
+```{r}
+mysheetlist <- excel_sheets(path="C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx")
+
+mysheetlist <- as.factor(mysheetlist)
+levels(mysheetlist)
+mysheetlist <- mysheetlist[-"METADATA"]
+mysheetlist <- mysheetlist[! mysheetlist %in% "METADATA"]
+
+
+for (i in mysheetlist) {
+ assign(paste0("SN",i),
+        read_excel(path="C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx", sheet = i),)
+}
+
+sn <- sapply (excel_sheets("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx"), read_excel, 
+              path= "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx", 
+              simplify = F, USE.NAMES = T)
+
+
+SN <- lapply (sn,function(SN) {
+  SN <- SN[-c(1:2),c(1:5)]
+  colnames(SN) <-SN[1,]
+  SN<- SN[-1,]
+  SN$Point <-as.numeric(SN$Point)
+  SN$Cat_tot <-as.numeric(SN$Cat_tot)
+  SN$Func_tot <-as.numeric(SN$Func_tot)
+  SN$Category<- factor(SN$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+  SN$Functional_group<-as.factor(SN$Functional_group)
+  str(SN)
+  SN
+})
+
+```
+
+# IMPORT DATASHEETS IN A BIG ASS LIST
+```{r}
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", pattern=".xlsx")
+files
+files <- files[-5]
+class(files)
+# Concat the directory to the file names
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", files)
+class(files)
+
+#install.packages("rio")
+library(rio)
+
+sites <- import_list("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_YO.xlsx" )
+
+prova2 <- sapply (files, FUN = import_list,
+              simplify = F, USE.NAMES = F)
+
+names(prova2) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+```
+# CLEAN PLITS OF EACH TRANSECT
+
+```{r}
+clean_PLIT <- function(x) {
+  x <- x[-c(1:2),c(1:5)]
+  colnames(x) <-x[1,]
+  x<- x[-1,]
+  x$Point <-as.integer(x$Point)
+  x$Cat_tot <-as.integer(x$Cat_tot)
+  x$Func_tot <-as.integer(x$Func_tot)
+  x$Category<- factor(x$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+  x$Functional_group<-as.factor(x$Functional_group)
+  str(x)
+  x
+}
+
+for (i in 1:12) {
+  prova2[[i]] <- lapply (prova2[[i]],clean_PLIT)
+}
+```
+Try function on one site with dplyr
+
+```{r}
+sn <- prova2[[9]]
+
+SN_EXC <- list()
+
+for (i in seq(sn)) {
+  SN_EXC[[i]] <- sn[[i]] %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  SN_EXC[[i]] <- SN_EXC[[i]][!is.na(SN_EXC[[i]]$Category),]
+  SN_EXC[[i]]$Rel_cov <- round(SN_EXC[[i]]$Abs_cov/sum(SN_EXC[[i]]$Abs_cov,na.rm = TRUE),3)
+  str(SN_EXC)
+}
+names(SN_EXC) <- c("D1","D2","D3","S1","S2","S3")
+```
+
+Try with one transect from 1 site
+
+```{r}
+sn_d1_ext <- sn[[1]] %>%
+    group_by(!! Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  sn_d1_ext[[1]] <- sn_d1_ext[1][!is.na(sn_d1_ext[[1]]$Category),]
+  sn_d1_ext[[1]]$Rel_cov <- round(sn_d1_ext[[1]]$Abs_cov/sum(sn_d1_ext[[1]]$Abs_cov,na.rm = TRUE),3)
+  str(sn_d1_ext)
+```
+
+
+Try function on one site with aggregate
+
+```{r}
+sn_ext <-list()
+for (i in 1:6) {
+  sn_ext[[i]] <- data.frame(aggregate(Cat_tot ~ Category, sn[[i]], sum))
+  names(sn_ext[[i]][2]) <-"Abs_cov"
+  sn_ext[[i]]$Rel_cov <- as.numeric(round(sn_ext[[i]]$Abs_cov/sum(sn_ext[[i]]$Abs_cov),3))
+  str(sn_ext[[i]])
+  sum(sn_ext[[i]]$Rel_cov)
+  sn_ext[[i]] <- sn_ext[[i]] %>% complete(Category)
+}
+```
+
+```{r}
+sn_d1_ext_agg <- data.frame(aggregate(Cat_tot ~ Category, sn[[1]], sum))
+  names(sn_d1_ext_agg$Cat_tot) <-"Abs_cov"
+  sn_ext[[i]]$Rel_cov <- as.numeric(round(sn_ext[[i]]$Abs_cov/sum(sn_ext[[i]]$Abs_cov),3))
+  str(sn_ext[[i]])
+  sum(sn_ext[[i]]$Rel_cov)
+  sn_ext[[i]] <- sn_ext[[i]] %>% complete(Category)
+```
+
+
