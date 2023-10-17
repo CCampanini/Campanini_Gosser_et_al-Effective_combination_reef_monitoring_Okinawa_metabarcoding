@@ -121,6 +121,9 @@ clean_PLIT <- function(x) {
 for (i in 1:12) {
   prova2[[i]] <- lapply (prova2[[i]],clean_PLIT)
 }
+
+#alternative with map()
+#for (i in 1:12) {prova2[[i]] <- map (prova2[[i]],clean_PLIT)}
 ```
 
 # TRIALS
@@ -314,6 +317,8 @@ for (i in 1:12) {
   prova_ext5[[i]] <- lapply (prova2[[i]],ext_PLIT5,
                              group_var = Category, summary_var = Cat_tot)
 }
+
+names(prova_ext5) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 
 prova_ext5[[1]] <- lapply(prova2[[1]], FUN = ext_PLIT5,
                           group_var = Category, summary_var = Cat_tot)
