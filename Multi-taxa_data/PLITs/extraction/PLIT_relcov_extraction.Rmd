@@ -62,8 +62,7 @@ for (i in 1:12) {
 
 # EXTRACT ABSOLUTE AND RELATIVE COVER FOR EACH TRANSECT
 
-Extraction function written using dplyr package, check the following link for tidy_eval
-https://dcl-prog.stanford.edu/tidy-eval-detailed.html
+Extraction function written using dplyr package, check the following link for tidy_eval <https://dcl-prog.stanford.edu/tidy-eval-detailed.html>
 
 ```{r}
 ext_fun <- function(df, group_var,summary_var) {
@@ -86,3 +85,27 @@ for (i in 1:12) {
 
 names(plits_ext) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 ```
+
+# ADD COLUMNS NAMES TO EACH TRANSECT
+
+Add a column with the transect name to each transect (dataframe)
+```{r}
+#install.packages("wrapr") #https://search.r-project.org/CRAN/refmans/wrapr/html/add_name_column.html
+library(wrapr)
+
+for (i in 1:12) {
+  plit_ext_mod[[i]] <- add_name_column(plits_ext[[i]], "Transect")
+}
+```
+
+Add a column with the site name to each transect (dataframe)
+```{r}
+sites <- c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+
+for (i in 1:12) {
+    for (k in 1:length(plit_ext_mod[[i]])) {
+    plit_ext_mod[[i]][[k]]$Site <- as.factor(rep(sites[i],13))
+  }
+}
+```
+
