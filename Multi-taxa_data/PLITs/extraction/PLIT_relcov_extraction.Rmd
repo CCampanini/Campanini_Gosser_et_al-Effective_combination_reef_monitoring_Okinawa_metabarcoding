@@ -94,7 +94,7 @@ Add a column with the transect name to each transect (dataframe)
 library(wrapr)
 
 for (i in 1:12) {
-  plit_ext_mod[[i]] <- add_name_column(plits_ext[[i]], "Transect")
+  plits_ext[[i]] <- add_name_column(plits_ext[[i]], "Site_Rep")
 }
 ```
 
@@ -103,9 +103,47 @@ Add a column with the site name to each transect (dataframe)
 sites <- c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 
 for (i in 1:12) {
-    for (k in 1:length(plit_ext_mod[[i]])) {
-    plit_ext_mod[[i]][[k]]$Site <- as.factor(rep(sites[i],13))
+    for (k in 1:length(plits_ext[[i]])) {
+    plits_ext[[i]][[k]]$Site <- as.factor(rep(sites[i],13))
   }
 }
+```
+
+Add a column for the depth level
+
+```{r}
+add_col_fun <- function(df, site_rep) {
+  site_rep <- enquo(site_rep)
+  
+  df %>% 
+       mutate(depth = case_when(!!site_rep == 'D1' | 
+                                  !!site_rep == "D2" | 
+                                  !!site_rep == "D3"~ "Deep", 
+                              !!site_rep == 'S1' | 
+                                  !!site_rep == "S2" | 
+                                  !!site_rep == "S3"~ "Shallow"))
+}
+
+for (i in 1:12) {
+  plits_ext[[i]] <- lapply (plits_ext[[i]],add_col_fun,
+                             site_rep= Site_Rep)
+}
+```
+
+# MERGE IN A SINGLE DATAFRAME
+
+```{r}
+plits_ext_df <-list()
+for (i in 1:12) {
+  plits_ext_df[[i]] <- as.data.frame(do.call(rbind, plits_ext[[i]]))
+
+}
+plits_ext_df <- as.data.frame(do.call(rbind, plits_ext_df))
+
+plits_ext_df[is.na(plits_ext_df)] <- 0
+
+plits_ext_df <- plits_ext_df %>% 
+  drop_na(Category) %>%
+  replace(is.na(.), 0)
 ```
 
