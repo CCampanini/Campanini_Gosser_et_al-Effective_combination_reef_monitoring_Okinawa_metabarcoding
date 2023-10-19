@@ -34,6 +34,15 @@ plits_raw <- sapply (files, FUN = import_list,
 
 names(plits_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 ```
+# CHECK INPUT FILES
+
+```{r}
+for (i in 1:12) {
+    for (k in 1:length(plits_raw[[i]])) {
+    print(which(plits_raw[[i]][[k]]$Cat_tot<0,arr.ind = TRUE))
+  }
+}
+```
 
 # CLEAN PLITS OF EACH TRANSECT
 
@@ -186,5 +195,6 @@ rel_cov_input <- rel_cov_input %>%
          sd_softc = round(sd(soft_coral),2),
          sd_zoanth = round(sd(zoanthids),2))
 ```
+
 
 
