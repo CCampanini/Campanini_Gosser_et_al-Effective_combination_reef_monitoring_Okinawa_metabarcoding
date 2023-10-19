@@ -130,7 +130,7 @@ for (i in 1:12) {
 }
 ```
 
-# MERGE IN A SINGLE DATAFRAME
+# MERGE IN A SINGLE DATAFRAME AND ADD SITE_REP AND SITE_DEPTH COLUMNS
 
 ```{r}
 plits_ext_df <-list()
@@ -143,7 +143,48 @@ plits_ext_df <- as.data.frame(do.call(rbind, plits_ext_df))
 plits_ext_df[is.na(plits_ext_df)] <- 0
 
 plits_ext_df <- plits_ext_df %>% 
-  drop_na(Category) %>%
+  drop_na(Category) %>% ## delete rows with NA as Category
   replace(is.na(.), 0)
+
+plits_ext_df$Transect <- paste(plits_ext_df$Site, plits_ext_df$Site_Rep, sep='_')
+plits_ext_df$Site_depth <- paste(plits_ext_df$Site, plits_ext_df$depth, sep='_')
+plits_ext_df<-   plits_ext_df %>% 
+       mutate(Replicate = case_when(Site_Rep == "D1" | Site_Rep == "S1" ~ 1, 
+                                    Site_Rep == "D2" | Site_Rep == "S2" ~ 2,
+                                    Site_Rep == "D3" | Site_Rep == "S3" ~ 3))
 ```
+# ROTATE DF
+
+```{r}
+rel_cov_input <- plits_ext_df[,-2] #delete Abs_cov column
+
+library(reshape2)
+rel_cov_input <- dcast(rel_cov_input, 
+                        Transect + Site + Site_Rep + Site + depth + Replicate  
+                          ~ Category, value.var = "Rel_cov")
+```
+
+- Merge sponge to "other"
+- Delete Unknown, Missing
+
+```{r}
+rel_cov_input$other <- rel_cov_input$other + rel_cov_input$sponge
+rel_cov_input<- rel_cov_input[,-c(4,10,14,16,17)]
+```
+
+# ADD STANDARD DEVIATION
+
+```{r}
+rel_cov_input <- rel_cov_input %>%
+  group_by(Site, depth) %>% 
+  mutate(sd_alg = round(sd(algae),2),
+         sd_boulder = round(sd(boulder),2),
+         sd_hc = round(sd(hard_coral),2),
+         sd_other = round(sd(other),2),
+         sd_rubble = round(sd(rubble),2),
+         sd_sand = round(sd(sand),2),
+         sd_softc = round(sd(soft_coral),2),
+         sd_zoanth = round(sd(zoanthids),2))
+```
+
 
