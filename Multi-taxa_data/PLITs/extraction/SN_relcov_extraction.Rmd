@@ -1,0 +1,86 @@
+# SECTION 1: PLIT data extraction to obtain the relative benthic coverage matrix at different sites
+
+```{r}
+library(readxl) #read xlsx files
+library(tidyverse) #aggregate fc et al.
+library(tidyverse)
+library(dplyr)
+library(MASS)
+```
+
+# SUNABE
+
+```{r}
+sn <- sapply (excel_sheets("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx"), read_excel, 
+              path= "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/PLIT_SN.xlsx", 
+              simplify = F, USE.NAMES = T)
+
+
+SN <- lapply (sn,function(SN) {
+  SN <- SN[-c(1:2),c(1:5)]
+  colnames(SN) <-SN[1,]
+  SN<- SN[-1,]
+  SN$Point <-as.numeric(SN$Point)
+  SN$Cat_tot <-as.numeric(SN$Cat_tot)
+  SN$Func_tot <-as.numeric(SN$Func_tot)
+  SN$Category<- factor(SN$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+  SN$Functional_group<-as.factor(SN$Functional_group)
+  str(SN)
+  SN
+})
+
+```
+
+```{r}
+SND1 <- as.data.frame(SN[[1]])
+str(SND1)
+
+SN_EXC_D1 <- SND1 %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+  as.data.frame()
+
+class(SN_EXC_D1)
+
+
+# Group by sum using R Base aggregate()
+SN_EXC_D1 <- aggregate(SND1$Cat_tot, by=list(SND1$Category), FUN=sum)
+
+SN_EXC_D1 <- data.frame(aggregate(Cat_tot ~ Category, SND1, sum))
+names(SN_EXC_D1)[2] <-"Abs_cov"
+SN_EXC_D1$Rel_cov <- as.numeric(round(SN_EXC_D1$Abs_cov/sum(SN_EXC_D1$Abs_cov),3))
+str(SN_EXC_D1)
+sum(SN_EXC_D1$Rel_cov)
+SN_EXC_D1 <- SN_EXC_D1 %>% complete(Category)
+
+SN_EXC <- list()
+
+for (i in 1:6) {
+  SN_EXC[[i]] <- data.frame(aggregate(Cat_tot ~ Category, SN[[i]], sum))
+  names(SN_EXC[[i]])[2] <-"Abs_cov"
+  SN_EXC[[i]]$Rel_cov <- as.numeric(round(SN_EXC[[i]]$Abs_cov/sum(SN_EXC[[i]]$Abs_cov),3))
+  str(SN_EXC[[i]])
+  sum(SN_EXC[[i]]$Rel_cov)
+  SN_EXC[[i]] <- SN_EXC[[i]] %>% complete(Category)
+}
+
+names(SN_EXC) <- c("D1","D2","D3","S1","S2","S3")
+
+  SN_EXC[[i]] <- SN_EXC[[i]][!is.na(SN_EXC[[i]]$Category),]
+  SN_EXC[[i]]$Rel_cov <- round(SN_EXC[[i]]$Abs_cov/sum(SN_EXC[[i]]$Abs_cov,na.rm = TRUE),3)
+  str(SN_EXC)
+
+SN_EXC <- list()
+
+for (i in seq(SN)) {
+  SN_EXC[[i]] <- SN[[i]] %>%
+    group_by(Category) %>% 
+    summarise(Abs_cov=sum(Cat_tot)) %>%
+    complete(Category)
+  SN_EXC[[i]] <- SN_EXC[[i]][!is.na(SN_EXC[[i]]$Category),]
+  SN_EXC[[i]]$Rel_cov <- round(SN_EXC[[i]]$Abs_cov/sum(SN_EXC[[i]]$Abs_cov,na.rm = TRUE),3)
+  str(SN_EXC)
+}
+names(SN_EXC) <- c("D1","D2","D3","S1","S2","S3")
+```
