@@ -34,7 +34,7 @@ plits_raw <- sapply (files, FUN = import_list,
 
 names(plits_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 ```
-# CHECK INPUT FILES
+# CHECK INPUT FILES FOR NEGATIVE VALUES
 
 ```{r}
 for (i in 1:12) {
@@ -163,6 +163,7 @@ plits_ext_df<-   plits_ext_df %>%
                                     Site_Rep == "D3" | Site_Rep == "S3" ~ 3))
 ```
 # ROTATE DF
+Follow the link for explanation of dcast function https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
 rel_cov_input <- plits_ext_df[,-2] #delete Abs_cov column
@@ -196,5 +197,11 @@ rel_cov_input <- rel_cov_input %>%
          sd_zoanth = round(sd(zoanthids),2))
 ```
 
+# EXPORT DATAFRAME AS EXCEL FILE
+
+```{r}
+library("writexl")
+write_xlsx(rel_cov_input,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/rel_cov_input.xlsx")
+```
 
 
