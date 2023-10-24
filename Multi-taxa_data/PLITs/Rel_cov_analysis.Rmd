@@ -1,0 +1,86 @@
+---
+title: "Relative cover analysis"
+author: "Claudia Campanini"
+date: 
+output: 
+  html_document: 
+    toc: yes
+    number_sections: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load some basic libraries
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readxl)   # to import excel datasets
+```
+
+```{r}
+cov_df <- read_excel("Rel_cov_input.xlsx")
+str(cov_df)
+```
+Format the table
+
+```{r}
+cov_df <- as.data.frame(unclass(cov_df),                     # Convert all columns to factor
+                       stringsAsFactors = TRUE)
+cov_df[,5] <- factor(cov_df[,5])
+```
+
+Create a df with mean values of relative cover and standard deviation per depth within site
+
+# Prepare dataframe for multivariate analyses
+
+```{r}
+categories <- as.factor(c(rep("algae",24),
+                          rep("boulder",24),
+                          rep("hard_coral",24),
+                          rep("other",24),
+                          rep("rubble",24),
+                          rep("sand",24),
+                          rep("soft_coral",24),
+                          rep("zoanthids",24)))
+
+str(categories)
+
+rel_cov_column<-data.frame(rel_cov=unlist(cov_df[,6:13]))
+
+
+cov_bar_df <- as.data.frame(cbind(rep(cov_df$transect,8),
+                                  rep(cov_df$site,8),
+                                  rep(cov_df$depth,8),
+                                  rep(cov_df$site_depth,8),
+                                  categories,
+                                  rel_cov_column))
+
+str(cov_bar_df)
+cov_bar_df[,6]<-as.numeric(cov_bar_df[,6])
+cov_bar_df[,2]<-factor(cov_bar_df[,2],levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+cov_bar_df[,3]<-factor(cov_bar_df[,3])
+cov_bar_df[,4]<-factor(cov_bar_df[,4],levels=c("AW_D","AW_S","SN_D","SN_S",
+                                               "ZA_D","ZA_S","HI_D","HI_S"))
+str(cov_bar_df)
+
+colnames(cov_bar_df) <-c("transect","site","Depth","site_depth","Category","rel_cover")
+
+str(cov_bar_df)
+```
+
+
+```{r}
+cov_mean_df <- cov_df %>% 
+  group_by(Category,Site,depth) %>%
+  mutate(mean_rel_cov_by_depth = round(mean(rel_cover),1),
+         sd_rel_cov_by_depth = round(sd(rel_cover),1))
+
+head(cov_mean_df)
+```
+
