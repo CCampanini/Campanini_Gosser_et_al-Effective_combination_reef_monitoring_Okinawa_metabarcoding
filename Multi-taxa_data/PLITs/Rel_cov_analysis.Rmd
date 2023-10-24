@@ -96,3 +96,90 @@ ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_r
 #ggsave("relcov_stacked.tiff", units="in", width=5, height=4, dpi=300, compression = 'lzw')
 ```
 
+# nMDS
+
+Load packages
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+install.packages("htmltools")
+library(htmltools)
+library(vegan3d)
+library(MASS)
+library(dplyr)
+library(readxl)   # to import excel datasets
+```
+
+## Format the data
+
+Load relative benthic cover data
+
+```{r}
+#Relative benthic cover dataframe
+
+cov_df <- read_excel("Rel_cov_input.xlsx")
+str(cov_df)
+cov_df$site <-ordered(cov_df$site)
+str(cov_df)
+levels(cov_df$site)
+cov_df[,c(1,3,4,5)] <- lapply(cov_df[,c(1,3,4,5)], as.factor)  ## as.factor() could also be used
+#cov_mat[,5] <- as.factor(cov_mat$Site_Depth) alternative for the single lines
+
+
+cov_df[,6:13] <- lapply(cov_df[,6:13], as.numeric)
+cov_df <- cov_df[,-c(14:21)]
+
+str(cov_df)
+
+
+#create a df with the independent variables
+ind_df <- as.data.frame(cov_df[,c(2:3,5)])
+str(ind_df)
+```
+
+Convert the database `cov_df`to a matrix
+
+```{r}
+cov_mat <- cov_df[,-c(1:5)]
+rownames(cov_mat) <- cov_df$transect
+cov_mat <- as.matrix(cov_mat)
+str(cov_mat)
+class(cov_mat)
+```
+
+## Run the Nonmetric Multidimensional scaling
+
+```{r}
+##metaMDS (isoMDS with random start, reduced  stress)----
+set.seed(69) #random number to start
+cov_nmds_br=metaMDS(cov_mat,distance = "bray",k=2) #Bray-Curtis resemblance matrix;k=2 means 2 dimensional
+```
+
+## Evaluate the nMDS mapping based on the stress and goodness of fit
+
+```{r}
+stressplot(cov_nmds_br) #evaluating NMDS mapping: stressplot
+cov_nmds_br_gof=goodness(cov_nmds_br) #evaluating NMDS mapping: goodness of fit
+cov_nmds_br_gof #smaller the value, the lower stress and better fit
+plot(cov_nmds_br, type="t", main="goodness of fit") # create a plot for goodness of fit visualization:
+points(cov_nmds_br, display="site", cex=cov_nmds_br_gof*100) #display the goodness of fit on the plot
+#Stress lesser, better (>0.2 poor,0.2-0.1 moderate,0.1-0.05 good,<0.05 excellent); 
+#K level higher, stress lesser
+```
+
+Stress = `r cov_nmds_br$stress` \< 0.2
+
+Check Stress for each additional dimension
+
+```{r}
+k_vec=1:10
+stress=numeric(length(k_vec))
+relcov_dij=metaMDSdist(cov_mat, trace=FALSE)
+set.seed(69)
+for(i in seq_along(k_vec)) {
+  cov_nmds_br_loop=metaMDSiter(relcov_dij, k=i, trace=FALSE)
+  stress[i]=cov_nmds_br_loop$stress
+}
+plot(k_vec,stress,type="b",ylab="Stress",xlab="Dimensions") #select the K correspondent to the most drastic drop in stress
+```
