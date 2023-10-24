@@ -34,7 +34,7 @@ plits_raw <- sapply (files, FUN = import_list,
 
 names(plits_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 ```
-# CHECK INPUT FILES FOR NEGATIVE VALUES
+## CHECK INPUT FILES FOR NEGATIVE VALUES
 
 ```{r}
 for (i in 1:12) {
@@ -95,7 +95,7 @@ for (i in 1:12) {
 names(plits_ext) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 ```
 
-# ADD COLUMNS NAMES TO EACH TRANSECT
+## ADD COLUMNS NAMES TO EACH TRANSECT
 
 Add a column with the transect name to each transect (dataframe)
 ```{r}
@@ -139,7 +139,9 @@ for (i in 1:12) {
 }
 ```
 
-# MERGE IN A SINGLE DATAFRAME AND ADD SITE_REP AND SITE_DEPTH COLUMNS
+# PREPARE SINGLE DATAFRAME WITH RELATIVE COVER
+
+Merge in a single dataframe and add site_rep and site_depth columns
 
 ```{r}
 plits_ext_df <-list()
@@ -162,7 +164,15 @@ plits_ext_df<-   plits_ext_df %>%
                                     Site_Rep == "D2" | Site_Rep == "S2" ~ 2,
                                     Site_Rep == "D3" | Site_Rep == "S3" ~ 3))
 ```
-# ROTATE DF
+## EXPORT PLIT_EXT_DF (long format)
+
+```{r}
+library("writexl")
+write_xlsx(rel_cov_input,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/plits_ext_df.xlsx")
+```
+
+
+## ROTATE DF
 Follow the link for explanation of dcast function https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
@@ -182,7 +192,7 @@ rel_cov_input$other <- rel_cov_input$other + rel_cov_input$sponge
 rel_cov_input<- rel_cov_input[,-c(4,10,14,16,17)]
 ```
 
-# ADD STANDARD DEVIATION
+## ADD STANDARD DEVIATION
 
 ```{r}
 rel_cov_input <- rel_cov_input %>%
@@ -197,10 +207,9 @@ rel_cov_input <- rel_cov_input %>%
          sd_zoanth = round(sd(zoanthids),2))
 ```
 
-# EXPORT DATAFRAME AS EXCEL FILE
+## EXPORT REL_COV_INPUT DATAFRAME AS EXCEL FILE
 
 ```{r}
-library("writexl")
 write_xlsx(rel_cov_input,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/rel_cov_input.xlsx")
 ```
 
