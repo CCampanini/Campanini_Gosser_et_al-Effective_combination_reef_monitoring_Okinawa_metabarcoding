@@ -59,3 +59,40 @@ mean_rel_cov_wide
 
 ## STACKED BARPLOTS
 
+Load the color-blind-friendly palette with black:
+
+```{r}
+relcovPalette <- c("#009E73","#E69F00","#D55E00", "#56B4E9", "#F0E442", "#0072B2", "#CC79A7","#000000","#999999") #I changed the order compared to the original version
+```
+
+Stacked barplot of the mean relative benthic cover
+
+N.B. I set a conditional labelling so that only mean relative cover
+values \>0.61 are shown in the plot
+
+```{r}
+ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_rel_cov)) + 
+  geom_bar(position="fill", stat="identity",alpha=.8, color = "black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean relative benthic cover",
+       title= "Stacked bar chart of mean relative benthic cover \n by depth within site")+
+  geom_text(aes(Depth, Mean_rel_cov, label = Mean_rel_cov), 
+            data = subset(mean_rel_cov_df,mean_rel_cov_df$Mean_rel_cov>= .061),
+            size = 3.5, position = position_fill(vjust = 0.5),color="black")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+  scale_fill_manual(labels = c("algae",
+                                "boulder",
+                                "hard coral",
+                                "other",
+                                "rubble",
+                                "sand",
+                                "soft coral",
+                                "zoantharians"), values=relcovPalette)+
+
+
+#ggsave("relcov_stacked.tiff", units="in", width=5, height=4, dpi=300, compression = 'lzw')
+```
+
