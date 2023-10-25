@@ -196,6 +196,7 @@ cov_nmds_br$stress
 ```{r, fig.show='hide'}
 plot(cov_nmds_br, type="n") #empty plot for next case
 ```
+Cols from https://stackoverflow.com/questions/65013406/how-to-generate-30-distinct-colors-that-are-color-blind-friendly 
 
 ```{r}
 plot(cov_nmds_br, type="n",display="site", xlim=c(-1,1),ylim=c(-1,0.5)) #plot nMDS with reference of sites, but empty
@@ -369,6 +370,140 @@ cov_df$Site_depth <- str_c (cov_df$Site,'_', cov_df$depth)
 ind_df <- as.data.frame(cov_df[,c(2,4,14)])
 str(ind_df)
 ```
+
+## PERMANOVA among the 12 sites
+
+### Question 1: is there a significant difference in benthic cover among sites?
+
+```{r}
+set.seed(69) 
+perm=how(nperm=999)
+relcov_site_pmv=adonis2(cov_mat~Site, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray")
+                        
+relcov_site_pmv
+```
+
+P-value `r relcov_site_pmv$Pr[1]` \< 0.05, so there is a significant
+difference among sites.
+
+### Question 2: is there a significant difference in benthic cover between depth withing sites?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69) 
+perm=how(nperm=999)
+relcov_depth_pmv <- adonis(cov_mat~depth, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$Site,
+                           methods="bray")
+relcov_depth_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69) 
+h <- how(blocks = ind_df$Site, nperm = 999)
+relcov_blocks_pmv <- adonis2(cov_mat~depth,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray")
+
+relcov_blocks_pmv
+```
+
+## Permutation test of multivariate homogeneity of groups dispersions (variances)
+
+Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
+K. Clarke. Permanova+ for primer: Guide to software and statisticl
+methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
+PERMANOVA test using permutations assumes only that the samples are
+exchangeable under a true null hypothesis12. The assumption of
+exchangeability is tantamount to assuming that the multivariate
+observations (samples) are independent and identically distributed
+(i.i.d.) under a true null hypothesis. Thus, although there are no
+explicit assumptions regarding the distributions of the original
+variables (they are certainly not assumed to be normally distributed),
+independence and homogeneity of dispersions (in the space of the
+resemblance measure) are directly implied by the permutation procedure.
+Clearly, if samples have very different dispersions in different groups,
+then they are not really exchangeable. Also, if the samples are
+unequally correlated with one another (e.g., temporally or spatially),
+then randomly shuffling them will destroy this kind of inherent
+structure.*
+
+```{r}
+set.seed(69) 
+densityplot(permustats(relcov_site_pmv)) #density plot of permutation results to to check if assumptions are met?
+
+relcov_dist = vegdist(cov_mat,method="bray")
+
+relcov_bd=betadisper(relcov_dist,ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(relcov_bd)
+
+plot(relcov_bd)
+boxplot(relcov_bd) #check data dispersion based on sites
+anova(relcov_bd) #F-test on distribution of sites
+
+```
+### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
+
+```{r}
+set.seed(69) 
+permutest(relcov_bd) #permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue
+permutest(relcov_bd, pairwise=TRUE) #pairwise of dispersion test
+```
+
+From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
+for primer: Guide to software and statisticl methods. Primer-E Limited,
+2008: \* If significant heterogeneity were detected by PERMDISP and
+differences among groups were also detected using PERMANOVA, then the
+latter could have been caused by differences in location, differences in
+dispersion, or some combination of the two. \*
+
+### Post hoc test for PERMANOVA (`pairwise.adonis`)
+
+```{r}
+set.seed(69) 
+relcov_pmv_phoc_holm= pairwise.adonis(cov_mat,ind_df$Site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "holm", 
+                                  reduce = NULL)
+
+relcov_pmv_phoc_holm
+
+set.seed(69) 
+relcov_pmv_phoc_bonf= pairwise.adonis(cov_mat,ind_df$Site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "bonferroni", 
+                                  reduce = NULL)
+
+relcov_pmv_phoc_bonf 
+```
+
+I can use Bonferroni because it is more conservative and it is the
+adjustment adopted for the other analyses.
+
+N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
+
+# SIMPER: Similarity of percentage
+
+From the vignette: *The simper functions performs pairwise comparisons
+of groups of sampling units and finds the contribution of each species
+to the average between-group Bray-Curtis dissimilarity. Although the
+method is called simper, it really studied dissimilarities instead of
+similarities (Clarke 1993).*
+
+```{r}
+relcov_sim=simper(cov_mat,group=ind_df$Site) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim
+str(relcov_sim)
+summary(relcov_sim) #check which categories were the main driver of difference among sites
+```
+
 
 # Session info
 
