@@ -21,6 +21,7 @@ Load some basic libraries
 library(dplyr)
 library(ggplot2)
 library(readxl)   # to import excel datasets
+library("writexl") # to export df to excel files (write_xlsx)
 ```
 # MEAN RELATIVE BENTHIC COVERBY CATEGORY
 
@@ -38,8 +39,16 @@ mean_rel_cov_site <- cov_df %>%
   group_by(Site, Category) %>%
   summarise(Mean_rel_cov=round(mean(Rel_cov),2))
 
+library(reshape2) #needed for dcast function
 mean_rel_cov_site <- dcast(mean_rel_cov_site, Site ~ Category)
+mean_rel_cov_site
 ```
+Export table with mean relative benthic cover by category per site within depth level
+
+```{r}
+write_xlsx(mean_rel_cov_site,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/mean_rel_cov_site.xlsx")
+```
+
 ## PER SITE WITHIN DEPTH
 
 ```{r}
@@ -49,12 +58,19 @@ mean_rel_cov_df <- cov_df %>%
 
 Site_depth <- mean_rel_cov_df$Site_depth
 
+library(tidyr) # needed for separate_wider_delim function
 mean_rel_cov_df <- mean_rel_cov_df %>%
   separate_wider_delim(Site_depth, "_", names = c("Site", "Depth")) %>%
   mutate(Site_depth=Site_depth)
 
-mean_rel_cov_wide <- dcast(mean_rel_cov_df, Site_depth ~ Category)
+mean_rel_cov_wide <- dcast(mean_rel_cov_df, Site_depth ~ Category, value.var = "Mean_rel_cov")
 mean_rel_cov_wide
+```
+
+Export table with mean relative benthic cover by category per site within depth level
+
+```{r}
+write_xlsx(mean_rel_cov_wide,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/mean_rel_cov_site_depth.xlsx")
 ```
 
 ## STACKED BARPLOTS
