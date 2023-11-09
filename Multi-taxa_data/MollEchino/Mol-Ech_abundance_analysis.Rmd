@@ -1,0 +1,747 @@
+---
+title: "Data analysis on preliminary data on mollusks and echinoderms abundance"
+author: "Claudia Campanini"
+date: '2022-06-21'
+output: 
+  html_document: 
+    toc: yes
+    number_sections: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# INTRODUCTION
+
+Mollusk and mollusk abundance by class extracted by analyzing photos
+collected on belt transects during surveys at different sites along
+Okinawa and Aka Island. Belt transect area (1 replicate) was 25 m^2^ for
+mollusks and 50 m^2^ for echinoderms. Sites exposure to anthropogenic
+pressure was previously estimated using the scale from DiBattista et
+al., 2019.
+
+Preliminary data from the following sites:
+
+     - AW = AWA (high anthropogenic pressure)
+     - SN = SUNABE (high anthropogenic pressure)
+     - ZA = ZATSUN (low anthropogenic pressure)
+     - HI = HIZUSHI (low anthropogenic pressure)
+     
+
+```{r}
+#load libraries
+#SECTION 1: Percent stacked bar chart 
+
+library(dplyr)
+library(ggplot2)
+library(readxl)   # to import excel datasets
+library(magrittr)
+
+```
+
+# Mollusks \| Abundance estimates
+
+```{r}
+mol_tot <- read_excel("Prel_mol_input.xlsx", sheet = "DATA")
+str(mol_tot)
+
+mol_tot[,c(1:9,11)] <- lapply(mol_tot[,c(1:9,11)], as.factor)
+mol_tot$site <-ordered(mol_tot$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+mol_tot$size <- as.numeric(mol_tot$size)
+str(mol_tot)
+
+```
+
+Extract abundance by class from the dataframe per transect (replicate)
+
+```{r}
+mol_ab_tb<- with(mol_tot, table(transect, class))
+mol_ab_tb
+class(mol_ab_tb)
+mol_ab_df <-data.frame(rbind(mol_ab_tb))
+str(mol_ab_df)
+mol_ab_df <-rbind(mol_ab_df[1:5,],
+                  AW_S3 = rep(0,4), #add a row with 0 abundance per class for AW_S3
+                  mol_ab_df[6:23,])
+mol_ab_df <- mol_ab_df[,-1] #eliminate non-ID photos
+
+mol_ab_df <- cbind(transect = as.factor(rownames(mol_ab_df)),
+                   site = as.factor(c(rep("Awa",6),
+                                    rep("Hizushi",6),
+                                    rep("Sunabe",6),
+                                    rep("Zatsun",6))),
+                   depth = as.factor(rep(c("D","D","D","S","S","S"),4)),
+                   site_depth= as.factor(c(rep("AW_D",3),
+                                 rep("AW_S",3),
+                                 rep("HI_D",3),
+                                 rep("HI_S",3),
+                                 rep("SN_D",3),
+                                 rep("SN_S",3),
+                                 rep("ZA_D",3),
+                                 rep("ZA_S",3))),
+                   mol_ab_df)
+
+mol_ab_df$site <-ordered(mol_ab_df$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+
+mol_ab_df$Cephalopoda <- NULL
+
+mol_ab_df[,c(5,6)] <- lapply(mol_ab_df[,c(5:6)], as.numeric)
+
+mol_ab_df$Bivalvia <- as.numeric(mol_ab_df$Bivalvia)
+
+mol_ab_df
+
+str(mol_ab_df)
+
+#library(writexl)
+#write_xlsx(mol_ab_df,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\mol_ab_df_output.xlsx")
+
+
+```
+
+# Mollusks \| Abundance by class by depth within site
+
+## Create the input dataframe
+
+Adjust `ech_ab_df` to create a new input dataframe for the barplot.
+Include a column with - mean echinoderm abundance by class per depth
+within site among replicates; - standard deviation by class per depth
+within site among replicates.
+
+Standard deviation will be used to add error bars to the barplot.
+
+```{r}
+mol_mean <- cbind(aggregate(Bivalvia~site_depth,data=mol_ab_df,FUN="mean"),
+                  aggregate(Gastropoda~site_depth,data=mol_ab_df,FUN="mean"),
+                  aggregate(Bivalvia~site_depth,data=mol_ab_df,FUN="sd"),
+                  aggregate(Gastropoda~site_depth,data=mol_ab_df,FUN="sd"))
+mol_mean <- mol_mean[,-c(3,5,7)]
+mol_mean[,2:5] <-round(mol_mean[,2:5],0)
+mol_mean
+mol_mean_bar <- cbind(site_depth = rep(levels(mol_mean$site_depth),2),
+                  class = c(rep("Bivalvia",8),rep("Gastropoda",8)),
+                  mean_ab = as.numeric(c(mol_mean$Bivalvia,mol_mean$Gastropoda)),
+                  sd_ab = as.numeric(c(mol_mean[,4],mol_mean[,5])))
+mol_mean_bar
+class(mol_mean_bar)
+mol_mean_bar <-data.frame(rbind(mol_mean_bar))
+str(mol_mean_bar)
+
+mol_mean_bar[,c(1,2)] <- lapply(mol_mean_bar[,c(1,2)], as.factor)
+mol_mean_bar$mean_ab <- as.numeric(mol_mean_bar$mean_ab)
+mol_mean_bar$sd_ab <- as.numeric(mol_mean_bar$sd_ab)
+mol_mean_bar$phylum <- as.factor(rep("Mollusca",16))
+mol_mean_bar$site <- as.factor(rep(c(rep("Awa",2),
+                                     rep("Hizushi",2),
+                                     rep("Sunabe",2),
+                                     rep("Zatsun",2)),2))
+mol_mean_bar$site <- ordered(mol_mean_bar$site, levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+mol_mean_bar$depth <- as.factor(rep(c("Deep","Shallow"),8))
+mol_mean_bar
+
+```
+
+# Echinoderms \| Abundance estimates
+
+```{r}
+ech_tot <- read_excel("Prel_ech_input.xlsx", sheet = "DATA")
+str(ech_tot)
+
+ech_tot[,c(1:9,11)] <- lapply(ech_tot[,c(1:9,11)], as.factor)
+ech_tot$site <-ordered(ech_tot$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+ech_tot$size <- as.numeric(ech_tot$size)
+str(ech_tot)
+
+```
+
+Extract abundance by class from the dataframe per transect (replicate)
+
+```{r}
+ech_ab_tb<- with(ech_tot, table(transect, class))
+ech_ab_tb
+class(ech_ab_tb)
+ech_ab_df <-data.frame(rbind(ech_ab_tb))
+str(ech_ab_df)
+
+ech_ab_df <- ech_ab_df[,-1] #eliminate non-ID photos
+
+ech_ab_df <- cbind(transect = as.factor(rownames(ech_ab_df)),
+                   site = as.factor(c(rep("Awa",6),
+                                    rep("Hizushi",6),
+                                    rep("Sunabe",6),
+                                    rep("Zatsun",6))),
+                   depth = as.factor(rep(c("D","D","D","S","S","S"),4)),
+                   site_depth= as.factor(c(rep("AW_D",3),
+                                 rep("AW_S",3),
+                                 rep("HI_D",3),
+                                 rep("HI_S",3),
+                                 rep("SN_D",3),
+                                 rep("SN_S",3),
+                                 rep("ZA_D",3),
+                                 rep("ZA_S",3))),
+                   ech_ab_df)
+
+ech_ab_df$site <-ordered(ech_ab_df$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+
+ech_ab_df[,c(5:8)] <- lapply(ech_ab_df[,c(5:8)], as.numeric)
+
+ech_ab_df
+
+str(ech_ab_df)
+
+
+#library("writexl")
+#write_xlsx(ech_ab_df,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\ech_ab_df_output.xlsx")
+
+```
+
+# Echinoderms \| Abundance by class by depth within site
+
+## Create the input dataframe
+
+Adjust `ech_ab_df` to create a new input dataframe for the barplot.
+Include a column with - mean echinoderm abundance by class per depth
+within site among replicates; - standard deviation by class per depth
+within site among replicates.
+
+Standard deviation will be used to add error bars to the barplot.
+
+```{r}
+ech_mean_sd<- cbind(aggregate(Asteroidea~site_depth,data=ech_ab_df,FUN="mean"),
+                    aggregate(Crinoidea~site_depth,data=ech_ab_df,FUN="mean"),
+                    aggregate(Echinoidea~site_depth,data=ech_ab_df,FUN="mean"),
+                    aggregate(Holothuroidea~site_depth,data=ech_ab_df,FUN="mean"),
+                    aggregate(Asteroidea~site_depth,data=ech_ab_df,FUN="sd"),
+                    aggregate(Crinoidea~site_depth,data=ech_ab_df,FUN="sd"),
+                    aggregate(Echinoidea~site_depth,data=ech_ab_df,FUN="sd"),
+                    aggregate(Holothuroidea~site_depth,data=ech_ab_df,FUN="sd"))
+str(ech_mean_sd)
+ech_mean_sd <- ech_mean_sd[,-c(3,5,7,9,11,13,15)]
+str(ech_mean_sd)
+
+ech_mean_sd[,c(2:9)] <-round(ech_mean_sd[,(2:9)],0)
+
+ech_mean_sd_bar <- cbind(site_depth = rep(levels(ech_mean_sd$site_depth),4),
+                      class = c(rep("Asteroidea",8),
+                                rep("Crinoidea",8),
+                                rep("Echinoidea",8),
+                                rep("Holothuroidea",8)),
+                      mean_ab = as.numeric(c(ech_mean_sd$Asteroidea,
+                                             ech_mean_sd$Crinoidea,
+                                             ech_mean_sd$Echinoidea,
+                                             ech_mean_sd$Holothuroidea)),
+                      sd_ab = as.numeric(c(ech_mean_sd[,6],
+                                           ech_mean_sd[,7],
+                                           ech_mean_sd[,8],
+                                           ech_mean_sd[,9])))
+
+
+ech_mean_sd_bar
+class(ech_mean_sd_bar)
+ech_mean_sd_bar <-data.frame(rbind(ech_mean_sd_bar))
+str(ech_mean_sd_bar)
+
+ech_mean_sd_bar[,c(1,2)] <- lapply(ech_mean_sd_bar[,c(1,2)], as.factor)
+ech_mean_sd_bar[,c(3,4)] <- lapply(ech_mean_sd_bar[,c(3,4)], as.numeric)
+ech_mean_sd_bar$phylum <- as.factor(rep("Echinodermata",16))
+ech_mean_sd_bar$site <- as.factor(rep(c(rep("Awa",2),
+                                     rep("Hizushi",2),
+                                     rep("Sunabe",2),
+                                     rep("Zatsun",2)),4))
+ech_mean_sd_bar$site <- ordered(ech_mean_sd_bar$site, levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+ech_mean_sd_bar$depth <- as.factor(rep(c("Deep","Shallow"),16))
+ech_mean_sd_bar
+```
+
+# Invertebrates \| Barplot with mollusk and echinoderm abundance by class by depth within site
+
+```{r}
+inv_bar <- rbind(mol_mean_bar,ech_mean_sd_bar)
+#library("writexl")
+#write_xlsx(inv_bar,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\mol_ech_ab_class_output.xlsx")
+
+invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7")
+
+ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum)) +
+  geom_bar(position="dodge",stat="identity")+
+  geom_errorbar(aes(ymin=ifelse(mean_ab > 0, 0, 0), 
+                    ymax=ifelse(mean_ab > 0, mean_ab+sd_ab, 0)), 
+                    width=.2, position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("black","grey"))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))
+
+ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab, color=phylum)) +
+  geom_bar(aes(alpha=phylum),position="dodge",stat="identity")+
+  geom_errorbar(aes(ymin=mean_ab, ymax=mean_ab+sd_ab), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("black","grey"))+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))
+```
+
+Remove Echinoidea from the plot to properly visualize the other classes
+
+```{r}
+inv_bar_clean <- inv_bar[-seq(33,40,1),]
+
+ggplot(inv_bar_clean, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum)) +
+  geom_bar(position="dodge",stat="identity")+
+  geom_errorbar(aes(ymin=mean_ab, ymax=mean_ab+sd_ab), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=c("#56B4E9","#0072B2","#F0E442","#E69F00","#CC79A7"))+
+  scale_color_manual(values=c("black","grey"))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))
+
+```
+
+```{r}
+#install.packages("ggbreak")
+library(ggbreak)
+
+ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum)) +
+  geom_bar(position="dodge",stat="identity")+
+  geom_errorbar(aes(ymin=ifelse(mean_ab > 0, mean_ab, 0), 
+                    ymax=ifelse(mean_ab > 0, mean_ab+sd_ab, 0)), #set conditions to remove error bar when the mean abundance is equal to zero
+                    width=.2, position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_bw()+
+  labs(x="Depth",
+       y="Mean abundance by class [individuals/transect]",
+       title = "Bar chart of mean abundance by depth within site for mollusks and echinoderms")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"))+
+  guides(fill=guide_legend(title="Class", order =2,
+                           override.aes = list(color = c(rep("blue",2),
+                                                         rep("firebrick",4)))),
+         color=guide_legend(title= "Phylum",order=1,
+                            override.aes = list(fill = c("white", "white"))))+
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "right",legend.box="vertical",
+        panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+         strip.background = element_rect(fill = "white"))+ #site title facet_grid background
+  scale_y_break(c(30, 50), scales=1, ticklabels=seq(50, 350, 100))
+
+#ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```
+
+# nMDS
+
+Load packages
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+#install.packages("vegan3d")
+library(vegan3d)
+library(MASS)
+library(dplyr)
+
+library(readxl)   # to import excel datasets
+```
+
+## Format the data
+
+```{r}
+str(mol_ab_df)
+str(ech_ab_df)
+
+inv_mat <- cbind(mol_ab_df,ech_ab_df) #merge mollusks and echinoderms abundance dataframes
+inv_mat <- inv_mat[,-c(1,2,3,4,7,8,9,10)]
+inv_mat <- as.data.frame(lapply(inv_mat[,seq(1,6,1)], as.numeric))
+
+str(inv_mat)
+
+inv_mat <- inv_mat
+
+for (i in 1:6) { 
+  inv_mat[,i] <- log1p(inv_mat[,i]) #apply the transformation log10(x+1) to avoid -inf values
+}
+
+str(inv_mat)
+
+inv_mat <- as.matrix(inv_mat) #convert to matrix
+rownames(inv_mat) <- mol_ab_df$transect
+
+#Create a df with independent variables
+ind_df <- mol_ab_df[,seq(1,4,1)]
+
+```
+
+## Run the Nonmetric Multidimensional scaling
+
+```{r}
+##metaMDS (isoMDS with random start, reduced  stress)----
+set.seed(69) #random number to start
+inv_nmds_br=metaMDS(inv_mat,distance = "bray",k=2) #Bray-Curtis resemblance matrix;k=2 means 2 dimensional
+```
+
+## Evaluate the nMDS mapping based on the stress and goodness of fit
+
+```{r}
+stressplot(inv_nmds_br) #evaluating NMDS mapping: stressplot
+inv_nmds_br_gof=goodness(inv_nmds_br) #evaluating NMDS mapping: goodness of fit
+inv_nmds_br_gof #smaller the value, the lower stress and better fit
+plot(inv_nmds_br, type="t", main="goodness of fit") # create a plot for goodness of fit visualization:
+points(inv_nmds_br, display="site", cex=inv_nmds_br_gof*100) #display the goodness of fit on the plot
+#Stress lesser, better (>0.2 poor,0.2-0.1 moderate,0.1-0.05 good,<0.05 excellent); 
+#K level higher, stress lesser
+str(inv_nmds_br)
+```
+
+Stress = `r inv_nmds_br$stress` \< 0.2
+
+Check Stress for each additional dimension
+
+```{r}
+k_vec=1:10
+stress=numeric(length(k_vec))
+inv_dij=metaMDSdist(inv_mat, trace=FALSE)
+set.seed(69)
+for(i in seq_along(k_vec)) {
+  inv_nmds_br_loop=metaMDSiter(inv_dij, k=i, trace=FALSE)
+  stress[i]=inv_nmds_br_loop$stress
+}
+plot(k_vec,stress,type="b",ylab="Stress",xlab="Dimensions") #select the K correspondent to the most drastic drop in stress
+```
+
+## nMDS visualization of nMDS plot with `ggplot()`
+
+N.B. Visualisation with ggplot()\` first require the creation of an
+input dataframe with nMDS scores
+
+```{r}
+inv_ndms_scores <- as.data.frame(scores(inv_nmds_br))  #Using the scores function from vegan to extract the site scores and convert to a data.frame
+inv_ndms_scores$transect <- rownames(inv_ndms_scores) # create a column of transect names
+inv_ndms_scores$site <- ind_df$site
+inv_ndms_scores$depth <- ind_df$depth  #  add the grp variable created earlier
+str(inv_ndms_scores)  #look at the data
+
+
+NMDS1 <- inv_nmds_br$points[,1] ##also found using: > scores(faMDS)
+NMDS2 <- inv_nmds_br$points[,2]
+nmds_df<-cbind(ind_df, NMDS1, NMDS2)
+
+```
+
+nMDS plot with `ggplot()` with stress value
+
+```{r}
+inv_ndms_ggplot<-ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),size=2.5)+##separates overlapping points
+  stat_ellipse(geom="polygon",
+               aes(fill=site), alpha=.2,type='t',size =1)+ ##draws 95% confidence interval ellipses
+  theme_classic()+
+  annotate("text", x=0.9, y=-0.8, 
+           label=paste('Stress =',round(inv_nmds_br$stress,3))) #add stress to plot
+
+inv_ndms_ggplot
+```
+
+## nMDS plot with `geom_mark_ellipse()` from `ggforce`
+
+```{r}
+#install.packages("ggforce")
+library(ggforce)
+
+palette4viridisorange=c("#440154","#2a788e","#35b779","darkorange")
+
+inv_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),size=3)+##separates overlapping points
+  geom_mark_ellipse(aes(fill=site, color=site), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
+  theme_classic()+
+  ggtitle("nMDS of mollusks and echinoderm abundance")+
+  theme(legend.position = "right",
+        plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  guides(color = guide_legend(order = 1,title="Site"),
+         fill = guide_legend(order = 1,title="Site"),
+         shape = guide_legend(order = 2,title="Depth",))+
+  scale_color_manual(values= palette4viridisorange)+
+  scale_fill_manual(values= palette4viridisorange)+
+  scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
+  ylim(-0.5,0.5)+
+  annotate("text", x=-0.80, y=-0.4,
+           label=paste('Stress =',round(inv_nmds_br$stress,3)),
+           size=4)+ #add stress to plot
+  annotate("text", x=-0.67, y=-0.48,
+           label=bquote('Non-metric fit,'~ R^2~"= 0.978"),
+           size=4) #add goodness of fit to plot
+
+inv_ndms_ggplot
+
+#ggsave("inv_ndms_ggplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```
+
+# PERMANOVA AND POST-HOC PAIRWISE PERMANOVA
+
+Load libraries
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+#install.packages("vegan3d")
+library(vegan3d)
+library(MASS)
+library(dplyr)
+
+#install.packages("pairwiseAdonis")
+library(devtools) #to install pairwiseAdonis from GitHub
+library(pairwiseAdonis)
+#install.packages("Rtools")
+# library(remotes) #to use install_github
+# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+library(pairwiseAdonis)
+
+library(readxl)   # to import excel datasets
+
+```
+
+Display input matrix and dataframe with independent variables
+
+```{r}
+str(inv_mat)
+head(inv_mat)
+str(ind_df)
+```
+
+## PERMANOVA among the 4 sites
+
+### Question 1: is there a significant difference in mollusks and echinoderm abundance among sites?
+
+```{r}
+set.seed(69)
+perm=how(nperm=999)
+inv_site_pmv=adonis2(inv_mat~site, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray")
+                        
+inv_site_pmv
+```
+
+P-value `r inv_site_pmv$Pr[1]` \< 0.05, so there is a significant
+difference among sites.
+
+### Question 2: is there a significant difference in mollusks and echinoderm abundance between depth within sites?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69)
+perm=how(nperm=999)
+inv_depth_pmv <- adonis(inv_mat~depth, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$site,
+                           methods="bray")
+inv_depth_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69)
+h <- how(blocks = ind_df$site, nperm = 999)
+inv_blocks_pmv <- adonis2(inv_mat~depth,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray")
+
+inv_blocks_pmv
+```
+
+## Permutation test of multivariate homogeneity of groups dispersions (variances)
+
+Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
+K. Clarke. Permanova+ for primer: Guide to software and statisticl
+methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
+PERMANOVA test using permutations assumes only that the samples are
+exchangeable under a true null hypothesis12. The assumption of
+exchangeability is tantamount to assuming that the multivariate
+observations (samples) are independent and identically distributed
+(i.i.d.) under a true null hypothesis. Thus, although there are no
+explicit assumptions regarding the distributions of the original
+variables (they are certainly not assumed to be normally distributed),
+independence and homogeneity of dispersions (in the space of the
+resemblance measure) are directly implied by the permutation procedure.
+Clearly, if samples have very different dispersions in different groups,
+then they are not really exchangeable. Also, if the samples are
+unequally correlated with one another (e.g., temporally or spatially),
+then randomly shuffling them will destroy this kind of inherent
+structure.*
+
+```{r}
+set.seed(69)
+densityplot(permustats(inv_site_pmv)) #density plot of permutation results to to check if assumptions are met?
+
+inv_dist = vegdist(inv_mat,method="bray")
+
+inv_bd=betadisper(inv_dist,ind_df$site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(inv_bd)
+
+plot(inv_bd)
+boxplot(inv_bd) #check data dispersion based on sites
+anova(inv_bd) #F-test on distribution of sites
+
+```
+
+### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
+
+```{r}
+set.seed(69)
+permutest(inv_bd) #permutative test on dispersion based on sites, if significance, PERMANOVA results may be driven by  dispersion issue
+set.seed(69)
+permutest(inv_bd, pairwise=TRUE) #pairwise of dispersion test
+```
+
+From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
+for primer: Guide to software and statisticl methods. Primer-E Limited,
+2008: \* If significant heterogeneity were detected by PERMDISP and
+differences among groups were also detected using PERMANOVA, then the
+latter could have been caused by differences in location, differences in
+dispersion, or some combination of the two. \*
+
+### Boxplot of within-site distance from centroid visualization with `ggplot()`
+
+Create an input dataframe for the boxplot with mean relative cover by
+category and depth within site
+
+```{r}
+inv_bd$distances #Extract betadisper scores
+
+distcent_df <- data.frame(Distance_to_centroid=inv_bd$distances,Sites=inv_bd$group) 
+Sites <- inv_bd$group
+distcent_df[,2]<-factor(distcent_df[,2],levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+
+#add a column with the mean relative cover by category by depth within site
+avg_inv_distcent <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="mean")
+avg_inv_distcent$Distance_to_centroid<-round(avg_inv_distcent$Distance_to_centroid,2)
+avg_inv_distcent_sd <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="sd")
+avg_inv_distcent <- cbind(avg_inv_distcent,avg_inv_distcent_sd)
+avg_inv_distcent <- avg_inv_distcent[,-3]
+colnames(avg_inv_distcent) <- c("Sites","Mean distance to centroid","SD")
+avg_inv_distcent$SD <-round(avg_inv_distcent$SD,2)
+
+```
+
+Boxplot with `geom_boxplot` from `ggplot2`
+
+```{r}
+palette4viridisorange=c("#440154","#2a788e","#35b779","darkorange")
+
+p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Sites,colour=Sites),alpha=0.3)+
+  geom_jitter(aes(color=Sites),alpha=0.7)+
+  theme_classic()+
+  labs(title="Boxplot of mean distance to centroid by site")+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))+
+  scale_color_manual(values= palette4viridisorange)+
+  scale_fill_manual(values= palette4viridisorange)
+```
+
+Add a table with mean distance from centroid with `annotate` from
+`ggpmisc`
+
+For guides on `annotate` see the
+[vignette](https://cran.r-project.org/web/packages/ggpp/vignettes/grammar-extensions.html#geom_table-and-stat_fmt_table)
+
+```{r}
+library(ggpmisc)
+
+p+ annotate(geom = "table", x=2.8,y = 0.42, label = list(avg_inv_distcent), 
+            vjust = 1, hjust = 0,
+            fill="grey96")
+
+#ggsave("inv_distcent_boxplot.tiff", units="in", width=7, height=4, dpi=300, compression = 'lzw')
+```
+
+## Post hoc test for PERMANOVA (`pairwise.adonis`)
+
+N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
+
+```{r}
+set.seed(69)
+inv_pmv_phoc_holm= pairwise.adonis(inv_mat,ind_df$site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "holm", 
+                                  reduce = NULL)
+
+inv_pmv_phoc_holm
+
+set.seed(69)
+inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "bonferroni", 
+                                  reduce = NULL)
+
+inv_pmv_phoc_bonf
+```
+
+# SIMPER: Similarity of percentage
+
+From the vignette: *The simper functions performs pairwise comparisons
+of groups of sampling units and finds the contribution of each species
+to the average between-group Bray-Curtis dissimilarity. Although the
+method is called simper, it really studied dissimilarities instead of
+similarities (Clarke 1993).*
+
+## SIMPER PER SITE:
+
+```{r}
+inv_sim=simper(inv_mat,group=ind_df$site) #Distinguish categories which caused the differences in relative cover among sites
+inv_sim
+summary(inv_sim, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER PER DEPTH:
+
+```{r}
+inv_sim_depth=simper(inv_mat,group=ind_df$depth) #Distinguish categories which caused the differences in relative cover among sites
+inv_sim_depth
+summary(inv_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+# References
+
+```{r}
+#install.packages("report")
+library(report)
+report(sessionInfo())
+```
