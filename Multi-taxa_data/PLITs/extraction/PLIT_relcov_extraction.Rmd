@@ -9,6 +9,7 @@ output: html_document
 
 ```{r}
 library(readxl) #read xlsx files
+library(writexl) #export to excel files
 library(tidyverse) #aggregate fc et al.
 library(tidyverse)
 library(dplyr)
@@ -92,7 +93,7 @@ library("writexl")
 write_xlsx(transect_length_df,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/plits_length_df.xlsx")
 ```
 
-Reference for unlist fucntion, see https://stackoverflow.com/questions/66884864/r-dataframe-convert-list-type-columns-to-chr-int 
+Reference for unlist fucntion, see <https://stackoverflow.com/questions/66884864/r-dataframe-convert-list-type-columns-to-chr-int>
 
 # EXTRACT ABSOLUTE AND RELATIVE COVER FOR EACH TRANSECT
 
@@ -252,7 +253,6 @@ plits_ext_df <- plits_ext_df %>%
 Export plit_ext_df
 
 ```{r}
-library("writexl")
 write_xlsx(plits_ext_df,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/plits_ext_df.xlsx")
 ```
 
