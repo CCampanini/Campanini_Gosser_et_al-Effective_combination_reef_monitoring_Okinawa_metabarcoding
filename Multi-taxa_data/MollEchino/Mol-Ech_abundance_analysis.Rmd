@@ -40,67 +40,70 @@ library(dplyr)
 library(ggplot2)
 library(readxl)   # to import excel datasets
 library(magrittr)
-
+library(stringr) # to use str_c function
+library(rio) # to use import_list
 ```
 
-# Mollusks \| Abundance estimates
+# Mollusks | Abundance estimates
+
+Merge raw files from each site in a single dataframe
 
 ```{r}
-mol_tot <- read_excel("Prel_mol_input.xlsx", sheet = "DATA")
-str(mol_tot)
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", pattern=".xlsx")
+files
 
-mol_tot[,c(1:9,11)] <- lapply(mol_tot[,c(1:9,11)], as.factor)
-mol_tot$site <-ordered(mol_tot$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-mol_tot$size <- as.numeric(mol_tot$size)
-str(mol_tot)
+# Concat the directory to the file names
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", files)
+class(files)
 
+mol_raw <- sapply (files, FUN = read_excel,
+              simplify = F, USE.NAMES = F)
+
+names(mol_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+
+mol_raw_df <- as.data.frame(do.call(rbind, mol_raw))
+
+rm(files, mol_raw)
 ```
 
-Extract abundance by class from the dataframe per transect (replicate)
+Format the data frame for analysis 
 
 ```{r}
-mol_ab_tb<- with(mol_tot, table(transect, class))
-mol_ab_tb
-class(mol_ab_tb)
-mol_ab_df <-data.frame(rbind(mol_ab_tb))
-str(mol_ab_df)
-mol_ab_df <-rbind(mol_ab_df[1:5,],
-                  AW_S3 = rep(0,4), #add a row with 0 abundance per class for AW_S3
-                  mol_ab_df[6:23,])
-mol_ab_df <- mol_ab_df[,-1] #eliminate non-ID photos
+mol_raw_df$CLASS <- replace(mol_raw_df$CLASS,mol_raw_df$CLASS=="-",NA)
+mol_raw_df[,c(1:4,7)] <- lapply(mol_raw_df[,c(1:4,7)], as.factor)
+mol_raw_df$site <-ordered(mol_raw_df$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+mol_raw_df[,11] <- as.numeric(mol_raw_df[,11])
+str(mol_raw_df)
+```
 
-mol_ab_df <- cbind(transect = as.factor(rownames(mol_ab_df)),
-                   site = as.factor(c(rep("Awa",6),
-                                    rep("Hizushi",6),
-                                    rep("Sunabe",6),
-                                    rep("Zatsun",6))),
-                   depth = as.factor(rep(c("D","D","D","S","S","S"),4)),
-                   site_depth= as.factor(c(rep("AW_D",3),
-                                 rep("AW_S",3),
-                                 rep("HI_D",3),
-                                 rep("HI_S",3),
-                                 rep("SN_D",3),
-                                 rep("SN_S",3),
-                                 rep("ZA_D",3),
-                                 rep("ZA_S",3))),
-                   mol_ab_df)
+Extract abundance by class per transect (replicate) from the dataframe
 
-mol_ab_df$site <-ordered(mol_ab_df$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+```{r}
+library(tidyr) #to use the "separate" function
+library(janitor) #to use the tabyl function
 
-mol_ab_df$Cephalopoda <- NULL
+mol_raw_df <- mol_raw_df[!is.na(mol_raw_df$transect),]
 
-mol_ab_df[,c(5,6)] <- lapply(mol_ab_df[,c(5:6)], as.numeric)
+mol_class <- mol_raw_df[!is.na(mol_raw_df$CLASS),] %>% tabyl(transect, CLASS, show_missing_levels = FALSE)
 
-mol_ab_df$Bivalvia <- as.numeric(mol_ab_df$Bivalvia)
+mol_class <- mol_class %>% 
+  separate(transect, c("site", "depth_rep")) %>% 
+  mutate(transect = mol_class$transect )
 
-mol_ab_df
+mol_class$depth <- gsub("[[:digit:]]", "", mol_class$depth_rep) #remove the number from depth_rep
 
-str(mol_ab_df)
+# Remove Numbers from Alphanumeric Character String Using gsub() Function
+mol_class <- mol_class %>% 
+  mutate(site_depth = paste(site, depth, sep='_')) %>%
+  select(-depth_rep)
+        
+mol_class <- mol_class[,c(5,1,6,7,2:4)]
+library(janitor) #to use the tabyl function
 
-#library(writexl)
-#write_xlsx(mol_ab_df,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\mol_ab_df_output.xlsx")
+mol_class$Cephalopoda <- NULL
 
-
+mol_class$site <-ordered(mol_class$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
 ```
 
 # Mollusks \| Abundance by class by depth within site
@@ -115,91 +118,103 @@ within site among replicates.
 Standard deviation will be used to add error bars to the barplot.
 
 ```{r}
-mol_mean <- cbind(aggregate(Bivalvia~site_depth,data=mol_ab_df,FUN="mean"),
-                  aggregate(Gastropoda~site_depth,data=mol_ab_df,FUN="mean"),
-                  aggregate(Bivalvia~site_depth,data=mol_ab_df,FUN="sd"),
-                  aggregate(Gastropoda~site_depth,data=mol_ab_df,FUN="sd"))
-mol_mean <- mol_mean[,-c(3,5,7)]
-mol_mean[,2:5] <-round(mol_mean[,2:5],0)
-mol_mean
-mol_mean_bar <- cbind(site_depth = rep(levels(mol_mean$site_depth),2),
-                  class = c(rep("Bivalvia",8),rep("Gastropoda",8)),
-                  mean_ab = as.numeric(c(mol_mean$Bivalvia,mol_mean$Gastropoda)),
-                  sd_ab = as.numeric(c(mol_mean[,4],mol_mean[,5])))
-mol_mean_bar
-class(mol_mean_bar)
-mol_mean_bar <-data.frame(rbind(mol_mean_bar))
-str(mol_mean_bar)
+mol_mean <- mol_class %>%
+  group_by(site_depth) %>% 
+  summarise(Biv_mean=round(mean(Bivalvia),0),
+            Gas_mean=round(mean(Gastropoda),0),
+            Biv_sd=round(sd(Bivalvia),0),
+            Gas_sd=round(sd(Gastropoda),0))
+```
 
-mol_mean_bar[,c(1,2)] <- lapply(mol_mean_bar[,c(1,2)], as.factor)
-mol_mean_bar$mean_ab <- as.numeric(mol_mean_bar$mean_ab)
-mol_mean_bar$sd_ab <- as.numeric(mol_mean_bar$sd_ab)
-mol_mean_bar$phylum <- as.factor(rep("Mollusca",16))
-mol_mean_bar$site <- as.factor(rep(c(rep("Awa",2),
-                                     rep("Hizushi",2),
-                                     rep("Sunabe",2),
-                                     rep("Zatsun",2)),2))
-mol_mean_bar$site <- ordered(mol_mean_bar$site, levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-mol_mean_bar$depth <- as.factor(rep(c("Deep","Shallow"),8))
+https://seananderson.ca/2013/10/19/reshape/
+
+```{r}
+library(reshape2)
+mol_mean_long <- melt(mol_mean[,1:3], id.vars = c("site_depth"),
+  variable.name = "class", 
+  value.name = c("mean"))
+
+mol_sd_long <- melt(mol_mean[,c(1,4,5)], id.vars = c("site_depth"),
+  variable.name = "class", 
+  value.name = c("sd"))
+
+mol_mean_bar <- cbind(mol_mean_long,mol_sd_long$sd)
 mol_mean_bar
 
+mol_mean_bar <- mol_mean_bar %>% 
+  separate(site_depth, c("site", "depth")) %>% #split the column site_depth in 2
+  mutate(site_depth = mol_mean_bar$site_depth ) %>% #re-integrate the original site_depth column
+  mutate(class = case_when(class == 'Biv_mean' ~ "Bivalvia", 
+                           class == "Gas_mean"~ "Gastropoda")) %>% #replace class values with class names
+  rename(sd = `mol_sd_long$sd`) #rename sd column
+
+mol_mean_bar <- mol_mean_bar[,c(6,1:5)]
+rm(mol_mean_long, mol_sd_long)
 ```
 
 # Echinoderms \| Abundance estimates
 
-```{r}
-ech_tot <- read_excel("Prel_ech_input.xlsx", sheet = "DATA")
-str(ech_tot)
-
-ech_tot[,c(1:9,11)] <- lapply(ech_tot[,c(1:9,11)], as.factor)
-ech_tot$site <-ordered(ech_tot$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-ech_tot$size <- as.numeric(ech_tot$size)
-str(ech_tot)
-
-```
-
-Extract abundance by class from the dataframe per transect (replicate)
+Merge raw files from each site in a single dataframe
 
 ```{r}
-ech_ab_tb<- with(ech_tot, table(transect, class))
-ech_ab_tb
-class(ech_ab_tb)
-ech_ab_df <-data.frame(rbind(ech_ab_tb))
-str(ech_ab_df)
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", pattern=".xlsx")
+files
 
-ech_ab_df <- ech_ab_df[,-1] #eliminate non-ID photos
+# Concat the directory to the file names
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", files)
+class(files)
 
-ech_ab_df <- cbind(transect = as.factor(rownames(ech_ab_df)),
-                   site = as.factor(c(rep("Awa",6),
-                                    rep("Hizushi",6),
-                                    rep("Sunabe",6),
-                                    rep("Zatsun",6))),
-                   depth = as.factor(rep(c("D","D","D","S","S","S"),4)),
-                   site_depth= as.factor(c(rep("AW_D",3),
-                                 rep("AW_S",3),
-                                 rep("HI_D",3),
-                                 rep("HI_S",3),
-                                 rep("SN_D",3),
-                                 rep("SN_S",3),
-                                 rep("ZA_D",3),
-                                 rep("ZA_S",3))),
-                   ech_ab_df)
+mol_raw <- sapply (files, FUN = read_excel,
+              simplify = F, USE.NAMES = F)
 
-ech_ab_df$site <-ordered(ech_ab_df$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+names(mol_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
 
-ech_ab_df[,c(5:8)] <- lapply(ech_ab_df[,c(5:8)], as.numeric)
+mol_raw_df <- as.data.frame(do.call(rbind, mol_raw))
 
-ech_ab_df
-
-str(ech_ab_df)
-
-
-#library("writexl")
-#write_xlsx(ech_ab_df,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\ech_ab_df_output.xlsx")
-
+rm(files, mol_raw)
 ```
 
-# Echinoderms \| Abundance by class by depth within site
+Format the data frame for analysis 
+
+```{r}
+mol_raw_df$CLASS <- replace(mol_raw_df$CLASS,mol_raw_df$CLASS=="-",NA)
+mol_raw_df[,c(1:4,7)] <- lapply(mol_raw_df[,c(1:4,7)], as.factor)
+mol_raw_df$site <-ordered(mol_raw_df$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+mol_raw_df[,11] <- as.numeric(mol_raw_df[,11])
+str(mol_raw_df)
+```
+
+Extract abundance by class per transect (replicate) from the dataframe
+
+```{r}
+library(tidyr) #to use the "separate" function
+library(janitor) #to use the tabyl function
+
+mol_raw_df <- mol_raw_df[!is.na(mol_raw_df$transect),]
+
+mol_class <- mol_raw_df[!is.na(mol_raw_df$CLASS),] %>% tabyl(transect, CLASS, show_missing_levels = FALSE)
+
+mol_class <- mol_class %>% 
+  separate(transect, c("site", "depth_rep")) %>% 
+  mutate(transect = mol_class$transect )
+
+mol_class$depth <- gsub("[[:digit:]]", "", mol_class$depth_rep) #remove the number from depth_rep
+
+# Remove Numbers from Alphanumeric Character String Using gsub() Function
+mol_class <- mol_class %>% 
+  mutate(site_depth = paste(site, depth, sep='_')) %>%
+  select(-depth_rep)
+        
+mol_class <- mol_class[,c(5,1,6,7,2:4)]
+library(janitor) #to use the tabyl function
+
+mol_class$Cephalopoda <- NULL
+
+mol_class$site <-ordered(mol_class$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
+```
+
+# Mollusks \| Abundance by class by depth within site
 
 ## Create the input dataframe
 
@@ -211,50 +226,38 @@ within site among replicates.
 Standard deviation will be used to add error bars to the barplot.
 
 ```{r}
-ech_mean_sd<- cbind(aggregate(Asteroidea~site_depth,data=ech_ab_df,FUN="mean"),
-                    aggregate(Crinoidea~site_depth,data=ech_ab_df,FUN="mean"),
-                    aggregate(Echinoidea~site_depth,data=ech_ab_df,FUN="mean"),
-                    aggregate(Holothuroidea~site_depth,data=ech_ab_df,FUN="mean"),
-                    aggregate(Asteroidea~site_depth,data=ech_ab_df,FUN="sd"),
-                    aggregate(Crinoidea~site_depth,data=ech_ab_df,FUN="sd"),
-                    aggregate(Echinoidea~site_depth,data=ech_ab_df,FUN="sd"),
-                    aggregate(Holothuroidea~site_depth,data=ech_ab_df,FUN="sd"))
-str(ech_mean_sd)
-ech_mean_sd <- ech_mean_sd[,-c(3,5,7,9,11,13,15)]
-str(ech_mean_sd)
+mol_mean <- mol_class %>%
+  group_by(site_depth) %>% 
+  summarise(Biv_mean=round(mean(Bivalvia),0),
+            Gas_mean=round(mean(Gastropoda),0),
+            Biv_sd=round(sd(Bivalvia),0),
+            Gas_sd=round(sd(Gastropoda),0))
+```
 
-ech_mean_sd[,c(2:9)] <-round(ech_mean_sd[,(2:9)],0)
+https://seananderson.ca/2013/10/19/reshape/
 
-ech_mean_sd_bar <- cbind(site_depth = rep(levels(ech_mean_sd$site_depth),4),
-                      class = c(rep("Asteroidea",8),
-                                rep("Crinoidea",8),
-                                rep("Echinoidea",8),
-                                rep("Holothuroidea",8)),
-                      mean_ab = as.numeric(c(ech_mean_sd$Asteroidea,
-                                             ech_mean_sd$Crinoidea,
-                                             ech_mean_sd$Echinoidea,
-                                             ech_mean_sd$Holothuroidea)),
-                      sd_ab = as.numeric(c(ech_mean_sd[,6],
-                                           ech_mean_sd[,7],
-                                           ech_mean_sd[,8],
-                                           ech_mean_sd[,9])))
+```{r}
+library(reshape2)
+mol_mean_long <- melt(mol_mean[,1:3], id.vars = c("site_depth"),
+  variable.name = "class", 
+  value.name = c("mean"))
 
+mol_sd_long <- melt(mol_mean[,c(1,4,5)], id.vars = c("site_depth"),
+  variable.name = "class", 
+  value.name = c("sd"))
 
-ech_mean_sd_bar
-class(ech_mean_sd_bar)
-ech_mean_sd_bar <-data.frame(rbind(ech_mean_sd_bar))
-str(ech_mean_sd_bar)
+mol_mean_bar <- cbind(mol_mean_long,mol_sd_long$sd)
+mol_mean_bar
 
-ech_mean_sd_bar[,c(1,2)] <- lapply(ech_mean_sd_bar[,c(1,2)], as.factor)
-ech_mean_sd_bar[,c(3,4)] <- lapply(ech_mean_sd_bar[,c(3,4)], as.numeric)
-ech_mean_sd_bar$phylum <- as.factor(rep("Echinodermata",16))
-ech_mean_sd_bar$site <- as.factor(rep(c(rep("Awa",2),
-                                     rep("Hizushi",2),
-                                     rep("Sunabe",2),
-                                     rep("Zatsun",2)),4))
-ech_mean_sd_bar$site <- ordered(ech_mean_sd_bar$site, levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-ech_mean_sd_bar$depth <- as.factor(rep(c("Deep","Shallow"),16))
-ech_mean_sd_bar
+mol_mean_bar <- mol_mean_bar %>% 
+  separate(site_depth, c("site", "depth")) %>% #split the column site_depth in 2
+  mutate(site_depth = mol_mean_bar$site_depth ) %>% #re-integrate the original site_depth column
+  mutate(class = case_when(class == 'Biv_mean' ~ "Bivalvia", 
+                           class == "Gas_mean"~ "Gastropoda")) %>% #replace class values with class names
+  rename(sd = `mol_sd_long$sd`) #rename sd column
+
+mol_mean_bar <- mol_mean_bar[,c(6,1:5)]
+rm(mol_mean_long, mol_sd_long)
 ```
 
 # Invertebrates \| Barplot with mollusk and echinoderm abundance by class by depth within site
