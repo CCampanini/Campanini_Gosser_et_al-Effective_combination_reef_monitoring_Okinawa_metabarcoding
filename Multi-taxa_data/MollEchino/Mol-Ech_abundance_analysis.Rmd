@@ -110,7 +110,7 @@ mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
 
 ## Create the input dataframe
 
-Adjust `ech_ab_df` to create a new input dataframe for the barplot.
+Adjust `ech_class` to create a new input dataframe for the barplot.
 Include a column with - mean echinoderm abundance by class per depth
 within site among replicates; - standard deviation by class per depth
 within site among replicates.
@@ -149,6 +149,9 @@ mol_mean_bar <- mol_mean_bar %>%
   rename(sd = `mol_sd_long$sd`) #rename sd column
 
 mol_mean_bar <- mol_mean_bar[,c(6,1:5)]
+mol_mean_bar$phylum <- "Mollusca" # add the phylum column
+mol_mean_bar$phylum <- as.factor(mol_mean_bar$phylum ) # 
+
 rm(mol_mean_long, mol_sd_long)
 ```
 
@@ -157,31 +160,33 @@ rm(mol_mean_long, mol_sd_long)
 Merge raw files from each site in a single dataframe
 
 ```{r}
-files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", pattern=".xlsx")
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Ech_raw/", pattern=".xlsx")
 files
 
 # Concat the directory to the file names
-files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", files)
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Ech_raw/", files)
 class(files)
 
-mol_raw <- sapply (files, FUN = read_excel,
+ech_raw <- sapply (files, FUN = read_excel,
               simplify = F, USE.NAMES = F)
 
-names(mol_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+names(ech_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za","zp")
 
-mol_raw_df <- as.data.frame(do.call(rbind, mol_raw))
+ech_raw_df <- as.data.frame(do.call(rbind, ech_raw))
 
-rm(files, mol_raw)
+rm(files, ech_raw)
 ```
 
 Format the data frame for analysis 
 
 ```{r}
-mol_raw_df$CLASS <- replace(mol_raw_df$CLASS,mol_raw_df$CLASS=="-",NA)
-mol_raw_df[,c(1:4,7)] <- lapply(mol_raw_df[,c(1:4,7)], as.factor)
-mol_raw_df$site <-ordered(mol_raw_df$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
-mol_raw_df[,11] <- as.numeric(mol_raw_df[,11])
-str(mol_raw_df)
+ech_raw_df$CLASS <- replace(ech_raw_df$CLASS,ech_raw_df$CLASS=="-",NA)
+ech_raw_df[,c(1:4,7)] <- lapply(ech_raw_df[,c(1:4,7)], as.factor)
+ech_raw_df$site <-ordered(ech_raw_df$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+ech_raw_df[,11] <- as.numeric(ech_raw_df[,11])
+str(ech_raw_df)
+
+levels(ech_raw_df$CLASS)
 ```
 
 Extract abundance by class per transect (replicate) from the dataframe
@@ -190,35 +195,32 @@ Extract abundance by class per transect (replicate) from the dataframe
 library(tidyr) #to use the "separate" function
 library(janitor) #to use the tabyl function
 
-mol_raw_df <- mol_raw_df[!is.na(mol_raw_df$transect),]
+ech_raw_df <- ech_raw_df[!is.na(ech_raw_df$transect),]
 
-mol_class <- mol_raw_df[!is.na(mol_raw_df$CLASS),] %>% tabyl(transect, CLASS, show_missing_levels = FALSE)
+ech_class <- ech_raw_df[!is.na(ech_raw_df$CLASS),] %>% tabyl(transect, CLASS, show_missing_levels = FALSE)
 
-mol_class <- mol_class %>% 
+ech_class <- ech_class %>% 
   separate(transect, c("site", "depth_rep")) %>% 
-  mutate(transect = mol_class$transect )
+  mutate(transect = ech_class$transect )
 
-mol_class$depth <- gsub("[[:digit:]]", "", mol_class$depth_rep) #remove the number from depth_rep
+ech_class$depth <- gsub("[[:digit:]]", "", ech_class$depth_rep) #remove the number from depth
 
 # Remove Numbers from Alphanumeric Character String Using gsub() Function
-mol_class <- mol_class %>% 
+ech_class <- ech_class %>% 
   mutate(site_depth = paste(site, depth, sep='_')) %>%
   select(-depth_rep)
         
-mol_class <- mol_class[,c(5,1,6,7,2:4)]
-library(janitor) #to use the tabyl function
+ech_class <- ech_class[,c(7,1,8,9,2:6)]
 
-mol_class$Cephalopoda <- NULL
-
-mol_class$site <-ordered(mol_class$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
-mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
+ech_class$site <-ordered(ech_class$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+ech_class[,3:4] <- lapply(ech_class[,3:4], as.factor)
 ```
 
-# Mollusks \| Abundance by class by depth within site
+# Echinoderms | Abundance by class by depth within site
 
 ## Create the input dataframe
 
-Adjust `ech_ab_df` to create a new input dataframe for the barplot.
+Adjust `ech_class` to create a new input dataframe for the barplot.
 Include a column with - mean echinoderm abundance by class per depth
 within site among replicates; - standard deviation by class per depth
 within site among replicates.
@@ -226,53 +228,67 @@ within site among replicates.
 Standard deviation will be used to add error bars to the barplot.
 
 ```{r}
-mol_mean <- mol_class %>%
+ech_mean <- ech_class %>%
   group_by(site_depth) %>% 
-  summarise(Biv_mean=round(mean(Bivalvia),0),
-            Gas_mean=round(mean(Gastropoda),0),
-            Biv_sd=round(sd(Bivalvia),0),
-            Gas_sd=round(sd(Gastropoda),0))
+  summarise(Ast_mean=round(mean(Asteroidea),0),
+            Cri_mean=round(mean(Crinoidea),0),
+            Ech_mean=round(mean(Echinoidea),0),
+            Hol_mean=round(mean(Holothuroidea),0),
+            Oph_mean=round(mean(Ophiuroidea),0),
+            Ast_sd=round(sd(Asteroidea),0),
+            Cri_sd=round(sd(Crinoidea),0),
+            Ech_sd=round(sd(Echinoidea),0),
+            Hol_sd=round(sd(Holothuroidea),0),
+            Oph_sd=round(sd(Ophiuroidea),0),)
 ```
 
 https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
 library(reshape2)
-mol_mean_long <- melt(mol_mean[,1:3], id.vars = c("site_depth"),
+ech_mean_long <- melt(ech_mean[,1:6], id.vars = c("site_depth"),
   variable.name = "class", 
   value.name = c("mean"))
 
-mol_sd_long <- melt(mol_mean[,c(1,4,5)], id.vars = c("site_depth"),
+ech_sd_long <- melt(ech_mean[,c(1,7:11)], id.vars = c("site_depth"),
   variable.name = "class", 
   value.name = c("sd"))
 
-mol_mean_bar <- cbind(mol_mean_long,mol_sd_long$sd)
-mol_mean_bar
+ech_mean_bar <- cbind(ech_mean_long,ech_sd_long$sd)
+ech_mean_bar
 
-mol_mean_bar <- mol_mean_bar %>% 
+ech_mean_bar <- ech_mean_bar %>% 
   separate(site_depth, c("site", "depth")) %>% #split the column site_depth in 2
-  mutate(site_depth = mol_mean_bar$site_depth ) %>% #re-integrate the original site_depth column
-  mutate(class = case_when(class == 'Biv_mean' ~ "Bivalvia", 
-                           class == "Gas_mean"~ "Gastropoda")) %>% #replace class values with class names
-  rename(sd = `mol_sd_long$sd`) #rename sd column
+  mutate(site_depth = ech_mean_bar$site_depth ) %>% #re-integrate the original site_depth column
+  mutate(class = case_when(class == 'Ast_mean' ~ "Asteroidea", 
+                           class == "Cri_mean"~ "Crinoidea",
+                           class == 'Ech_mean' ~ "Echinoidea", 
+                           class == "Hol_mean"~ "Holothuroidea",
+                           class == 'Oph_mean' ~ "Ophiuroidea")) %>% #replace class values with class names
+  rename(sd = `ech_sd_long$sd`) #rename sd column
 
-mol_mean_bar <- mol_mean_bar[,c(6,1:5)]
-rm(mol_mean_long, mol_sd_long)
+ech_mean_bar <- ech_mean_bar[,c(6,1:5)]
+ech_mean_bar$phylum <- "Echinodermata" # add the phylum column
+ech_mean_bar$phylum <- as.factor(ech_mean_bar$phylum ) # 
+
+rm(ech_mean_long, ech_sd_long)
 ```
 
-# Invertebrates \| Barplot with mollusk and echinoderm abundance by class by depth within site
+# Invertebrates | Barplot with mollusk and echinoderm abundance by class by depth within site
 
 ```{r}
-inv_bar <- rbind(mol_mean_bar,ech_mean_sd_bar)
+inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
 #library("writexl")
 #write_xlsx(inv_bar,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\mol_ech_ab_class_output.xlsx")
 
-invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7")
+inv_bar$class <- factor(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
 
-ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum)) +
+invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
+
+ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
   geom_bar(position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=ifelse(mean_ab > 0, 0, 0), 
-                    ymax=ifelse(mean_ab > 0, mean_ab+sd_ab, 0)), 
+  geom_errorbar(aes(ymin=ifelse(mean > 0, 0, 0), 
+                    ymax=ifelse(mean > 0, mean+sd, 0)), 
                     width=.2, position=position_dodge(.9))+
   facet_grid(~ site)+
   theme_classic()+
@@ -285,9 +301,9 @@ ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum))
                                           size = 0.5,
                                           linetype = 2))
 
-ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab, color=phylum)) +
+ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
   geom_bar(aes(alpha=phylum),position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=mean_ab, ymax=mean_ab+sd_ab), width=.2,
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
                  position=position_dodge(.9))+
   facet_grid(~ site)+
   theme_classic()+
@@ -302,36 +318,14 @@ ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab, color=phylum)
                                           linetype = 2))
 ```
 
-Remove Echinoidea from the plot to properly visualize the other classes
-
-```{r}
-inv_bar_clean <- inv_bar[-seq(33,40,1),]
-
-ggplot(inv_bar_clean, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum)) +
-  geom_bar(position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=mean_ab, ymax=mean_ab+sd_ab), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid(~ site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=c("#56B4E9","#0072B2","#F0E442","#E69F00","#CC79A7"))+
-  scale_color_manual(values=c("black","grey"))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))
-
-```
-
 ```{r}
 #install.packages("ggbreak")
 library(ggbreak)
 
-ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum)) +
+ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean,color=phylum)) +
   geom_bar(position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=ifelse(mean_ab > 0, mean_ab, 0), 
-                    ymax=ifelse(mean_ab > 0, mean_ab+sd_ab, 0)), #set conditions to remove error bar when the mean abundance is equal to zero
+  geom_errorbar(aes(ymin=ifelse(mean > 0, mean, 0), 
+                    ymax=ifelse(mean > 0, mean+sd, 0)), #set conditions to remove error bar when the mean abundance is equal to zero
                     width=.2, position=position_dodge(.9))+
   facet_grid(~ site)+
   theme_bw()+
@@ -342,7 +336,7 @@ ggplot(inv_bar, aes(x=depth, y=mean_ab, fill=class, label=mean_ab,color=phylum))
   scale_color_manual(values=c("blue","firebrick"))+
   guides(fill=guide_legend(title="Class", order =2,
                            override.aes = list(color = c(rep("blue",2),
-                                                         rep("firebrick",4)))),
+                                                         rep("firebrick",5)))),
          color=guide_legend(title= "Phylum",order=1,
                             override.aes = list(fill = c("white", "white"))))+
   theme(plot.title = element_text(hjust = 0.5),
@@ -374,28 +368,37 @@ library(readxl)   # to import excel datasets
 ## Format the data
 
 ```{r}
-str(mol_ab_df)
-str(ech_ab_df)
+str(mol_class)
+str(ech_class)
 
-inv_mat <- cbind(mol_ab_df,ech_ab_df) #merge mollusks and echinoderms abundance dataframes
-inv_mat <- inv_mat[,-c(1,2,3,4,7,8,9,10)]
-inv_mat <- as.data.frame(lapply(inv_mat[,seq(1,6,1)], as.numeric))
+AW_S3 <- c("AW_S3",rep(NA,5))
+
+mol_class[nrow(mol_class) + 3,] <- list("AW_S3",rep(NA,5),
+                                        "G1_D3",rep(NA,5),
+                                        "S2_D1",rep(NA,5))
+
+# missing transects in mol_class:"AW_S3", "G1_D3","S2_D1" 
+# missing transects in ech_class: "MI_S2", "MI_S3", "S1_S2", "S1_S3","ZP_D1","ZP_D2","ZP_D3","ZP_S2","ZP_S3"
+
+inv_df <- merge(mol_class, ech_class, by=c("transect","site","depth","site_depth"), all = T)
+
+inv_mat <- inv_df[,-c(1:4)]
+inv_mat <- as.data.frame(lapply(inv_mat[,c(1:7)], as.numeric))
 
 str(inv_mat)
+inv_mat[is.na(inv_mat)] <- 0
 
-inv_mat <- inv_mat
-
-for (i in 1:6) { 
+for (i in 1:7) { 
   inv_mat[,i] <- log1p(inv_mat[,i]) #apply the transformation log10(x+1) to avoid -inf values
 }
 
 str(inv_mat)
 
 inv_mat <- as.matrix(inv_mat) #convert to matrix
-rownames(inv_mat) <- mol_ab_df$transect
+rownames(inv_mat) <- inv_df$transect
 
 #Create a df with independent variables
-ind_df <- mol_ab_df[,seq(1,4,1)]
+ind_df <- inv_df[,c(1:4)]
 
 ```
 
@@ -442,7 +445,7 @@ N.B. Visualisation with ggplot()\` first require the creation of an
 input dataframe with nMDS scores
 
 ```{r}
-inv_ndms_scores <- as.data.frame(scores(inv_nmds_br))  #Using the scores function from vegan to extract the site scores and convert to a data.frame
+inv_ndms_scores <- as.data.frame(scores(inv_nmds_br)$sites)  #Using the scores function from vegan to extract the site scores and convert to a data.frame
 inv_ndms_scores$transect <- rownames(inv_ndms_scores) # create a column of transect names
 inv_ndms_scores$site <- ind_df$site
 inv_ndms_scores$depth <- ind_df$depth  #  add the grp variable created earlier
@@ -475,8 +478,6 @@ inv_ndms_ggplot
 #install.packages("ggforce")
 library(ggforce)
 
-palette4viridisorange=c("#440154","#2a788e","#35b779","darkorange")
-
 inv_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),size=3)+##separates overlapping points
   geom_mark_ellipse(aes(fill=site, color=site), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
@@ -489,15 +490,12 @@ inv_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   guides(color = guide_legend(order = 1,title="Site"),
          fill = guide_legend(order = 1,title="Site"),
          shape = guide_legend(order = 2,title="Depth",))+
-  scale_color_manual(values= palette4viridisorange)+
-  scale_fill_manual(values= palette4viridisorange)+
   scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
-  ylim(-0.5,0.5)+
   annotate("text", x=-0.80, y=-0.4,
            label=paste('Stress =',round(inv_nmds_br$stress,3)),
            size=4)+ #add stress to plot
   annotate("text", x=-0.67, y=-0.48,
-           label=bquote('Non-metric fit,'~ R^2~"= 0.978"),
+           label=bquote('Non-metric fit,'~ R^2~"= 0.976"),
            size=4) #add goodness of fit to plot
 
 inv_ndms_ggplot
@@ -618,7 +616,7 @@ anova(inv_bd) #F-test on distribution of sites
 
 ```{r}
 set.seed(69)
-permutest(inv_bd) #permutative test on dispersion based on sites, if significance, PERMANOVA results may be driven by  dispersion issue
+permutest(inv_bd) #permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue
 set.seed(69)
 permutest(inv_bd, pairwise=TRUE) #pairwise of dispersion test
 ```
@@ -640,7 +638,7 @@ inv_bd$distances #Extract betadisper scores
 
 distcent_df <- data.frame(Distance_to_centroid=inv_bd$distances,Sites=inv_bd$group) 
 Sites <- inv_bd$group
-distcent_df[,2]<-factor(distcent_df[,2],levels=c("Awa","Sunabe","Zatsun","Hizushi"))
+distcent_df[,2]<-factor(distcent_df[,2],levels=c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP"))
 
 #add a column with the mean relative cover by category by depth within site
 avg_inv_distcent <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="mean")
@@ -656,8 +654,6 @@ avg_inv_distcent$SD <-round(avg_inv_distcent$SD,2)
 Boxplot with `geom_boxplot` from `ggplot2`
 
 ```{r}
-palette4viridisorange=c("#440154","#2a788e","#35b779","darkorange")
-
 p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
   geom_boxplot(aes(fill=Sites,colour=Sites),alpha=0.3)+
   geom_jitter(aes(color=Sites),alpha=0.7)+
@@ -666,9 +662,9 @@ p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+
   ylab(label="Distance to centroid")+
   theme(legend.position = "none", #remove legend
         plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
-        axis.text=element_text(size=14))+
-  scale_color_manual(values= palette4viridisorange)+
-  scale_fill_manual(values= palette4viridisorange)
+        axis.text=element_text(size=14))
+
+p
 ```
 
 Add a table with mean distance from centroid with `annotate` from
