@@ -71,7 +71,7 @@ Format the data frame for analysis
 ```{r}
 mol_raw_df$CLASS <- replace(mol_raw_df$CLASS,mol_raw_df$CLASS=="-",NA)
 mol_raw_df[,c(1:4,7)] <- lapply(mol_raw_df[,c(1:4,7)], as.factor)
-mol_raw_df$site <-ordered(mol_raw_df$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+mol_raw_df$site <-ordered(mol_raw_df$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 mol_raw_df[,11] <- as.numeric(mol_raw_df[,11])
 str(mol_raw_df)
 ```
@@ -96,17 +96,37 @@ mol_class$depth <- gsub("[[:digit:]]", "", mol_class$depth_rep) #remove the numb
 mol_class <- mol_class %>% 
   mutate(site_depth = paste(site, depth, sep='_')) %>%
   select(-depth_rep)
-        
-mol_class <- mol_class[,c(5,1,6,7,2:4)]
-library(janitor) #to use the tabyl function
 
 mol_class$Cephalopoda <- NULL
 
-mol_class$site <-ordered(mol_class$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+mol_class$site <-ordered(mol_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+```
+
+Add pressure score column 
+
+```{r}
+mol_class <- mol_class %>% 
+       mutate(pressure = case_when(site == 'HI' | 
+                                   site == "S1" | 
+                                   site == "S2" |
+                                   site == "ZP"~ "Low", 
+                                   site == 'ZA' | 
+                                   site == "YO" | 
+                                   site == "MI" ~ "Medium",
+                                   site == 'SK' |
+                                   site == 'SN' | 
+                                   site == "AW" | 
+                                   site == "G1" |
+                                   site == "G2"~ "High"))
+
+mol_class$pressure <- ordered(mol_class$pressure, levels=c("Low","Medium", "High"))
+
+mol_class <- mol_class[,c(5,1,6,7,2:4)]
+
 mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
 ```
 
-# Mollusks \| Abundance by class by depth within site
+# Mollusks | Abundance by class by depth within site
 
 ## Create the input dataframe
 
@@ -155,7 +175,7 @@ mol_mean_bar$phylum <- as.factor(mol_mean_bar$phylum ) #
 rm(mol_mean_long, mol_sd_long)
 ```
 
-# Echinoderms \| Abundance estimates
+# Echinoderms | Abundance estimates
 
 Merge raw files from each site in a single dataframe
 
@@ -210,10 +230,26 @@ ech_class <- ech_class %>%
   mutate(site_depth = paste(site, depth, sep='_')) %>%
   select(-depth_rep)
         
-ech_class <- ech_class[,c(7,1,8,9,2:6)]
-
-ech_class$site <-ordered(ech_class$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+ech_class$site <-ordered(ech_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 ech_class[,3:4] <- lapply(ech_class[,3:4], as.factor)
+
+ech_class <- ech_class %>% 
+       mutate(pressure = case_when(site == 'HI' | 
+                                   site == "S1" | 
+                                   site == "S2" |
+                                   site == "ZP"~ "Low", 
+                                   site == 'ZA' | 
+                                   site == "YO" | 
+                                   site == "MI" ~ "Medium",
+                                   site == 'SK' |
+                                   site == 'SN' | 
+                                   site == "AW" | 
+                                   site == "G1" |
+                                   site == "G2"~ "High"))
+
+ech_class$pressure <- ordered(ech_class$pressure, levels=c("Low","Medium", "High"))
+                              
+ech_class <- ech_class[,c(7,1,8,9,2:6)]
 ```
 
 # Echinoderms | Abundance by class by depth within site
@@ -282,6 +318,8 @@ inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
 #write_xlsx(inv_bar,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\mol_ech_ab_class_output.xlsx")
 
 inv_bar$class <- factor(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
+
+inv_bar$site <- factor(inv_bar$site, levels=c("G1","G2","AW","SN","SK","MI","YO","ZA","ZP","S1","S2","HI"))
 
 invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
 
@@ -370,12 +408,6 @@ library(readxl)   # to import excel datasets
 ```{r}
 str(mol_class)
 str(ech_class)
-
-AW_S3 <- c("AW_S3",rep(NA,5))
-
-mol_class[nrow(mol_class) + 3,] <- list("AW_S3",rep(NA,5),
-                                        "G1_D3",rep(NA,5),
-                                        "S2_D1",rep(NA,5))
 
 # missing transects in mol_class:"AW_S3", "G1_D3","S2_D1" 
 # missing transects in ech_class: "MI_S2", "MI_S3", "S1_S2", "S1_S3","ZP_D1","ZP_D2","ZP_D3","ZP_S2","ZP_S3"
