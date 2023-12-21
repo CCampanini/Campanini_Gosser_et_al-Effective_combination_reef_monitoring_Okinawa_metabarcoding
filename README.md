@@ -7,11 +7,11 @@ For further information on the monitoring protocol see [Field data collection pr
 ![This is an image](/survey_pic.jpg)
 
 **Subfolders:**
-- [env_data](/env_data/) : environmental variables and impact score per site
-- [PLITS](/PLITS/) : analysis of relative benthic cover by category from Photo Line Intercept Transects (PLITs)
-- [Mol-ech_abundance_analysis](/MollEchino/): analysis of mollusk and echinoderm abundance by class
-- [Fish](/Fish/): analysis of fish video transects
-- [eDNA](/eDNA/): analysis of sequences from eDNA metabarcoding targeting metazoans from water samples
+- [env_data](/Env_data/) : environmental variables and impact score per site
+- [PLITS](/Multi-taxa_data/PLITS/) : analysis of relative benthic cover by category from Photo Line Intercept Transects (PLITs)
+- [Mol-ech_abundance_analysis](/Multi-taxa_data/MollEchino/): analysis of mollusk and echinoderm abundance by class
+- [Fish](/Multi-taxa_data/Fish/): analysis of fish video transects
+- [eDNA](/Multi-taxa_data/eDNA/): analysis of sequences from eDNA metabarcoding targeting metazoans from water samples
 
 ## Aims of the thesis project
 
