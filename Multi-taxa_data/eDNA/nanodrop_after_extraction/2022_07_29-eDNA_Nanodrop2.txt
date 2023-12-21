@@ -1,0 +1,3 @@
+Plate ID	Well 	Sample ID	User ID	Date 	Time 	Conc. 	Units 	A260 	A280 	260/280 	260/230 	Conc. Factor (ng/ul)	Cursor Pos.	Cursor abs.	340 raw	NA Type
+	A1	HISU2	Default	7/29/2022	4:22 PM	5.786	ng/ul	0.116	0.077	1.50	-2.77	50.00	260	0.115	-0.073	DNA-50
+	B1	S2S2	Default	7/29/2022	4:22 PM	-0.2961	ng/ul	-0.006	-0.006	1.05	0.03	50.00	260	-0.006	0.022	DNA-50
