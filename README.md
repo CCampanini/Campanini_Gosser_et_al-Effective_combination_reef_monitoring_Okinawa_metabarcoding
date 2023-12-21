@@ -8,7 +8,7 @@ For further information on the monitoring protocol see [Field data collection pr
 
 **Subfolders:**
 - [env_data](/Env_data/) : environmental variables and impact score per site
-- [PLITS](/Multi-taxa_data/PLITS/) : analysis of relative benthic cover by category from Photo Line Intercept Transects (PLITs)
+- [PLITS](/Multi-taxa_data/PLITs/) : analysis of relative benthic cover by category from Photo Line Intercept Transects (PLITs)
 - [Mol-ech_abundance_analysis](/Multi-taxa_data/MollEchino/): analysis of mollusk and echinoderm abundance by class
 - [Fish](/Multi-taxa_data/Fish/): analysis of fish video transects
 - [eDNA](/Multi-taxa_data/eDNA/): analysis of sequences from eDNA metabarcoding targeting metazoans from water samples
