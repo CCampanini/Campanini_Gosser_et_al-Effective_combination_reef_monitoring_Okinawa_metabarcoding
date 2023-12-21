@@ -46,7 +46,7 @@ library(rio) # to use import_list
 
 # Mollusks | Abundance estimates
 
-Merge raw files from each site in a single dataframe
+Merge raw files from each site in a single data frame
 
 ```{r}
 files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", pattern=".xlsx")
@@ -98,10 +98,7 @@ mol_class <- mol_class %>%
   select(-depth_rep)
 
 mol_class$Cephalopoda <- NULL
-
-mol_class$site <-ordered(mol_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 ```
-
 Add pressure score column 
 
 ```{r}
@@ -120,8 +117,9 @@ mol_class <- mol_class %>%
                                    site == "G2"~ "High"))
 
 mol_class$pressure <- ordered(mol_class$pressure, levels=c("Low","Medium", "High"))
+mol_class$site <-ordered(mol_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
-mol_class <- mol_class[,c(5,1,6,7,2:4)]
+mol_class <- mol_class[,c(4,1,5:7,2:3)]
 
 mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
 ```
@@ -130,7 +128,7 @@ mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
 
 ## Create the input dataframe
 
-Adjust `ech_class` to create a new input dataframe for the barplot.
+Adjust `mol_class` to create a new input data frame for the bar plot.
 Include a column with - mean echinoderm abundance by class per depth
 within site among replicates; - standard deviation by class per depth
 within site among replicates.
@@ -140,10 +138,11 @@ Standard deviation will be used to add error bars to the barplot.
 ```{r}
 mol_mean <- mol_class %>%
   group_by(site_depth) %>% 
-  summarise(Biv_mean=round(mean(Bivalvia),0),
+  mutate(Biv_mean=round(mean(Bivalvia),0),
             Gas_mean=round(mean(Gastropoda),0),
             Biv_sd=round(sd(Bivalvia),0),
-            Gas_sd=round(sd(Gastropoda),0))
+            Gas_sd=round(sd(Gastropoda),0)) %>%
+  select(c(2,3,4)) 
 ```
 
 https://seananderson.ca/2013/10/19/reshape/
@@ -202,7 +201,7 @@ Format the data frame for analysis
 ```{r}
 ech_raw_df$CLASS <- replace(ech_raw_df$CLASS,ech_raw_df$CLASS=="-",NA)
 ech_raw_df[,c(1:4,7)] <- lapply(ech_raw_df[,c(1:4,7)], as.factor)
-ech_raw_df$site <-ordered(ech_raw_df$site,levels=c("G1", "G2", "AW", "SN", "SK", "MI", "YO","ZA", "ZP", "HI", "S1", "S2"))
+ech_raw_df$site <-ordered(ech_raw_df$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 ech_raw_df[,11] <- as.numeric(ech_raw_df[,11])
 str(ech_raw_df)
 
@@ -228,11 +227,12 @@ ech_class$depth <- gsub("[[:digit:]]", "", ech_class$depth_rep) #remove the numb
 # Remove Numbers from Alphanumeric Character String Using gsub() Function
 ech_class <- ech_class %>% 
   mutate(site_depth = paste(site, depth, sep='_')) %>%
-  select(-depth_rep)
-        
-ech_class$site <-ordered(ech_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
-ech_class[,3:4] <- lapply(ech_class[,3:4], as.factor)
+  dplyr::select(-depth_rep)
+```
 
+Add pressure score column 
+
+```{r}
 ech_class <- ech_class %>% 
        mutate(pressure = case_when(site == 'HI' | 
                                    site == "S1" | 
@@ -248,8 +248,12 @@ ech_class <- ech_class %>%
                                    site == "G2"~ "High"))
 
 ech_class$pressure <- ordered(ech_class$pressure, levels=c("Low","Medium", "High"))
-                              
-ech_class <- ech_class[,c(7,1,8,9,2:6)]
+
+ech_class$site <-ordered(ech_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+ech_class <- ech_class[,c(7,1,8:10,2:6)]  #re-ordering the column
+
+ech_class[,3:4] <- lapply(ech_class[,3:4], as.factor)
 ```
 
 # Echinoderms | Abundance by class by depth within site
@@ -319,7 +323,7 @@ inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
 
 inv_bar$class <- factor(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
 
-inv_bar$site <- factor(inv_bar$site, levels=c("G1","G2","AW","SN","SK","MI","YO","ZA","ZP","S1","S2","HI"))
+inv_bar$site <- factor(inv_bar$site, levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
 invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
 
@@ -412,9 +416,11 @@ str(ech_class)
 # missing transects in mol_class:"AW_S3", "G1_D3","S2_D1" 
 # missing transects in ech_class: "MI_S2", "MI_S3", "S1_S2", "S1_S3","ZP_D1","ZP_D2","ZP_D3","ZP_S2","ZP_S3"
 
-inv_df <- merge(mol_class, ech_class, by=c("transect","site","depth","site_depth"), all = T)
+inv_df <- merge(mol_class, ech_class,
+                by=c("transect","site","depth","site_depth","pressure"), 
+                all = T)
 
-inv_mat <- inv_df[,-c(1:4)]
+inv_mat <- inv_df[,-c(1:5)]
 inv_mat <- as.data.frame(lapply(inv_mat[,c(1:7)], as.numeric))
 
 str(inv_mat)
@@ -430,7 +436,7 @@ inv_mat <- as.matrix(inv_mat) #convert to matrix
 rownames(inv_mat) <- inv_df$transect
 
 #Create a df with independent variables
-ind_df <- inv_df[,c(1:4)]
+ind_df <- inv_df[,c(1:5)]
 
 ```
 
@@ -496,7 +502,7 @@ nMDS plot with `ggplot()` with stress value
 inv_ndms_ggplot<-ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),size=2.5)+##separates overlapping points
   stat_ellipse(geom="polygon",
-               aes(fill=site), alpha=.2,type='t',size =1)+ ##draws 95% confidence interval ellipses
+               aes(fill=pressure), alpha=.2,type='t',size =1)+ ##draws 95% confidence interval ellipses
   theme_classic()+
   annotate("text", x=0.9, y=-0.8, 
            label=paste('Stress =',round(inv_nmds_br$stress,3))) #add stress to plot
@@ -512,7 +518,7 @@ library(ggforce)
 
 inv_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),size=3)+##separates overlapping points
-  geom_mark_ellipse(aes(fill=site, color=site), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
+  geom_mark_ellipse(aes(fill=pressure), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
   theme_classic()+
   ggtitle("nMDS of mollusks and echinoderm abundance")+
   theme(legend.position = "right",
@@ -520,7 +526,7 @@ inv_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
         legend.title = element_text(color = "black", size = 12),
         legend.text = element_text(size=10))+
   guides(color = guide_legend(order = 1,title="Site"),
-         fill = guide_legend(order = 1,title="Site"),
+         fill = guide_legend(order = 1,title="Pressure"),
          shape = guide_legend(order = 2,title="Depth",))+
   scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
   annotate("text", x=-0.80, y=-0.4,
@@ -608,7 +614,42 @@ inv_blocks_pmv <- adonis2(inv_mat~depth,
 
 inv_blocks_pmv
 ```
+### Question 3: is there a significant difference in mollusks and echinoderm abundance among anthropogenic pressure level?
 
+```{r}
+set.seed(69)
+perm=how(nperm=999)
+inv_pressure_pmv=adonis2(inv_mat~pressure, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray")
+                        
+inv_pressure_pmv
+```
+
+### Question 4: is there a significant difference in mollusks and echinoderm abundance among sites within pressure levels?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69)
+perm=how(nperm=999)
+inv_site_pressure_pmv <- adonis(inv_mat~site, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$pressure,
+                           methods="bray")
+inv_site_pressure_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69)
+h <- how(blocks = ind_df$pressure, nperm = 999)
+inv_site_pressure_blocks_pmv <- adonis2(inv_mat~site,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray")
+
+inv_site_pressure_blocks_pmv
+```
 ## Permutation test of multivariate homogeneity of groups dispersions (variances)
 
 Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
@@ -668,27 +709,37 @@ category and depth within site
 ```{r}
 inv_bd$distances #Extract betadisper scores
 
-distcent_df <- data.frame(Distance_to_centroid=inv_bd$distances,Sites=inv_bd$group) 
+distcent_df <- data.frame(Distance_to_centroid=inv_bd$distances,Sites=ind_df$site, Pressure=ind_df$pressure) 
 Sites <- inv_bd$group
-distcent_df[,2]<-factor(distcent_df[,2],levels=c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP"))
+distcent_df[,2]<-factor(distcent_df[,2],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+distcent_df[,3]<-factor(distcent_df[,3],levels=c("Low","Medium","High"))
 
-#add a column with the mean relative cover by category by depth within site
-avg_inv_distcent <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="mean")
-avg_inv_distcent$Distance_to_centroid<-round(avg_inv_distcent$Distance_to_centroid,2)
-avg_inv_distcent_sd <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="sd")
-avg_inv_distcent <- cbind(avg_inv_distcent,avg_inv_distcent_sd)
-avg_inv_distcent <- avg_inv_distcent[,-3]
-colnames(avg_inv_distcent) <- c("Sites","Mean distance to centroid","SD")
-avg_inv_distcent$SD <-round(avg_inv_distcent$SD,2)
-
+distcent_mean_df <- distcent_df %>%
+  group_by(Sites) %>% 
+  summarise(`Mean distance to centroid`=round(mean(Distance_to_centroid),2),
+         SD=round(mean(Distance_to_centroid),2)) %>%
+  mutate(Pressure = case_when(Sites == 'HI' | 
+                              Sites == "S1" | 
+                              Sites == "S2" |
+                              Sites == "ZP"~ "Low", 
+                              Sites == 'ZA' | 
+                              Sites == "YO" | 
+                              Sites == "MI" ~ "Medium",
+                              Sites == 'SK' |
+                              Sites == 'SN' | 
+                              Sites == "AW" | 
+                              Sites == "G1" |
+                              Sites == "G2"~ "High"))
+  
+distcent_mean_df <- distcent_mean_df[,c(1,4,2,3)]
 ```
 
 Boxplot with `geom_boxplot` from `ggplot2`
 
 ```{r}
 p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
-  geom_boxplot(aes(fill=Sites,colour=Sites),alpha=0.3)+
-  geom_jitter(aes(color=Sites),alpha=0.7)+
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
   theme_classic()+
   labs(title="Boxplot of mean distance to centroid by site")+
   ylab(label="Distance to centroid")+
@@ -708,8 +759,8 @@ For guides on `annotate` see the
 ```{r}
 library(ggpmisc)
 
-p+ annotate(geom = "table", x=2.8,y = 0.42, label = list(avg_inv_distcent), 
-            vjust = 1, hjust = 0,
+p+ annotate(geom = "table", x=2.8,y = 0.42, label = list(distcent_mean_df), 
+            vjust = 0.3, hjust = -1.2,
             fill="grey96")
 
 #ggsave("inv_distcent_boxplot.tiff", units="in", width=7, height=4, dpi=300, compression = 'lzw')
