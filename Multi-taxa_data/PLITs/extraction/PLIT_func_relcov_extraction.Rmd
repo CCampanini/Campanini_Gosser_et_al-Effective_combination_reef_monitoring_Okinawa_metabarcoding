@@ -1,0 +1,40 @@
+---
+title: "Extraction of relative cover by functional group from PLITs"
+author: "Claudia Campanini"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# LOAD BASIC LIBRARIES
+
+```{r}
+library(readxl) #read xlsx files
+library(writexl) #export to excel files
+library(tidyverse) #aggregate fc et al.
+library(tidyverse)
+library(dplyr)
+library(MASS)
+```
+
+# IMPORT DATASHEETS FOR EACH SITE IN A SINGLE LIST OF LISTS
+
+```{r}
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", pattern=".xlsx")
+files
+files <- files[-5]
+class(files)
+# Concat the directory to the file names
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", files)
+class(files)
+
+#install.packages("rio")
+library(rio)
+
+plits_raw <- sapply (files, FUN = import_list,
+              simplify = F, USE.NAMES = F)
+
+names(plits_raw) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
