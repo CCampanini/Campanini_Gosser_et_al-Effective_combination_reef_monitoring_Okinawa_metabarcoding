@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# LOAD BASIC LIBRARIES
+LOAD BASIC LIBRARIES
 
 ```{r}
 library(readxl) #read xlsx files
@@ -20,7 +20,9 @@ library(dplyr)
 library(MASS)
 ```
 
-# IMPORT DATASHEETS FOR EACH SITE IN A SINGLE LIST OF LISTS
+# LOADING AND CLEANING OF RAW DATA
+
+##IMPORT DATASHEETS FOR EACH SITE IN A SINGLE LIST OF LISTS
 
 ```{r}
 files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/1-Extraction/", pattern=".xlsx")
@@ -42,7 +44,7 @@ names(plits_raw) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO",
 rm(files)
 ```
 
-# CLEAN PLITS OF EACH TRANSECT
+## CLEAN PLITS OF EACH TRANSECT
 
 ```{r}
 clean_plit_fun <- function(x) {
@@ -69,6 +71,8 @@ for (i in 1:12) {
 rm(clean_plit_fun)
 ```
 # HARD CORAL BY FUNCTIONAL GROUP 
+
+## Subset raw data to hard coral only
 
 ```{r}
 plits_hc <- vector("list", 12)
@@ -109,7 +113,7 @@ plits_hc[[i]][[k]]$Functional_group <-
 }
 ```
 
-Extraction
+## Extraction
 
 ```{r}
 ext_func_fun <- function(df, group_var,summary_var) {
@@ -178,7 +182,7 @@ for (i in 1:12) {
 
 ```
 
-Merge dataframes 
+## Merge data frames and formatting
 
 ```{r}
 hc_ext_df <-list()
@@ -214,7 +218,7 @@ hc_per_depth <- hc_ext_df %>%
 
 # ALGAE COVER BY FUNCTIONAL GROUP
 
-## Subset dataframe 
+## Subset raw data to algae only 
 
 ```{r}
 plits_alg <- vector("list", 12)
@@ -318,7 +322,7 @@ for (i in 1:12) {
 rm(add_col_fun)
 ```
 
-Merge dataframes 
+## Merge data frames and formatting
 
 ```{r}
 alg_ext_df <-list()
@@ -354,6 +358,7 @@ alg_per_depth <- alg_ext_df %>%
 # RELATIVE COVER BY FUNCTIONAL GROUPS 
 
 Merging dataframes with hard-coral and algae cover per depth
+
 ```{r}
 func_mean_depth_input <- rbind(hc_per_depth, alg_per_depth)
 ```
@@ -372,7 +377,8 @@ func_per_transect<- func_per_transect %>%
                               Depth_Rep == 'D3' | Depth_Rep == "S3"~ 3)))
 ```
 
-## ROTATE DF
+## Rotate df
+
 Follow the link for explanation of dcast function https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
