@@ -289,7 +289,7 @@ plits_ext_df <- plits_ext_df %>%
 Export plit_ext_df
 
 ```{r}
-write_xlsx(plits_ext_df,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/plits_ext_df.xlsx")
+write_xlsx(plits_ext_df,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/2-Relative_cover_category/plits_ext_df.xlsx")
 ```
 
 
