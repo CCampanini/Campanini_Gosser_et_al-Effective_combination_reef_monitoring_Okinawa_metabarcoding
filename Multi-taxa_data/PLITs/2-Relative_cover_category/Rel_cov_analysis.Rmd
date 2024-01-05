@@ -41,6 +41,24 @@ mean_rel_cov_site <- cov_df %>%
 
 library(reshape2) #needed for dcast function
 mean_rel_cov_site <- dcast(mean_rel_cov_site, Site ~ Category)
+
+mean_rel_cov_site <- mean_rel_cov_site %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" |
+                              Site == "ZP"~ "Low", 
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+mean_rel_cov_site[,1]<-factor(mean_rel_cov_site[,1],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+mean_rel_cov_site <- mean_rel_cov_site[,c(1,14,2:13)]
 mean_rel_cov_site
 ```
 Export table with mean relative benthic cover by category per site within depth level
@@ -56,6 +74,8 @@ mean_rel_cov_df <- cov_df %>%
   group_by(Site_depth, Category) %>%
   summarise(Mean_rel_cov=round(mean(Rel_cov),2))
 
+
+
 Site_depth <- mean_rel_cov_df$Site_depth
 
 library(tidyr) # needed for separate_wider_delim function
@@ -63,8 +83,43 @@ mean_rel_cov_df <- mean_rel_cov_df %>%
   separate_wider_delim(Site_depth, "_", names = c("Site", "Depth")) %>%
   mutate(Site_depth=Site_depth)
 
+mean_rel_cov_site <- mean_rel_cov_site %>%
+  mutate(Site = case_when(Site == 'hi' ~ "HI" | 
+                              Site == "S1" | 
+                              Site == "S2" |
+                              Site == "ZP" ~ "Low", 
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High")) %>%
+  
+  
+
 mean_rel_cov_wide <- dcast(mean_rel_cov_df, Site_depth ~ Category, value.var = "Mean_rel_cov")
 mean_rel_cov_wide
+
+mean_rel_cov_site <- mean_rel_cov_site %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" |
+                              Site == "ZP"~ "Low", 
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+mean_rel_cov_site[,1]<-factor(mean_rel_cov_site[,1],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+mean_rel_cov_site <- mean_rel_cov_site[,c(1,14,2:13)]
+mean_rel_cov_site
 ```
 
 Export table with mean relative benthic cover by category per site within depth level
@@ -144,7 +199,7 @@ cov_df[,c(1,3,4,5)] <- lapply(cov_df[,c(1,3,4,5)], as.factor)  ## as.factor() co
 
 
 cov_df[,6:13] <- lapply(cov_df[,6:13], as.numeric)
-V <- cov_df[,-c(14:21)]
+cov_df <- cov_df[,-c(14:21)]
 
 str(cov_df)
 
