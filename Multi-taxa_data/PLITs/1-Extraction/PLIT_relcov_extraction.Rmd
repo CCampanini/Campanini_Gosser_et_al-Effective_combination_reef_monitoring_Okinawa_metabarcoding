@@ -19,12 +19,12 @@ library(MASS)
 # IMPORT DATASHEETS FOR EACH SITE IN A SINGLE LIST OF LISTS
 
 ```{r}
-files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", pattern=".xlsx")
+files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/1-Extraction/", pattern=".xlsx")
 files
 files <- files[-5]
 class(files)
 # Concat the directory to the file names
-files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/extraction/", files)
+files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/1-Extraction/", files)
 class(files)
 
 #install.packages("rio")
@@ -33,7 +33,9 @@ library(rio)
 plits_raw <- sapply (files, FUN = import_list,
               simplify = F, USE.NAMES = F)
 
-names(plits_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+names(plits_raw) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
+
+rm(files)
 ```
 ## CHECK INPUT FILES FOR NEGATIVE VALUES
 
@@ -68,6 +70,8 @@ for (i in 1:12) {
 
 #alternative with map()
 #for (i in 1:12) {plits_raw[[i]] <- map (plits_raw[[i]],clean_PLIT)}
+
+rm(clean_plit_fun)
 ```
 # TOTAL LENGTH COVERED PER TRANSECT
 
@@ -89,8 +93,10 @@ transect_length_df <- as.data.frame(lapply(transect_length_df, unlist, recursive
 transect_length_df <- data.frame(Site = row.names(transect_length_df), transect_length_df)
 transect_length_df
 
-library("writexl")
-write_xlsx(transect_length_df,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/plits_length_df.xlsx")
+#library("writexl")
+#write_xlsx(transect_length_df,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/plits_length_df.xlsx")
+
+rm(transect_length, length_sum_fun)
 ```
 
 Reference for unlist fucntion, see <https://stackoverflow.com/questions/66884864/r-dataframe-convert-list-type-columns-to-chr-int>
@@ -118,7 +124,9 @@ for (i in 1:12) {
                              group_var = Category, summary_var = Cat_tot)
 }
 
-names(plits_ext) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+names(plits_ext) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
+
+rm(ext_fun)
 ```
 
 ## ADD COLUMNS NAMES TO EACH TRANSECT
@@ -129,49 +137,50 @@ Add a column with the transect name to each transect (dataframe)
 library(wrapr)
 
 for (i in 1:12) {
-  plits_ext[[i]] <- add_name_column(plits_ext[[i]], "Site_Rep")
+  plits_ext[[i]] <- add_name_column(plits_ext[[i]], "Depth_rep")
 }
 ```
 
 Add a column with the site name to each transect (dataframe)
 ```{r}
-sites <- c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+sites <- c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
 
 for (i in 1:12) {
     for (k in 1:length(plits_ext[[i]])) {
     plits_ext[[i]][[k]]$Site <- as.factor(rep(sites[i],13))
   }
 }
+
+rm(sites)
 ```
 
 Add a column for the depth level
 
 ```{r}
-add_col_fun <- function(df, site_rep) {
-  site_rep <- enquo(site_rep)
+add_col_fun <- function(df, Depth_rep) {
+  Depth_rep <- enquo(Depth_rep)
   
   df %>% 
-       mutate(depth = case_when(!!site_rep == 'D1' | 
-                                  !!site_rep == "D2" | 
-                                  !!site_rep == "D3"~ "Deep", 
-                              !!site_rep == 'S1' | 
-                                  !!site_rep == "S2" | 
-                                  !!site_rep == "S3"~ "Shallow"))
+       mutate(depth = case_when(!!Depth_rep == 'D1' | 
+                                  !!Depth_rep == "D2" | 
+                                  !!Depth_rep == "D3"~ "Deep", 
+                              !!Depth_rep == 'S1' | 
+                                  !!Depth_rep == "S2" | 
+                                  !!Depth_rep == "S3"~ "Shallow"))
 }
 
 for (i in 1:12) {
   plits_ext[[i]] <- lapply (plits_ext[[i]],add_col_fun,
-                             site_rep= Site_Rep)
+                             Depth_rep= Depth_rep)
 }
+
+rm(add_col_fun)
 ```
+
 # PREPARE SINGLE DATAFRAME WITH RELATIVE COVER
 
-- Merge in a single dataframe
+- Merge in a single data frame
 - Delete rows with NA as "Category"
-- Replace NA in "Abs_cov" and "Rel_cov" with 0
-- Add "site_rep" and "site_depth" columns
-- Merge "sponge" with "other"
-- Remove rows with "sponge", "unknown", "missing" and "shadow"
 
 ```{r}
 plits_ext_df <-list()
@@ -180,43 +189,70 @@ for (i in 1:12) {
 
 }
 plits_ext_df <- as.data.frame(do.call(rbind, plits_ext_df))
+```
 
+- Replace NA in "Abs_cov" and "Rel_cov" with 0
+- Add "Depth_rep" and "Site_depth" columns
+- Merge "sponge" with "other"
+- Remove rows with "sponge", "unknown", "missing" and "shadow"
+
+```{r}
 plits_ext_df[is.na(plits_ext_df)] <- 0
 
 plits_ext_df <- plits_ext_df %>% 
   drop_na(Category) %>% ## delete rows with NA as Category
   replace(is.na(.), 0)
 
-plits_ext_df$Transect <- paste(plits_ext_df$Site, plits_ext_df$Site_Rep, sep='_')
+plits_ext_df$Transect <- paste(plits_ext_df$Site, plits_ext_df$Depth_rep, sep='_')
 plits_ext_df$Site_depth <- paste(plits_ext_df$Site, plits_ext_df$depth, sep='_')
 plits_ext_df<-   plits_ext_df %>% 
-       mutate(Replicate = case_when(Site_Rep == "D1" | Site_Rep == "S1" ~ 1, 
-                                    Site_Rep == "D2" | Site_Rep == "S2" ~ 2,
-                                    Site_Rep == "D3" | Site_Rep == "S3" ~ 3))
+       mutate(Replicate = case_when(Depth_rep == "D1" | Depth_rep == "S1" ~ 1, 
+                                    Depth_rep == "D2" | Depth_rep == "S2" ~ 2,
+                                    Depth_rep == "D3" | Depth_rep == "S3" ~ 3))
 
-plits_ext_df$other <- plits_ext_df$other + plits_ext_df$sponge
+plits_ext_df[plits_ext_df == "sponge"] <- "other"
 
-plits_ext_df <- plits_ext_df  %/% 
-  filter(Category != "sponge" & Category != "unknown" & 
+plits_ext_df <- plits_ext_df %>%                                    
+  group_by(Transect, Category) %>%
+  mutate(Abs_cov = sum(Abs_cov)) %>%
+  ungroup() %>%
+  as.data.frame()
+
+plits_ext_df <- plits_ext_df[!duplicated(plits_ext_df[c(1,7)]),]
+
+plits_ext_df <- plits_ext_df  %>% 
+  filter(Category != "unknown" & 
            Category != "shadow" & Category != "missing")
+
+rm(i, k)
 ```
+## RECALCULATE RELATIVE COVER WITHOUT UNDEFINED CATEGORIES (unknown, shadow, missing)
+
+```{r}
+plits_ext_df$Transect <- as.factor(plits_ext_df$Transect)
+
+plits_ext_df <-  plits_ext_df %>%
+  group_by(Transect) %>%
+  mutate(Rel_cov = round(Abs_cov/sum(Abs_cov, na.rm = T),3))
+```
+
 ## ROTATE DF
 Follow the link for explanation of dcast function https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
 rel_cov_input <- plits_ext_df[,-2] #delete Abs_cov column
 
-library(reshape2)
-rel_cov_input <- dcast(rel_cov_input, 
-                        Transect + Site + Site_Rep + Site + depth + Replicate  
-                          ~ Category, value.var = "Rel_cov")
-```
-- Merge sponge to "other"
-- Delete Unknown, Missing
+str(rel_cov_input)
 
-```{r}
-rel_cov_input$other <- rel_cov_input$other + rel_cov_input$sponge
-rel_cov_input<- rel_cov_input[,-c(4,10,14,16,17)]
+rel_cov_input$Replicate <- as.factor(rel_cov_input$Replicate)
+rel_cov_input$Transect <- as.factor(rel_cov_input$Transect)
+
+rel_cov_input$Category <- 
+  factor(rel_cov_input$Category,                                        levels=as.character(unique(rel_cov_input$Category)[]))
+
+rel_cov_input <- dcast(rel_cov_input, 
+                        Transect + Site + Depth_rep + depth + Site_depth + Replicate  
+                          ~ Category, value.var = "Rel_cov")
 ```
 
 ## ADD STANDARD DEVIATION
@@ -234,13 +270,13 @@ rel_cov_input <- rel_cov_input %>%
          sd_zoanth = round(sd(zoanthids),2))
 ```
 
-## EXPORT REL_COV_INPUT DATAFRAME (wide format -> matrix) AS EXCEL FILE
+# EXPORT REL_COV_INPUT DATAFRAME (wide format -> matrix) AS EXCEL FILE
 
 ```{r}
 write_xlsx(rel_cov_input,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/rel_cov_input.xlsx")
 ```
 
-## EXPORT PLIT_EXT_DF (long format) WITH STANDARD DEVIATION
+# EXPORT PLIT_EXT_DF (long format) WITH STANDARD DEVIATION
 
 Add standard deviation 
 
