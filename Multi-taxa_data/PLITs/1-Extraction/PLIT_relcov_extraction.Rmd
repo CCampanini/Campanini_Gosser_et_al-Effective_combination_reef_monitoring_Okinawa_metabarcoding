@@ -273,7 +273,7 @@ rel_cov_input <- rel_cov_input %>%
 # EXPORT REL_COV_INPUT DATAFRAME (wide format -> matrix) AS EXCEL FILE
 
 ```{r}
-write_xlsx(rel_cov_input,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/rel_cov_input.xlsx")
+write_xlsx(rel_cov_input,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/PLITs/2-Relative_cover_category/rel_cov_input.xlsx")
 ```
 
 # EXPORT PLIT_EXT_DF (long format) WITH STANDARD DEVIATION
