@@ -149,7 +149,7 @@ for (i in 1:12) {
 }
 ```
 
-Add a column with the site name to each transect (dataframe)
+Add a column with the site name to each transect (data frame)
 ```{r}
 sites <- c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
 
