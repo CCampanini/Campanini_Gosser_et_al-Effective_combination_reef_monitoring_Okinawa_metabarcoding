@@ -221,8 +221,7 @@ plits_ext_df <- plits_ext_df %>%
 plits_ext_df <- plits_ext_df[!duplicated(plits_ext_df[c(1,7)]),]
 
 plits_ext_df <- plits_ext_df  %>% 
-  filter(Category != "unknown" & 
-           Category != "shadow" & Category != "missing")
+  filter(Category != "shadow" & Category != "missing")
 
 rm(i, k)
 ```
@@ -267,6 +266,7 @@ rel_cov_input <- rel_cov_input %>%
          sd_rubble = round(sd(rubble),2),
          sd_sand = round(sd(sand),2),
          sd_softc = round(sd(soft_coral),2),
+         sd_unknown = round(sd(unknown),2),
          sd_zoanth = round(sd(zoanthids),2))
 ```
 
