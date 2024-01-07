@@ -36,7 +36,7 @@ Load the input dataframe
 func_mean_depth<- read_excel("func_mean_depth_input.xlsx")
 
 str(func_mean_depth) 
-func_mean_depth$Site <- ordered(func_mean_depth$Site, levels= c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP"))
+func_mean_depth$Site <- ordered(func_mean_depth$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 func_mean_depth$Depth[func_mean_depth$Depth == "Deep"] <- "D"
 func_mean_depth$Depth[func_mean_depth$Depth == "Shallow"] <- "S"
 func_mean_depth[,c(2:4)] <- lapply(func_mean_depth[,c(2:4)], as.factor) 
@@ -48,23 +48,7 @@ str(func_mean_depth)
 ## Hard coral stacked bar chart
 
 ```{r}
-ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
-       aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
-  geom_bar(position="stack",stat="identity")+
-  facet_grid(~ Site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean hard coral cover by growth form [m]")+
-  guides(fill=guide_legend(title="Growth form"))+
-  scale_y_continuous(label = c("0","5","10","15"))
-```
 
-## Hard coral stacked bar chart in percentage
-
-See palette from
-<https://cran.r-project.org/web/packages/colorspace/vignettes/colorspace.html#Usage_with_ggplot2>
-
-```{r}
 #remotes::install_github("wilkelab/cowplot")
 #install.packages("colorspace")
 library(colorspace)
@@ -76,23 +60,34 @@ library(colorblindr)
 palette10plasma=c("#f0f921","#fdca26","#fb9f3a","#ed7953","#d8576b",
                   "#bd3786","#9c179e","#7201a8","#46039f","#0d0887")
 
-ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
-       aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
-  geom_bar(position="fill",stat="identity")+
-  facet_grid(~ Site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean hard coral cover by growth form [%]")+
-  guides(fill=guide_legend(title="Growth form"))
-
 plasma5 = sequential_hcl(5, palette= "plasma")
 plasma5
 ag_GrnYl5 = sequential_hcl(5, palette= "ag_GrnYl")
 ag_GrnYl5
-  
-plasma_ag_GrnYl_10 = c("#001889","#91008D","#D24E71","#EDA200","gold1", #plasma
-                        "#EDEF5C","#82CC6C","#17A77E","#007E7D","#255668") #ag_Grnl5
+sequential_hcl(1, palette= "Emrld") # --> "#0B4151"
 
+  
+plasma_ag_GrnYl_11 = c("#001889","#91008D","#D24E71","#EDA200","gold1", #plasma
+                        "#EDEF5C","#82CC6C","#17A77E","#007E7D","#255668","#0B4151")
+
+ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
+       aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+  geom_bar(position="stack",stat="identity", color = "black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [m]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_y_continuous(label = c("0","5","10","15"))+
+  scale_fill_manual(values=plasma_ag_GrnYl_11)
+```
+
+## Hard coral stacked bar chart in percentage
+
+See palette from
+<https://cran.r-project.org/web/packages/colorspace/vignettes/colorspace.html#Usage_with_ggplot2>
+
+```{r}
 hc_func_stacked <- ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
        aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
   geom_bar(position="fill",stat="identity",color="black")+
@@ -101,7 +96,7 @@ hc_func_stacked <- ggplot(subset(func_mean_depth,func_mean_depth$Category == "ha
   labs(x="Depth",
        y="Mean hard coral cover by growth form [%]")+
   guides(fill=guide_legend(title="Growth form"))+
-  scale_fill_manual(values=plasma_ag_GrnYl_10)+
+  scale_fill_manual(values=plasma_ag_GrnYl_11)+
   scale_y_continuous(label = c("0","25","50","75","100"))
 
 cvd_grid(hc_func_stacked)
@@ -173,13 +168,14 @@ algae_func_stacked <- ggplot(alg_mean_depth,aes(x=Depth, y=mean_cat_tot, fill=Fu
   geom_bar(position="fill",stat="identity",alpha=0.7,color="black")+
   geom_text(aes(x=Depth, y= mean_cat_tot, label = Perc_func), 
             data = subset(alg_mean_depth,alg_mean_depth$Perc_func > 2),
-            size = 3.5, position = position_fill(vjust = 0.5),color="black")+
+            size = 2.5, position = position_fill(vjust = 0.5),color="black")+
   facet_grid(~ Site)+
   theme_classic()+
   labs(x="Depth",
        y="Mean algae cover by functional group [%]")+
   guides(fill=guide_legend(title="Functional groups"))+
-  scale_fill_manual(values=RedGreen3)
+  scale_fill_manual(values=RedGreen3)+
+  scale_y_continuous(label=c(0,25,50,75,100))
 
 cvd_grid(algae_func_stacked)
 
@@ -208,7 +204,7 @@ Load input dataframe
 ```{r}
 func_input <- read_excel("func_input.xlsx")
 
-func_input$Site <- ordered(func_input$Site, levels= c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP"))
+func_input$Site <- ordered(func_input$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 func_input[,c(1:5)] <- lapply(func_input[,c(1:5)], as.factor)
 
 str(func_input)
