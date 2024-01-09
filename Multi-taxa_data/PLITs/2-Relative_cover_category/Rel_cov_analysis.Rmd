@@ -565,7 +565,7 @@ perm=how(nperm=999)
 relcov_site_pressure_pmv <- adonis(cov_mat~Site, 
                            data=ind_df,
                            permutations =perm,
-                           strata=ind_df$pressure,
+                           strata=ind_df$Pressure,
                            methods="bray")
 relcov_site_pressure_pmv$aov.tab
 
@@ -748,15 +748,15 @@ summary(relcov_sim) #check which categories were the main driver of difference a
 
 ## SIMPER per depth
 ```{r}
-relcov_sim_Depth=simper(cov_mat,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
-relcov_sim_Depth
-summary(relcov_sim_Depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+relcov_sim_depth=simper(cov_mat,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim_depth
+summary(relcov_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
 
 ## SIMPER per pressure exposure
 ```{r}
 relcov_sim_pres=simper(cov_mat,group=ind_df$Pressure) #Distinguish categories which caused the differences in relative cover among sites
-relcov_sim_Depth
+relcov_sim_pres
 summary(relcov_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
 
