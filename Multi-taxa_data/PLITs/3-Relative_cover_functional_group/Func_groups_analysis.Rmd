@@ -204,14 +204,33 @@ Load input dataframe
 ```{r}
 func_input <- read_excel("func_input.xlsx")
 
+func_input <- func_input %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+func_input <- func_input[ ,c(1:5, 20, 6:19)]
+
+func_input[,c(1:6)] <- lapply(func_input[,c(1:6)], as.factor)
+
+func_input$Pressure<-ordered(func_input$Pressure,levels=c("Low", "Medium", "High"))
+
 func_input$Site <- ordered(func_input$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
-func_input[,c(1:5)] <- lapply(func_input[,c(1:5)], as.factor)
 
 str(func_input)
 
 
 #create a df with the independent variables
-ind_df <- as.data.frame(func_input[,c(1:5)])
+ind_df <- as.data.frame(func_input[,c(1:6)])
 str(ind_df)
 
 ```
@@ -219,7 +238,7 @@ str(ind_df)
 Convert the database `func_input`to a matrix
 
 ```{r}
-func_mat <- func_input[,-c(1:5)]
+func_mat <- func_input[,-c(1:6)]
 rownames(func_mat) <- func_input$Trans
 func_mat <- as.matrix(func_mat)
 str(func_mat)
@@ -285,23 +304,21 @@ nmds_df<-cbind(ind_df, NMDS1, NMDS2)
 nMDS plot with colorblind-friendly
 
 ```{r}
-
 #install.packages("ggforce")
 library(ggforce)
+library(ggplot2)
 
-
-palette4viridisorange=c("#440154","#2a788e","#35b779","darkorange")
 
 func_ndms_ggplot<-ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=3)+##separates overlapping points
-  geom_mark_ellipse(aes(fill=Site, color=Site), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
   theme_classic()+
    ggtitle("nMDS of hard coral and algae cover by functional group") +
   annotate("text", x=-1.73, y=-0.4, 
            label=paste('Stress =',round(func_nmds_br$stress,3)),
            size=5)+ #add stress to plot
   annotate("text", x=-1.49, y=-0.47,
-           label=bquote('Non-metric fit,'~ R^2~"= 0.989"),
+           label=bquote('Non-metric fit,'~ R^2~"= 0.921"),
            size=5)+ #add goodness of fit to plot
   theme(plot.title = element_text(size=15, face="bold",hjust=.5),
         legend.title = element_text(color = "black", size = 12),
@@ -313,6 +330,62 @@ func_ndms_ggplot<-ggplot(nmds_df, aes(NMDS1, NMDS2))+
 
 func_ndms_ggplot
 ```
+
+Use
+
+```{r}
+pal12 <- c("#000000","#004949","#009292","#ffb6db",
+ "#490092","#006ddb","#b66dff","#b6dbff",
+ "#920000","#924900","#24ff24","#ffff6d")
+
+library(ggnewscale) #necessary for new_scale_color 
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=2.5)+##separates overlapping points
+  scale_color_manual(values= pal12)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"))+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  theme_classic()+
+  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.5,0.8))+
+  scale_y_continuous(limits = c(-0.5,.6))+
+  annotate("text", x=-1.4, y=-0.45, 
+           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.921")),
+           size=3, hjust=0) #add goodness of fit to plot
+
+```
+
+```{r}
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
+  scale_color_manual(values= pal12)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"))+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  theme_classic()+
+  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.5,0.8))+
+  scale_y_continuous(limits = c(-0.5,.6))+
+  annotate("text", x=-1.45, y=-0.45, 
+           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.921")),
+           size=3, hjust=0) #add goodness of fit to plot
+
+rm(pal12)
+```
+
 
 Test a colorblind-friendly palette using `colorblindr` package
 
@@ -368,22 +441,42 @@ Load input data frame
 ```{r}
 func_input <- read_excel("func_input.xlsx")
 
-func_input$site <-ordered(func_input$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-func_input[,c(1,3,4,5)] <- lapply(func_input[,c(1,3,4,5)], as.factor)
+func_input <- func_input %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+func_input <- func_input[ ,c(1:5, 20, 6:19)]
+
+func_input[,c(1:6)] <- lapply(func_input[,c(1:6)], as.factor)
+
+func_input$Pressure<-ordered(func_input$Pressure,levels=c("Low", "Medium", "High"))
+
+func_input$Site <- ordered(func_input$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
 str(func_input)
 
 
 #create a df with the independent variables
-ind_df <- as.data.frame(func_input[,c(2:3,5)])
+ind_df <- as.data.frame(func_input[,c(1:6)])
 str(ind_df)
+
 
 ```
 
 Convert the database `func_input`to a matrix
 
 ```{r}
-func_mat <- func_input[,-c(1:5)]
+func_mat <- func_input[,-c(1:6)]
 rownames(func_mat) <- func_input$Trans
 func_mat <- as.matrix(func_mat)
 str(func_mat)
@@ -397,7 +490,7 @@ class(func_mat)
 ```{r}
 set.seed(69) 
 perm=how(nperm=999)
-func_site_pmv=adonis2(func_mat~site, 
+func_site_pmv=adonis2(func_mat~Site, 
                         data=ind_df,
                         permutations =perm,
                         method="bray")
@@ -414,22 +507,58 @@ difference among sites.
 #SCRIPT WITH adonis()
 set.seed(69) 
 perm=how(nperm=999)
-func_depth_pmv <- adonis(func_mat~depth, 
+func_depth_pmv <- adonis(func_mat~Depth, 
                            data=ind_df,
                            permutations =perm,
-                           strata=ind_df$site,
+                           strata=ind_df$Site,
                            method="bray")
 func_depth_pmv$aov.tab
 
 #ALTERNATIVE SCRIPT WITH adonis2()
 set.seed(69) 
-h <- how(blocks = ind_df$site, nperm = 999)
-func_blocks_pmv <- adonis2(func_mat~depth,
+h <- how(blocks = ind_df$Site, nperm = 999)
+func_blocks_pmv <- adonis2(func_mat~Depth,
                              data=ind_df,
                              permutations =h,
                              method="bray")
 
 func_blocks_pmv
+```
+
+### Question 3: is there a significant difference in relative cover by functional group among anthropogenic pressure level?
+
+```{r}
+set.seed(69)
+perm=how(nperm=999)
+func_pressure_pmv=adonis2(func_mat~Pressure, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray")
+                        
+func_pressure_pmv
+```
+### Question 4: is there a significant difference in relative cover by functional group among sites within pressure levels?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69)
+perm=how(nperm=999)
+func_site_pressure_pmv <- adonis(func_mat~Site, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$Pressure,
+                           methods="bray")
+func_site_pressure_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69)
+h <- how(blocks = ind_df$Pressure, nperm = 999)
+func_site_pressure_pmv <- adonis2(func_mat~Site,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray")
+
+func_site_pressure_pmv
 ```
 
 ## Permutation test of multivariate homogeneity of groups dispersions (variances)
@@ -458,7 +587,7 @@ densityplot(permustats(func_site_pmv)) #density plot of permutation results to t
 
 func_dist = vegdist(func_mat,method="bray")
 
-func_bd=betadisper(func_dist,ind_df$site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+func_bd=betadisper(func_dist,ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
 str(func_bd)
 
 boxplot(func_bd) #check data dispersion based on sites
@@ -491,36 +620,49 @@ category and depth within site
 func_bd$distances #Extract betadisper scores
 
 distcent_df <- data.frame(Distance_to_centroid=func_bd$distances,
-                          Sites=func_bd$group) #create a df for the plot
-Sites <- func_bd$group
-distcent_df[,2]<-factor(distcent_df[,2],levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-
-#add a column with the mean relative cover by category by depth within site
-avg_func_distcent <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="mean")
-avg_func_distcent$Distance_to_centroid<-round(avg_func_distcent$Distance_to_centroid,2)
-avg_func_distcent_sd <- aggregate(Distance_to_centroid~Sites,data=distcent_df,FUN="sd")
-avg_func_distcent <- cbind(avg_func_distcent,avg_func_distcent_sd)
-avg_func_distcent <- avg_func_distcent[,-3]
-colnames(avg_func_distcent) <- c("Sites","Mean distance to centroid","SD")
-avg_func_distcent$SD <-round(avg_func_distcent$SD,2)
+                          Site=func_bd$group) #create a df for the plot
 
 
+distcent_df <- distcent_df %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+distcent_df[,2]<-ordered(distcent_df[,2],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+distcent_df$Pressure<-ordered(distcent_df$Pressure,levels=c("Low", "Medium", "High"))
+
+distcent_df_mean <- distcent_df %>%
+  group_by(Site, Pressure) %>%
+  summarise(Mean_dist = round(mean(Distance_to_centroid),2),
+            SD = round(sd(Distance_to_centroid),2)) %>%
+  ungroup()
+
+
+colnames(distcent_df_mean) <- c("Site","Pressure","Mean distance to centroid","SD")
 ```
 
 Boxplot with `geom_boxplot` from `ggplot2`
 
 ```{r}
-palette4viridisorange=c("#440154","#2a788e","#35b779","darkorange")
-
-p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
-  geom_boxplot(aes(fill=Sites,colour=Sites),alpha=0.3)+
-  geom_jitter(aes(color=Sites),alpha=0.7)+
+box<- ggplot(data=distcent_df,aes(x=Site,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+   
+  geom_jitter(aes(color=Pressure),alpha=0.7)+
   theme_classic()+
   ylab(label="Distance to centroid")+
   theme(legend.position = "none")+ #remove legend
-  scale_fill_manual(values=palette4viridisorange)+
-  scale_color_manual(values=palette4viridisorange)
-  
+  scale_fill_manual(values=c("green", "orange", "red"))+
+  scale_color_manual(values=c("green", "orange", "red"))
+box  
 ```
 
 Add a table with mean distance from centroid with `annotate` from
@@ -532,8 +674,8 @@ For guides on `annotate` see the
 ```{r}
 library(ggpmisc)
 
-p+
-  annotate(geom = "table", x=2.8,y = 0.43, label = list(avg_func_distcent), 
+box+
+  annotate(geom = "table", x=9,y = 0.43, label = list(distcent_df_mean), 
             vjust = 1, hjust = 0,
             fill="grey96")+
   labs(title="Boxplot of mean distance to centroid by site")+
@@ -546,7 +688,7 @@ p+
 
 ```{r}
 set.seed(69) 
-func_pmv_phoc_holm= pairwise.adonis(func_mat,ind_df$site,
+func_pmv_phoc_holm= pairwise.adonis(func_mat,ind_df$Site,
                                   sim.function = "vegdist", 
                                   sim.method = "bray", 
                                   p.adjust.m = "holm", 
@@ -555,7 +697,7 @@ func_pmv_phoc_holm= pairwise.adonis(func_mat,ind_df$site,
 func_pmv_phoc_holm
 
 set.seed(69) 
-func_pmv_phoc_bonf= pairwise.adonis(func_mat,ind_df$site,
+func_pmv_phoc_bonf= pairwise.adonis(func_mat,ind_df$Site,
                                   sim.function = "vegdist", 
                                   sim.method = "bray", 
                                   p.adjust.m = "bonferroni", 
@@ -569,149 +711,6 @@ adjustment adopted for the other analyses.
 
 N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
 
-## PERMANOVA WITHOUT HIZUSHI (3 sites)
-
-### Load the data and subset the original dataframe removing data from Hizushi (HI) since it has a lower variance than the other sites
-
-Load input dataframe
-
-```{r}
-func_3 <- read_excel("func_input.xlsx")
-
-func_3$site <-ordered(func_3$site,levels=c("Awa","Sunabe","Zatsun","Hizushi"))
-func_3[,c(1,3,4,5)] <- lapply(func_3[,c(1,3,4,5)], as.factor)
-
-str(func_3)
-
-
-#create a df with the independent variables
-ind_df <- as.data.frame(func_3[,c(2:3,5)])
-str(ind_df)
-
-```
-
-Subset the `func_3`removing Hizushi (HI)
-
-```{r}
-func_3 <- subset(func_3,func_3$site != "Hizushi" )
-```
-
-Convert the database `func_3`to a matrix
-
-```{r}
-func_mat_3 <- func_3[,-c(1:5)]
-rownames(func_mat_3) <- func_3$Trans
-func_mat_3 <- as.matrix(func_mat_3)
-str(func_mat_3)
-class(func_mat_3)
-```
-
-Create a df for the independent variables
-
-```{r}
-ind_df_3 <- as.data.frame(func_3[,c(2:3,5)])
-str(func_3)
-```
-
-### Question 1: is there a significant difference in relative algae and coral cover by functional group among sites?
-
-```{r}
-set.seed(69) 
-perm=how(nperm=999)
-func_site_pmv_3=adonis2(func_mat_3~site, 
-                        data=ind_df_3,
-                        permutations =perm,
-                        methods="bray")
-func_site_pmv_3
-```
-
-P-value `r func_site_pmv_3$Pr[1]` \< 0.05, so there is a significant
-difference among sites.
-
-### Question 2: Is there a significant difference in relative algae and coral cover by functional group between depth withing sites?
-
-```{r}
-set.seed(69) 
-perm=how(nperm=999)
-func_depth_pmv_3 <- adonis(func_mat_3~depth, 
-                           data=ind_df_3,
-                           permutations =perm,
-                           strata=ind_df_3$site,
-                           methods="bray")
-func_depth_pmv_3$aov.tab
-
-#alternative code with adonis2()
-set.seed(69) 
-h <- how(blocks = ind_df_3$site, nperm = 999)
-func_blocks_pmv_3 <- adonis2(func_mat_3~depth,
-                             data=ind_df_3,
-                             permutations =h,
-                             methods="bray")
-
-func_blocks_pmv_3
-```
-
-## Permutation test of multivariate homogeneity of groups dispersions (variances)
-
-```{r}
-set.seed(69) 
-densityplot(permustats(func_site_pmv_3)) #to check if assumptions are met?
-
-func_dist_3 = vegdist(func_mat_3,method="bray")
-
-func_bd_3=betadisper(func_dist_3,ind_df_3$site)  #to check for the diversity among sites: Butler test/Levene test
-str(func_bd_3)
-
-plot(func_bd_3)
-boxplot(func_bd_3) #check data dispersion based on sites
-anova(func_bd_3) #F-test on distribution of sites
-
-```
-
-### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
-
-```{r}
-set.seed(69) 
-permutest(func_bd_3) #permutative test on dispersion based on sites, if significance, PERMANOVA due to dispersion issue
-set.seed(69) 
-permutest(func_bd_3, pairwise=TRUE) #pairwise of dispersion test
-```
-
-From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
-for primer: Guide to software and statisticl methods. Primer-E Limited,
-2008: \* If significant heterogeneity were detected by PERMDISP and
-differences among groups were also detected using PERMANOVA, then the
-latter could have been caused by differences in location, differences in
-dispersion, or some combination of the two. \*
-
-### Post hoc test for PERMANOVA (`pairwise.adonis`)
-
-```{r}
-set.seed(69) 
-func_pmv_phoc_holm_3= pairwise.adonis(func_mat_3,ind_df_3$site,
-                                      sim.function = "vegdist", 
-                                      sim.method = "bray", 
-                                      p.adjust.m = "holm", 
-                                      reduce = NULL)
-
-func_pmv_phoc_holm_3
-
-set.seed(69) 
-func_pmv_phoc_bonf_3= pairwise.adonis(func_mat_3,ind_df_3$site,
-                                      sim.function = "vegdist", 
-                                      sim.method = "bray", 
-                                      p.adjust.m = "bonferroni", 
-                                      reduce = NULL)
-
-func_pmv_phoc_bonf_3
-
-#N.B. pariwise.adonis and pairwise.adonis2 have different syntaxes!
-
-```
-
-I can use Bonferroni because it is more conservative and it is the
-adjustment adopted for the other analyses.
-
 # SIMPER: Similarity of percentage
 
 From the vignette: *The simper functions performs pairwise comparisons
@@ -720,15 +719,27 @@ to the average between-group Bray-Curtis dissimilarity. Although the
 method is called simper, it really studied dissimilarities instead of
 similarities (Clarke 1993).*
 
+## SIMPER PER SITE:
+
 ```{r}
-func_sim_site=simper(func_mat,group=ind_df$site) #Distinguish categories which caused the differences in relative cover among sites
+func_sim_site=simper(func_mat,group=ind_df$Site) #Distinguish categories which caused the differences in relative cover among sites
 func_sim_site
 summary(func_sim_site) #check which categories were the main driver of difference among sites
 ```
 
+## SIMPER per depth
+
 ```{r}
-func_sim_depth=simper(func_mat,group=ind_df$depth) #Distinguish categories which caused the differences in relative cover between depth
+func_sim_depth=simper(func_mat,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
 func_sim_depth
+summary(func_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER per pressure exposure
+```{r}
+func_sim_pres=simper(func_mat,group=ind_df$Pressure) #Distinguish categories which caused the differences in relative cover among sites
+func_sim_pres
+summary(func_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
 
 # Session info
