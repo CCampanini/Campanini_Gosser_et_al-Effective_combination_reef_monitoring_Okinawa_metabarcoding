@@ -17,7 +17,8 @@ For further information on the monitoring protocol see [Field data collection pr
 
 This study aims to test a multi-taxa protocol that combined both observer-based and eDNA techniques for reef monitoring and impact assessment: 
 - suggesting possible indicator taxa for future monitoring campaigns
-- providing both a qualitative and a quantitative estimate of the difference in benthic community among sites exposed to different levels of anthropogenic pressure. 
+- providing both a qualitative and a quantitative estimate of the difference in benthic community among sites exposed to different levels of anthropogenic pressure
+- testing a monitoring protocol that combines traditional observer-based techniques and eDNA metabarcoding
 
 ## Project summary
 
