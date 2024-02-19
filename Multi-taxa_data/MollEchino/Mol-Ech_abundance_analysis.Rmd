@@ -17,20 +17,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # INTRODUCTION
 
-Mollusk and mollusk abundance by class extracted by analyzing photos
+Mollusk and echinoderm abundance by class extracted by analyzing photos
 collected on belt transects during surveys at different sites along
 Okinawa and Aka Island. Belt transect area (1 replicate) was 25 m^2^ for
-mollusks and 50 m^2^ for echinoderms. Sites exposure to anthropogenic
+mollusks and 50 m^2 for echinoderms. Sites exposure to anthropogenic
 pressure was previously estimated using the scale from DiBattista et
 al., 2019.
-
-Preliminary data from the following sites:
-
-     - AW = AWA (high anthropogenic pressure)
-     - SN = SUNABE (high anthropogenic pressure)
-     - ZA = ZATSUN (low anthropogenic pressure)
-     - HI = HIZUSHI (low anthropogenic pressure)
-     
 
 ```{r}
 #load libraries
@@ -59,7 +51,7 @@ class(files)
 mol_raw <- sapply (files, FUN = read_excel,
               simplify = F, USE.NAMES = F)
 
-names(mol_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+names(mol_raw) = c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2")
 
 mol_raw_df <- as.data.frame(do.call(rbind, mol_raw))
 
@@ -85,21 +77,37 @@ library(janitor) #to use the tabyl function
 mol_raw_df <- mol_raw_df[!is.na(mol_raw_df$transect),]
 
 mol_class <- mol_raw_df[!is.na(mol_raw_df$CLASS),] %>% tabyl(transect, CLASS, show_missing_levels = FALSE)
+```
+ 
+Add empty lines for transects with no records 
 
+```{r}
+str(mol_class)
+mol_class$transect <- as.character(mol_class$transect)
+mol_class <- rbind(mol_class, 
+                   c("AW_S3", 0, 0 , 0),
+                   c("S2_D1", 0, 0 , 0),
+                   c("G1_D3", 0, 0 , 0))
+```
+
+Add site_depth column and remove "Cephalopoda"
+
+```{r}
 mol_class <- mol_class %>% 
   separate(transect, c("site", "depth_rep")) %>% 
   mutate(transect = mol_class$transect )
 
-mol_class$depth <- gsub("[[:digit:]]", "", mol_class$depth_rep) #remove the number from depth_rep
+mol_class$depth <- gsub("[[:digit:]]", "", mol_class$depth_rep) #remove the number from depth_rep from Alphanumeric Character String Using gsub() Function
 
-# Remove Numbers from Alphanumeric Character String Using gsub() Function
 mol_class <- mol_class %>% 
-  mutate(site_depth = paste(site, depth, sep='_')) %>%
-  select(-depth_rep)
+  mutate(site_depth = paste(site, depth, sep='_'))
 
+mol_class$depth_rep <- NULL
 mol_class$Cephalopoda <- NULL
 ```
-Add pressure score column 
+
+
+Add pressure score column and define the appropriate class for each column
 
 ```{r}
 mol_class <- mol_class %>% 
@@ -116,12 +124,14 @@ mol_class <- mol_class %>%
                                    site == "G1" |
                                    site == "G2"~ "High"))
 
+mol_class <- mol_class[,c(4,1,5:7,2:3)] #re-order columns
+
 mol_class$pressure <- ordered(mol_class$pressure, levels=c("Low","Medium", "High"))
 mol_class$site <-ordered(mol_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+mol_class[,2:4] <- lapply(mol_class[,2:4], as.factor)
+mol_class[,6:7] <- lapply(mol_class[,6:7], as.numeric)
 
-mol_class <- mol_class[,c(4,1,5:7,2:3)]
-
-mol_class[,3:4] <- lapply(mol_class[,3:4], as.factor)
+str(mol_class)
 ```
 
 # Mollusks | Abundance by class by depth within site
@@ -133,27 +143,26 @@ Include a column with - mean echinoderm abundance by class per depth
 within site among replicates; - standard deviation by class per depth
 within site among replicates.
 
-Standard deviation will be used to add error bars to the barplot.
+Standard deviation will be used to add error bars to the bar plot.
 
-```{r}
-mol_mean <- mol_class %>%
-  group_by(site_depth) %>% 
-  mutate(Biv_mean=round(mean(Bivalvia),0),
+```{r message=FALSE, warning=FALSE}
+mol_mean <- mol_class %>% 
+  group_by(site_depth,site,depth,pressure) %>%
+  reframe(Biv_mean=round(mean(Bivalvia),0),
             Gas_mean=round(mean(Gastropoda),0),
             Biv_sd=round(sd(Bivalvia),0),
-            Gas_sd=round(sd(Gastropoda),0)) %>%
-  select(c(2,3,4)) 
+            Gas_sd=round(sd(Gastropoda),0))
 ```
 
 https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
 library(reshape2)
-mol_mean_long <- melt(mol_mean[,1:3], id.vars = c("site_depth"),
+mol_mean_long <- melt(mol_mean[,1:6], id.vars = c("site_depth","site","depth","pressure"),
   variable.name = "class", 
   value.name = c("mean"))
 
-mol_sd_long <- melt(mol_mean[,c(1,4,5)], id.vars = c("site_depth"),
+mol_sd_long <- melt(mol_mean[,c("site_depth","Biv_sd","Gas_sd")], id.vars = c("site_depth"),
   variable.name = "class", 
   value.name = c("sd"))
 
@@ -161,15 +170,14 @@ mol_mean_bar <- cbind(mol_mean_long,mol_sd_long$sd)
 mol_mean_bar
 
 mol_mean_bar <- mol_mean_bar %>% 
-  separate(site_depth, c("site", "depth")) %>% #split the column site_depth in 2
-  mutate(site_depth = mol_mean_bar$site_depth ) %>% #re-integrate the original site_depth column
   mutate(class = case_when(class == 'Biv_mean' ~ "Bivalvia", 
                            class == "Gas_mean"~ "Gastropoda")) %>% #replace class values with class names
   rename(sd = `mol_sd_long$sd`) #rename sd column
 
-mol_mean_bar <- mol_mean_bar[,c(6,1:5)]
+
 mol_mean_bar$phylum <- "Mollusca" # add the phylum column
 mol_mean_bar$phylum <- as.factor(mol_mean_bar$phylum ) # 
+mol_mean_bar <- mol_mean_bar[,c(1:4,8,5:7)] #re-order columns
 
 rm(mol_mean_long, mol_sd_long)
 ```
@@ -189,7 +197,7 @@ class(files)
 ech_raw <- sapply (files, FUN = read_excel,
               simplify = F, USE.NAMES = F)
 
-names(ech_raw) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za","zp")
+names(ech_raw) = c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2")
 
 ech_raw_df <- as.data.frame(do.call(rbind, ech_raw))
 
@@ -216,7 +224,8 @@ library(janitor) #to use the tabyl function
 
 ech_raw_df <- ech_raw_df[!is.na(ech_raw_df$transect),]
 
-ech_class <- ech_raw_df[!is.na(ech_raw_df$CLASS),] %>% tabyl(transect, CLASS, show_missing_levels = FALSE)
+ech_class <- ech_raw_df[!is.na(ech_raw_df$CLASS),] %>% 
+  tabyl(transect, CLASS, show_missing_levels = FALSE)
 
 ech_class <- ech_class %>% 
   separate(transect, c("site", "depth_rep")) %>% 
@@ -227,7 +236,7 @@ ech_class$depth <- gsub("[[:digit:]]", "", ech_class$depth_rep) #remove the numb
 # Remove Numbers from Alphanumeric Character String Using gsub() Function
 ech_class <- ech_class %>% 
   mutate(site_depth = paste(site, depth, sep='_')) %>%
-  dplyr::select(-depth_rep)
+  dplyr::select(-depth_rep) #remove depth_rep
 ```
 
 Add pressure score column 
@@ -247,13 +256,14 @@ ech_class <- ech_class %>%
                                    site == "G1" |
                                    site == "G2"~ "High"))
 
+ech_class <- ech_class[,c(7,1,8:10,2:6)]  #re-ordering the column
 ech_class$pressure <- ordered(ech_class$pressure, levels=c("Low","Medium", "High"))
 
 ech_class$site <-ordered(ech_class$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
-ech_class <- ech_class[,c(7,1,8:10,2:6)]  #re-ordering the column
+ech_class[,3:5] <- lapply(ech_class[,3:5], as.factor)
 
-ech_class[,3:4] <- lapply(ech_class[,3:4], as.factor)
+str(ech_class)
 ```
 
 # Echinoderms | Abundance by class by depth within site
@@ -269,8 +279,8 @@ Standard deviation will be used to add error bars to the barplot.
 
 ```{r}
 ech_mean <- ech_class %>%
-  group_by(site_depth) %>% 
-  summarise(Ast_mean=round(mean(Asteroidea),0),
+  group_by(site_depth,site,depth,pressure) %>% 
+  reframe(Ast_mean=round(mean(Asteroidea),0),
             Cri_mean=round(mean(Crinoidea),0),
             Ech_mean=round(mean(Echinoidea),0),
             Hol_mean=round(mean(Holothuroidea),0),
@@ -286,20 +296,19 @@ https://seananderson.ca/2013/10/19/reshape/
 
 ```{r}
 library(reshape2)
-ech_mean_long <- melt(ech_mean[,1:6], id.vars = c("site_depth"),
+ech_mean_long <- melt(ech_mean[,1:9], id.vars = c("site_depth","site","depth","pressure"),
   variable.name = "class", 
   value.name = c("mean"))
 
-ech_sd_long <- melt(ech_mean[,c(1,7:11)], id.vars = c("site_depth"),
+ech_sd_long <- melt(ech_mean[,c(1,10:14)], id.vars = c("site_depth"),
   variable.name = "class", 
   value.name = c("sd"))
+
 
 ech_mean_bar <- cbind(ech_mean_long,ech_sd_long$sd)
 ech_mean_bar
 
 ech_mean_bar <- ech_mean_bar %>% 
-  separate(site_depth, c("site", "depth")) %>% #split the column site_depth in 2
-  mutate(site_depth = ech_mean_bar$site_depth ) %>% #re-integrate the original site_depth column
   mutate(class = case_when(class == 'Ast_mean' ~ "Asteroidea", 
                            class == "Cri_mean"~ "Crinoidea",
                            class == 'Ech_mean' ~ "Echinoidea", 
@@ -307,9 +316,10 @@ ech_mean_bar <- ech_mean_bar %>%
                            class == 'Oph_mean' ~ "Ophiuroidea")) %>% #replace class values with class names
   rename(sd = `ech_sd_long$sd`) #rename sd column
 
-ech_mean_bar <- ech_mean_bar[,c(6,1:5)]
 ech_mean_bar$phylum <- "Echinodermata" # add the phylum column
-ech_mean_bar$phylum <- as.factor(ech_mean_bar$phylum ) # 
+ech_mean_bar$phylum <- as.factor(ech_mean_bar$phylum ) 
+
+ech_mean_bar <- ech_mean_bar[,c(1:4,8,5:7)] #re-order columns
 
 rm(ech_mean_long, ech_sd_long)
 ```
@@ -319,29 +329,14 @@ rm(ech_mean_long, ech_sd_long)
 ```{r}
 inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
 #library("writexl")
-#write_xlsx(inv_bar,"C:\\Users\\claud\\Qsync\\QSync Claudia\\Thesis\\Let_the_benthos_speak\\mol_ech_ab_class_output.xlsx")
+#write_xlsx(inv_bar,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/mol_ech_ab_class_output.xlsx")
 
-inv_bar$class <- factor(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
+str(inv_bar)
 
-inv_bar$site <- factor(inv_bar$site, levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+inv_bar$class <- ordered(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
 
 invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
 
-ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=ifelse(mean > 0, 0, 0), 
-                    ymax=ifelse(mean > 0, mean+sd, 0)), 
-                    width=.2, position=position_dodge(.9))+
-  facet_grid(~ site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=invPalette)+
-  scale_color_manual(values=c("black","grey"))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))
 
 ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
   geom_bar(aes(alpha=phylum),position="dodge",stat="identity")+
@@ -391,6 +386,137 @@ ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean,color=phylum)) +
 
 #ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
 ```
+
+Split Echinoidea and all the other classes in 2 different bar plots
+
+```{r}
+ggplot(subset(inv_bar,inv_bar$class != "Echinoidea" & 
+                inv_bar$class != "Crinoidea"), 
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=phylum),position="dodge",stat="identity")+
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"))+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))
+
+```
+
+```{r}
+ggplot(subset(inv_bar,inv_bar$class == "Echinoidea" |
+                inv_bar$class == "Crinoidea"), 
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=phylum),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=c("#CC79A7","orchid3"))+
+  scale_color_manual(values="firebrick")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))
+```
+
+
+
+Another visualization option
+
+Ophiuroidea were removed from the plot because they were recorded only at one site
+
+```{r}
+ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
+       aes(x=site_depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=phylum),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"))+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.x = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))+
+  coord_flip()
+```
+
+```{r}
+ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
+       aes(x=site, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"))+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill=guide_legend(title="Class"))+
+  theme(panel.grid.major.x = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))+
+  coord_flip()
+```
+
+```{r}
+ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
+       aes(x=site, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position=position_dodge(-2))+
+  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"), guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.x = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))+
+  coord_flip()
+```
+
+
+```{r}
+ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
+       aes(x=site, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position=position_dodge(),stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position=position_dodge(.9))+
+  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"), guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.x = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2))+
+  coord_flip()
+```
+
 
 # nMDS
 
@@ -768,6 +894,7 @@ p+ annotate(geom = "table", x=2.8,y = 0.42, label = list(distcent_mean_df),
 
 ## Post hoc test for PERMANOVA (`pairwise.adonis`)
 
+### Post-hoc test FOR PERMANOVA PER SITES
 N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
 
 ```{r}
@@ -782,6 +909,29 @@ inv_pmv_phoc_holm
 
 set.seed(69)
 inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "bonferroni", 
+                                  reduce = NULL)
+
+inv_pmv_phoc_bonf
+```
+
+### Post-hoc tert FOR PERMANOVA PER SITES
+N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
+
+```{r}
+set.seed(69)
+inv_pmv_phoc_holm= pairwise.adonis(inv_mat,ind_df$pressure,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "holm", 
+                                  reduce = NULL)
+
+inv_pmv_phoc_holm
+
+set.seed(69)
+inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$pressure,
                                   sim.function = "vegdist", 
                                   sim.method = "bray", 
                                   p.adjust.m = "bonferroni", 
@@ -812,6 +962,14 @@ summary(inv_sim, ordered=T, digits=3) #check which categories were the main driv
 inv_sim_depth=simper(inv_mat,group=ind_df$depth) #Distinguish categories which caused the differences in relative cover among sites
 inv_sim_depth
 summary(inv_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER per anthropogenic pressure exposure
+
+```{r}
+inv_sim_pres=simper(inv_mat,group=ind_df$pressure) #Distinguish categories which caused the differences in relative cover among sites
+inv_sim_pres
+summary(inv_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
 
 # Session info
