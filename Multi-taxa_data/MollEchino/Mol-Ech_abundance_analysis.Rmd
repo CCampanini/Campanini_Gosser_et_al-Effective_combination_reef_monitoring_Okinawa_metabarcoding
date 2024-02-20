@@ -387,104 +387,25 @@ ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean,color=phylum)) +
 #ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
 ```
 
-Split Echinoidea and all the other classes in 2 different bar plots
-
-```{r}
-ggplot(subset(inv_bar,inv_bar$class != "Echinoidea" & 
-                inv_bar$class != "Crinoidea"), 
-       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(aes(alpha=phylum),position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid(~ site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=invPalette)+
-  scale_color_manual(values=c("blue","firebrick"))+
-  scale_alpha_manual(values=c(1,.6))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))
-
-```
-
-```{r}
-ggplot(subset(inv_bar,inv_bar$class == "Echinoidea" |
-                inv_bar$class == "Crinoidea"), 
-       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(aes(alpha=phylum),position="dodge",stat="identity") +
-  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid(~ site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=c("#CC79A7","orchid3"))+
-  scale_color_manual(values="firebrick")+
-  scale_alpha_manual(values=c(1,.6))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))
-```
-
-
-
 Another visualization option
 
 Ophiuroidea were removed from the plot because they were recorded only at one site
 
-```{r}
-ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
-       aes(x=site_depth, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(aes(alpha=phylum),position="dodge",stat="identity") +
-  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=invPalette)+
-  scale_color_manual(values=c("blue","firebrick"))+
-  scale_alpha_manual(values=c(1,.6))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.x = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))+
-  coord_flip()
-```
+- scale= "free" --> https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+
+- switch --> https://stackoverflow.com/questions/3261597/change-the-position-of-the-strip-label-in-ggplot-from-the-top-to-the-bottom#:~:text=As%20of%20ggplot2%202.0%2C%20the,be%20displayed%20to%20the%20left.
+
+- strip.placement --> https://stackoverflow.com/questions/3261597/change-the-position-of-the-strip-label-in-ggplot-from-the-top-to-the-bottom#:~:text=As%20of%20ggplot2%202.0%2C%20the,be%20displayed%20to%20the%20left.
 
 ```{r}
 ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
-       aes(x=site, y=mean, fill=class, label=mean, color=phylum)) +
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
   geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
   geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+                 position="dodge")+
+  facet_grid(site ~ class, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
   theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=invPalette)+
-  scale_color_manual(values=c("blue","firebrick"))+
-  scale_alpha_manual(values=c(1,.6))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.x = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))+
-  coord_flip()
-```
-
-```{r}
-ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
-       aes(x=site, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
-  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(-2))+
-  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
-  theme_classic()+
-  labs(x="Depth",
+  labs(x="Depth within site",
        y="Mean abundance by class")+
   scale_fill_manual(values=invPalette)+
   scale_color_manual(values=c("blue","firebrick"), guide ="none")+
@@ -492,20 +413,25 @@ ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
   guides(fill="none", alpha= "none")+
   theme(panel.grid.major.x = element_line(color = "grey",
                                           size = 0.5,
-                                          linetype = 2))+
+                                          linetype = 2),
+        panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")+ 
   coord_flip()
-```
 
+ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```
 
 ```{r}
 ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
-       aes(x=site, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(aes(alpha=depth),position=position_dodge(),stat="identity") +
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
   geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid( ~ class, scales = "free")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+                 position="dodge")+
+  facet_grid(site ~ class, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
   theme_classic()+
-  labs(x="Depth",
+  labs(x="Depth within site",
        y="Mean abundance by class")+
   scale_fill_manual(values=invPalette)+
   scale_color_manual(values=c("blue","firebrick"), guide ="none")+
@@ -513,8 +439,11 @@ ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
   guides(fill="none", alpha= "none")+
   theme(panel.grid.major.x = element_line(color = "grey",
                                           size = 0.5,
-                                          linetype = 2))+
+                                          linetype = 2),
+        strip.placement = "outside")+ 
   coord_flip()
+
+ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
 ```
 
 
