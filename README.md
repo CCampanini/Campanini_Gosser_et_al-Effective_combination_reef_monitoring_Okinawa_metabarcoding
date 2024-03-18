@@ -13,7 +13,7 @@ For further information on the monitoring protocol see [Field data collection pr
 - [Fish](/Multi-taxa_data/Fish/): analysis of fish video transects
 - [eDNA](/Multi-taxa_data/eDNA/): analysis of sequences from eDNA metabarcoding targeting metazoans from water samples
 
-## Aims of the thesis project
+## Aims of the project
 
 This study aims to test a multi-taxa protocol that combined both observer-based and eDNA techniques for reef monitoring and impact assessment: 
 - suggesting possible indicator taxa for future monitoring campaigns
