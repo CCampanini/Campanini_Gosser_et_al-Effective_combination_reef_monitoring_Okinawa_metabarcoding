@@ -24,16 +24,14 @@ mollusks and 50 m^2 for echinoderms. Sites exposure to anthropogenic
 pressure was previously estimated using the scale from DiBattista et
 al., 2019.
 
-```{r}
+```{r, message= FALSE}
 #load libraries
-#SECTION 1: Percent stacked bar chart 
-
+library(here)
 library(dplyr)
 library(ggplot2)
 library(readxl)   # to import excel datasets
 library(magrittr)
-library(stringr) # to use str_c function
-library(rio) # to use import_list
+
 ```
 
 # Mollusks | Abundance estimates
@@ -41,21 +39,19 @@ library(rio) # to use import_list
 Merge raw files from each site in a single data frame
 
 ```{r}
-files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", pattern=".xlsx")
-files
-
-# Concat the directory to the file names
-files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Mol_raw/", files)
-class(files)
-
-mol_raw <- sapply (files, FUN = read_excel,
-              simplify = F, USE.NAMES = F)
+mol_raw <-  list.files(path = here("Multi-taxa_data","MollEchino","Mol_raw"),
+             pattern = "*.xlsx",
+             full.names =T) %>%  
+  sapply(read_excel,
+         simplify = F, 
+         USE.NAMES = F) 
 
 names(mol_raw) = c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2")
 
 mol_raw_df <- as.data.frame(do.call(rbind, mol_raw))
+str(mol_raw_df)
 
-rm(files, mol_raw)
+rm(mol_raw)
 ```
 
 Format the data frame for analysis 
@@ -68,7 +64,7 @@ mol_raw_df[,11] <- as.numeric(mol_raw_df[,11])
 str(mol_raw_df)
 ```
 
-Extract abundance by class per transect (replicate) from the dataframe
+Extract abundance by class per transect (replicate) from the data frame
 
 ```{r}
 library(tidyr) #to use the "separate" function
@@ -184,36 +180,25 @@ rm(mol_mean_long, mol_sd_long)
 
 # Echinoderms | Abundance estimates
 
-Merge raw files from each site in a single dataframe
+Merge raw files from each site in a single data frame
 
 ```{r}
-files <- list.files(path = "C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Ech_raw/", pattern=".xlsx")
-files
-
-# Concat the directory to the file names
-files <- str_c("C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/Ech_raw/", files)
-class(files)
-
-ech_raw <- sapply (files, FUN = read_excel,
-              simplify = F, USE.NAMES = F)
-
-names(ech_raw) = c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2")
-
-ech_raw_df <- as.data.frame(do.call(rbind, ech_raw))
-
-rm(files, ech_raw)
+ech_raw <-  list.files(path = here("Multi-taxa_data","MollEchino","Ech_raw"),
+             pattern = "*.xlsx",
+             full.names =T) %>%  
+  lapply(read_excel) %>% 
+  bind_rows
 ```
 
 Format the data frame for analysis 
 
 ```{r}
-ech_raw_df$CLASS <- replace(ech_raw_df$CLASS,ech_raw_df$CLASS=="-",NA)
-ech_raw_df[,c(1:4,7)] <- lapply(ech_raw_df[,c(1:4,7)], as.factor)
-ech_raw_df$site <-ordered(ech_raw_df$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
-ech_raw_df[,11] <- as.numeric(ech_raw_df[,11])
-str(ech_raw_df)
+ech_raw$CLASS <- replace(ech_raw$CLASS,ech_raw$CLASS=="-",NA)
+ech_raw[,c(1:4,7)] <- lapply(ech_raw[,c(1:4,7)], as.factor)
+ech_raw$site <-ordered(ech_raw$site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+str(ech_raw)
 
-levels(ech_raw_df$CLASS)
+levels(ech_raw$CLASS)
 ```
 
 Extract abundance by class per transect (replicate) from the dataframe
@@ -222,9 +207,9 @@ Extract abundance by class per transect (replicate) from the dataframe
 library(tidyr) #to use the "separate" function
 library(janitor) #to use the tabyl function
 
-ech_raw_df <- ech_raw_df[!is.na(ech_raw_df$transect),]
+ech_raw <- ech_raw[!is.na(ech_raw$transect),]
 
-ech_class <- ech_raw_df[!is.na(ech_raw_df$CLASS),] %>% 
+ech_class <- ech_raw[!is.na(ech_raw$CLASS),] %>% 
   tabyl(transect, CLASS, show_missing_levels = FALSE)
 
 ech_class <- ech_class %>% 
@@ -324,7 +309,9 @@ ech_mean_bar <- ech_mean_bar[,c(1:4,8,5:7)] #re-order columns
 rm(ech_mean_long, ech_sd_long)
 ```
 
-# Invertebrates | Barplot with mollusk and echinoderm abundance by class by depth within site
+# Invertebrates 
+
+## Barplot with mollusk and echinoderm abundance by class by depth within site
 
 ```{r}
 inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
@@ -336,58 +323,7 @@ str(inv_bar)
 inv_bar$class <- ordered(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
 
 invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
-
-
-ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
-  geom_bar(aes(alpha=phylum),position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position=position_dodge(.9))+
-  facet_grid(~ site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean abundance by class")+
-  scale_fill_manual(values=invPalette)+
-  scale_color_manual(values=c("black","grey"))+
-  scale_alpha_manual(values=c(1,.6))+
-  guides(fill=guide_legend(title="Class"))+
-  theme(panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2))
 ```
-
-```{r}
-#install.packages("ggbreak")
-library(ggbreak)
-
-ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean,color=phylum)) +
-  geom_bar(position="dodge",stat="identity")+
-  geom_errorbar(aes(ymin=ifelse(mean > 0, mean, 0), 
-                    ymax=ifelse(mean > 0, mean+sd, 0)), #set conditions to remove error bar when the mean abundance is equal to zero
-                    width=.2, position=position_dodge(.9))+
-  facet_grid(~ site)+
-  theme_bw()+
-  labs(x="Depth",
-       y="Mean abundance by class [individuals/transect]",
-       title = "Bar chart of mean abundance by depth within site for mollusks and echinoderms")+
-  scale_fill_manual(values=invPalette)+
-  scale_color_manual(values=c("blue","firebrick"))+
-  guides(fill=guide_legend(title="Class", order =2,
-                           override.aes = list(color = c(rep("blue",2),
-                                                         rep("firebrick",5)))),
-         color=guide_legend(title= "Phylum",order=1,
-                            override.aes = list(fill = c("white", "white"))))+
-  theme(plot.title = element_text(hjust = 0.5),
-        legend.position = "right",legend.box="vertical",
-        panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2),
-         strip.background = element_rect(fill = "white"))+ #site title facet_grid background
-  scale_y_break(c(30, 50), scales=1, ticklabels=seq(50, 350, 100))
-
-#ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
-```
-
-Another visualization option
 
 Ophiuroidea were removed from the plot because they were recorded only at one site
 
@@ -419,9 +355,17 @@ ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
                                           linetype = 2),
         strip.placement = "outside")+ 
   coord_flip()
-
-ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
 ```
+
+Export plot
+
+```{r, eval = F}
+ggsave("mol-ech_abundance_vert_barplot.tiff", 
+       units="in", width=7, height=6, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+```
+
+Vertical box plot
 
 ```{r}
 ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
@@ -429,7 +373,145 @@ ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
   geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
   geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
                  position="dodge")+
-  facet_grid(site ~ class, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  facet_grid(class ~ site, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within site",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"), guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+Export plot
+
+```{r, eval= F}
+ggsave("mol-ech_abundance_barplot.tiff", 
+       units = "in", width = 7, height = 6, dpi = 300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+```
+
+
+## Barplot with mollusk and echinoderm abundance by class by depth within pressure exposure
+
+```{r}
+ech_mean_pressure <- ech_class %>%
+  group_by(depth,pressure) %>% 
+  reframe(Ast_mean=round(mean(Asteroidea),0),
+            Cri_mean=round(mean(Crinoidea),0),
+            Ech_mean=round(mean(Echinoidea),0),
+            Hol_mean=round(mean(Holothuroidea),0),
+            Oph_mean=round(mean(Ophiuroidea),0),
+            Ast_sd=round(sd(Asteroidea),0),
+            Cri_sd=round(sd(Crinoidea),0),
+            Ech_sd=round(sd(Echinoidea),0),
+            Hol_sd=round(sd(Holothuroidea),0),
+            Oph_sd=round(sd(Ophiuroidea),0),)
+```
+
+https://seananderson.ca/2013/10/19/reshape/
+
+```{r}
+library(reshape2)
+ech_mean_long_pressure <- melt(ech_mean_pressure[,1:7],
+                               id.vars = c("pressure","depth"),
+                               variable.name = "class", 
+                               value.name = c("mean"))
+
+ech_sd_long_pressure <- melt(ech_mean_pressure[,c(1,2,8:12)],
+                             id.vars = c("pressure","depth"),
+                             variable.name = "class",
+                             value.name = c("sd"))           
+
+
+ech_mean_bar_pressure <-cbind(ech_mean_long_pressure,
+                              ech_sd_long_pressure$sd)
+
+ech_mean_bar_pressure <- ech_mean_bar_pressure %>% 
+  mutate(class = case_when(class == 'Ast_mean' ~ "Asteroidea", 
+                           class == "Cri_mean"~ "Crinoidea",
+                           class == 'Ech_mean' ~ "Echinoidea", 
+                           class == "Hol_mean"~ "Holothuroidea",
+                           class == 'Oph_mean' ~ "Ophiuroidea")) %>% #replace class values with class names
+  rename(sd = `ech_sd_long_pressure$sd`) #rename sd column
+
+ech_mean_bar_pressure$phylum <- "Echinodermata" # add the phylum column
+ech_mean_bar_pressure$phylum <- as.factor(ech_mean_bar_pressure$phylum ) 
+
+ech_mean_bar_pressure <- ech_mean_bar_pressure[,c(6,3,1,2,4,5)] #re-order columns
+
+rm(ech_mean_long_pressure, ech_sd_long_pressure)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+mol_mean_pressure <- mol_class %>% 
+  group_by(pressure, depth) %>%
+  reframe(Biv_mean=round(mean(Bivalvia),0),
+            Gas_mean=round(mean(Gastropoda),0),
+            Biv_sd=round(sd(Bivalvia),0),
+            Gas_sd=round(sd(Gastropoda),0))
+```
+
+https://seananderson.ca/2013/10/19/reshape/
+
+```{r}
+library(reshape2)
+mol_mean_long_pressure <- melt(
+  mol_mean_pressure[,c("depth","pressure","Biv_mean","Gas_mean")],
+  id.vars = c("pressure","depth"),
+  variable.name = "class",
+  value.name = c("mean"))
+
+mol_sd_long_pressure <- melt(
+  mol_mean_pressure[,c("depth","pressure","Biv_sd","Gas_sd")],
+  id.vars = c("pressure","depth"),
+  variable.name = "class", 
+  value.name = c("sd"))
+
+mol_mean_bar_pressure <- cbind(mol_mean_long_pressure,mol_sd_long_pressure$sd)
+mol_mean_bar_pressure
+
+mol_mean_bar_pressure <- mol_mean_bar_pressure %>% 
+  mutate(class = case_when(class == 'Biv_mean' ~ "Bivalvia", 
+                           class == "Gas_mean"~ "Gastropoda")) %>% #replace class values with class names
+  rename(sd = `mol_sd_long_pressure$sd`) #rename sd column
+
+
+mol_mean_bar_pressure$phylum <- "Mollusca" # add the phylum column
+mol_mean_bar_pressure$phylum <- as.factor(mol_mean_bar_pressure$phylum ) # 
+mol_mean_bar_pressure <- mol_mean_bar_pressure[,c(6,3,1,2,4,5)] #re-order columns
+
+rm(mol_mean_long_pressure, mol_sd_long_pressure,mol_mean_pressure)
+```
+
+Merge 
+
+```{r}
+inv_bar_pressure <- rbind(mol_mean_bar_pressure,ech_mean_bar_pressure)
+#library("writexl")
+#write_xlsx(inv_bar,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/mol_ech_ab_class_output.xlsx")
+
+str(inv_bar_pressure)
+
+inv_bar_pressure$class <- ordered(inv_bar_pressure$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
+
+invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
+```
+
+BAR PLOT PER PRESSURE
+
+```{r}
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position="dodge")+
+  facet_grid(class ~ pressure, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
   theme_classic()+
   labs(x="Depth within site",
        y="Mean abundance by class")+
@@ -440,10 +522,44 @@ ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
   theme(panel.grid.major.x = element_line(color = "grey",
                                           size = 0.5,
                                           linetype = 2),
-        strip.placement = "outside")+ 
-  coord_flip()
+        strip.placement = "outside")+
+    coord_flip()
 
-ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position="dodge")+
+  facet_grid(class ~ pressure, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within pressure levels",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"), guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+Export plot
+
+```{r, eval= F}
+ggsave("mol-ech_abundance_pressure_barplot.tiff", 
+       units = "in", width = 4, height = 6, dpi = 300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+```
+
+## Export clean data
+
+```{r, eval =F}
+#export each data frame to separate sheets in same Excel file
+openxlsx::write.xlsx(list("inv_bar" = inv_bar,
+                          "inv_bar_pressure" = inv_bar_pressure),
+                     file = here("Multi-taxa_data","MollEchino","Output",
+                   "inv_clean.xlsx")) 
 ```
 
 
@@ -452,14 +568,8 @@ ggsave("mol-ech_abundance_barplot.tiff", units="in", width=7, height=4.5, dpi=30
 Load packages
 
 ```{r}
-#VEGAN----
-library(vegan)#load package
-#install.packages("vegan3d")
-library(vegan3d)
+library(vegan)
 library(MASS)
-library(dplyr)
-
-library(readxl)   # to import excel datasets
 ```
 
 ## Format the data
@@ -559,7 +669,7 @@ inv_ndms_ggplot<-ggplot(nmds_df, aes(NMDS1, NMDS2))+
   stat_ellipse(geom="polygon",
                aes(fill=pressure), alpha=.2,type='t',size =1)+ ##draws 95% confidence interval ellipses
   theme_classic()+
-  annotate("text", x=0.9, y=-0.8, 
+  annotate("text", x=-0.9, y=-0.85, 
            label=paste('Stress =',round(inv_nmds_br$stress,3))) #add stress to plot
 
 inv_ndms_ggplot
@@ -584,16 +694,51 @@ inv_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
          fill = guide_legend(order = 1,title="Pressure"),
          shape = guide_legend(order = 2,title="Depth",))+
   scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
-  annotate("text", x=-0.80, y=-0.4,
-           label=paste('Stress =',round(inv_nmds_br$stress,3)),
-           size=4)+ #add stress to plot
-  annotate("text", x=-0.67, y=-0.48,
-           label=bquote('Non-metric fit,'~ R^2~"= 0.976"),
-           size=4) #add goodness of fit to plot
+  scale_x_continuous(limits = c(-1.2,1))+
+  scale_y_continuous(limits = c(-1.2,1))+
+  annotate("text", x=-1.20, y=0.97, 
+           label=bquote(atop('Non-metric fit,'~ R^2~"= 0.968",
+                             Stress == .(round(inv_nmds_br$stress,3)),
+                             )),
+           size=3, hjust=0)
 
 inv_ndms_ggplot
+```
 
-#ggsave("inv_ndms_ggplot.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```{r}
+pal12 <- c("#000000","#004949","#009292","#ffb6db",
+ "#490092","#006ddb","#b66dff","#b6dbff",
+ "#920000","#924900","#24ff24","#ffff6d")
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site,shape=depth),
+             size=2.5)+##separates overlapping points
+  guides(color = guide_legend(order=1, title = "Site", ncol =2),
+         shape = guide_legend(order=2, title = "Depth"))+
+  scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
+  ggnewscale::new_scale_color() +
+  geom_mark_ellipse(aes(fill=pressure, color=pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"),
+                     guide_legend(title = "Pressure"))+
+  scale_fill_manual(values= c("green","yellow","red"), 
+                    guide_legend(title = "Pressure"))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.2,1))+
+  scale_y_continuous(limits = c(-1.2,1.15))+
+  annotate("text", x=-1.20, y=0.97, 
+           label=bquote(atop('Non-metric fit,'~ R^2~"= 0.968",
+                             Stress == .(round(inv_nmds_br$stress,3)),
+                             )),
+           size=3, hjust=0) #add goodness of fit to plot
+```
+
+```{r, eval= F}
+ggsave("inv_ndms_ggplot.tiff", 
+       units="in", width=7, height=5, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
 # PERMANOVA AND POST-HOC PAIRWISE PERMANOVA
@@ -603,8 +748,6 @@ Load libraries
 ```{r}
 #VEGAN----
 library(vegan)#load package
-#install.packages("vegan3d")
-library(vegan3d)
 library(MASS)
 library(dplyr)
 
@@ -615,9 +758,6 @@ library(pairwiseAdonis)
 # library(remotes) #to use install_github
 # install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 library(pairwiseAdonis)
-
-library(readxl)   # to import excel datasets
-
 ```
 
 Display input matrix and dataframe with independent variables
@@ -792,9 +932,11 @@ distcent_mean_df <- distcent_mean_df[,c(1,4,2,3)]
 Boxplot with `geom_boxplot` from `ggplot2`
 
 ```{r}
-p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
+inv_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
   geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
   geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  scale_color_manual(values= c("green","yellow3","red"))+
   theme_classic()+
   labs(title="Boxplot of mean distance to centroid by site")+
   ylab(label="Distance to centroid")+
@@ -802,24 +944,19 @@ p<- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+
         plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
         axis.text=element_text(size=14))
 
-p
+inv_box
+
+ggpubr:: ggarrange(inv_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
 ```
 
-Add a table with mean distance from centroid with `annotate` from
-`ggpmisc`
-
-For guides on `annotate` see the
-[vignette](https://cran.r-project.org/web/packages/ggpp/vignettes/grammar-extensions.html#geom_table-and-stat_fmt_table)
-
-```{r}
-library(ggpmisc)
-
-p+ annotate(geom = "table", x=2.8,y = 0.42, label = list(distcent_mean_df), 
-            vjust = 0.3, hjust = -1.2,
-            fill="grey96")
-
-#ggsave("inv_distcent_boxplot.tiff", units="in", width=7, height=4, dpi=300, compression = 'lzw')
+```{r, eval=F}
+ggsave("inv_distcent_boxplot.tiff", 
+       units="in", width=12, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
+
 
 ## Post hoc test for PERMANOVA (`pairwise.adonis`)
 
