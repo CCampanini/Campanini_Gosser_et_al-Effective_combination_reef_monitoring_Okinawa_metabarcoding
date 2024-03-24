@@ -1,0 +1,3 @@
+- Run Extraction scripts first (extract clean data from raw data)
+- Rel_cov_analysis and Func_cov_analysis have extracted data from the clean_data folder as input
+- Visual outputs in their dedicated folder
