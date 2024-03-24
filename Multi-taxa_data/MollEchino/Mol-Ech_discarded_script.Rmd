@@ -1,0 +1,81 @@
+---
+title: "Mol-ech_discarded_scripts"
+author: "Claudia Campanini"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    toc: yes
+    number_sections: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# INVERTEBRATE BAR PLOT WITH Y-AXIS BREAK
+
+```{r}
+library(ggbreak)
+
+ggplot(inv_bar, aes(x=depth, y=mean, fill=class, label=mean,color=phylum)) +
+  geom_bar(position="dodge",stat="identity")+
+  geom_errorbar(aes(ymin=ifelse(mean > 0, mean, 0), 
+                    ymax=ifelse(mean > 0, mean+sd, 0)), #set conditions to remove error bar when the mean abundance is equal to zero
+                width=.2, position=position_dodge(.9))+
+  facet_grid(~ site)+
+  theme_bw()+
+  labs(x="Depth",
+       y="Mean abundance by class [individuals/transect]",
+       title = "Bar chart of mean abundance by depth within site for mollusks and echinoderms")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"))+
+  guides(fill=guide_legend(title="Class", order =2,
+                           override.aes = list(color = c(rep("blue",2),
+                                                         rep("firebrick",5)))),
+         color=guide_legend(title= "Phylum",order=1,
+                            override.aes = list(fill = c("white", "white"))))+
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "right",legend.box="vertical",
+        panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.background = element_rect(fill = "white"))+ #site title facet_grid background
+  scale_y_break(c(30, 50), scales=1, ticklabels=seq(50, 350, 100))
+```
+
+# INVERTEBRATE BAR PLOT WITH FLIPPED COORDINATES
+
+```{r}
+ggplot(subset(inv_bar, inv_bar$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, fill=class, label=mean, color=phylum)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                position="dodge")+
+  facet_grid(site ~ class, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within site",
+       y="Mean abundance by class")+
+  scale_fill_manual(values=invPalette)+
+  scale_color_manual(values=c("blue","firebrick"), guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.x = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")+ 
+  coord_flip()
+```
+
+# 
+
+Add a table with mean distance from centroid with `annotate` from
+`ggpmisc`
+
+For guides on `annotate` see the
+[vignette](https://cran.r-project.org/web/packages/ggpp/vignettes/grammar-extensions.html#geom_table-and-stat_fmt_table)
+
+```{r}
+library(ggpmisc)
+
+inv_box + annotate(geom = "table", x=2.8,y = 0.42, label = list(distcent_mean_df), 
+            vjust = 0.3, hjust = -1.2,
+            fill="grey96")
