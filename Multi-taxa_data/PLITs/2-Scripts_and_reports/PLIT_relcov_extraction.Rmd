@@ -1,0 +1,292 @@
+---
+title: "Extraction of relative benthic cover at 12 sites in Okinawa"
+author: "Claudia Campanini"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# LOAD BASIC LIBRARIES
+
+```{r, message = F}
+library(readxl) #read xlsx files
+library(writexl) #export to excel files
+library(here)
+library(tidyverse) #aggregate fc et al.
+library(tidyverse)
+library(dplyr)
+library(MASS)
+```
+
+# IMPORT DATASHEETS FOR EACH SITE IN A SINGLE LIST OF LISTS
+
+```{r}
+plits_raw <-  list.files(path = here("Multi-taxa_data","PLITs","1-Raw_data"),
+             pattern = "*.xlsx",
+             full.names =T) %>%  
+  sapply(rio::import_list, #rio package needed
+         simplify = F, 
+         USE.NAMES = F) 
+
+names(plits_raw) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
+```
+## CHECK INPUT FILES FOR NEGATIVE VALUES
+
+```{r}
+for (i in 1:12) {
+    for (k in 1:length(plits_raw[[i]])) {
+    print(which(plits_raw[[i]][[k]]$Cat_tot<0,arr.ind = TRUE))
+  }
+}
+```
+
+# CLEAN PLITS OF EACH TRANSECT
+
+```{r}
+clean_plit_fun <- function(x) {
+  x <- x[-c(1:2),c(1:5)]
+  colnames(x) <-x[1,]
+  x<- x[-1,]
+  x$Point <-as.integer(x$Point)
+  x$Cat_tot <-as.integer(x$Cat_tot)
+  x$Func_tot <-as.integer(x$Func_tot)
+  x$Category<- factor(x$Category, levels= c("algae","boulder","hard_coral","missing","other","rubble","sand",
+                "shadow","soft_coral","sponge","unknown","zoanthids"))
+  x$Functional_group<-as.factor(x$Functional_group)
+  str(x)
+  x
+}
+
+for (i in 1:12) {
+  plits_raw[[i]] <- lapply (plits_raw[[i]],clean_plit_fun)
+}
+
+#alternative with map()
+#for (i in 1:12) {plits_raw[[i]] <- map (plits_raw[[i]],clean_PLIT)}
+
+rm(clean_plit_fun)
+```
+# TOTAL LENGTH COVERED PER TRANSECT
+
+```{r}
+length_sum_fun <- function(x,y) {
+  y <- sum(x$Cat_tot, na.rm=T)
+} 
+
+transect_length <- list()
+for (i in 1:12) {
+  transect_length[[i]] <- lapply (plits_raw[[i]],length_sum_fun)
+}
+
+names(transect_length) = c("awa", "g1", "g2", "hi", "mi", "s1", "s2", "sk", "sn", "yo", "za", "zp")
+
+transect_length_df <- as.data.frame(do.call(rbind, transect_length))
+transect_length_df <- as.data.frame(lapply(transect_length_df, unlist, recursive = TRUE))
+
+transect_length_df <- data.frame(Site = row.names(transect_length_df), transect_length_df)
+transect_length_df
+
+rm(transect_length, length_sum_fun)
+```
+Reference for unlist fucntion, see <https://stackoverflow.com/questions/66884864/r-dataframe-convert-list-type-columns-to-chr-int>
+
+```{r, eval = F}
+library("writexl")
+write_xlsx(transect_length_df,
+           here("Multi-taxa_data","PLITs","3-Clean_data","plits_length_df.xlsx"))
+```
+
+
+# EXTRACT ABSOLUTE AND RELATIVE COVER FOR EACH TRANSECT
+
+Extraction function written using dplyr package, check the following link for tidy_eval <https://dcl-prog.stanford.edu/tidy-eval-detailed.html>
+
+```{r}
+ext_fun <- function(df, group_var,summary_var) {
+  group_var <- enquo(group_var)
+  summary_var <- enquo(summary_var)
+  
+  df %>%
+  group_by(!! group_var) %>% 
+  summarise(Abs_cov=sum(!! summary_var)) %>%
+  mutate(Rel_cov = round(Abs_cov/sum(Abs_cov, na.rm = T),3)) %>%
+  complete(!! group_var)
+    
+}
+
+plits_ext <- vector("list", 12)
+for (i in 1:12) {
+  plits_ext[[i]] <- lapply (plits_raw[[i]],ext_fun,
+                             group_var = Category, summary_var = Cat_tot)
+}
+
+names(plits_ext) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
+
+rm(ext_fun)
+```
+
+## ADD COLUMNS NAMES TO EACH TRANSECT
+
+Add a column with the transect name to each transect (dataframe)
+```{r}
+#install.packages("wrapr") #https://search.r-project.org/CRAN/refmans/wrapr/html/add_name_column.html
+library(wrapr)
+
+for (i in 1:12) {
+  plits_ext[[i]] <- add_name_column(plits_ext[[i]], "Depth_rep")
+}
+```
+
+Add a column with the site name to each transect (dataframe)
+```{r}
+sites <- c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
+
+for (i in 1:12) {
+    for (k in 1:length(plits_ext[[i]])) {
+    plits_ext[[i]][[k]]$Site <- as.factor(rep(sites[i],13))
+  }
+}
+
+rm(sites)
+```
+
+Add a column for the depth level
+
+```{r}
+add_col_fun <- function(df, Depth_rep) {
+  Depth_rep <- enquo(Depth_rep)
+  
+  df %>% 
+       mutate(depth = case_when(!!Depth_rep == 'D1' | 
+                                  !!Depth_rep == "D2" | 
+                                  !!Depth_rep == "D3"~ "Deep", 
+                              !!Depth_rep == 'S1' | 
+                                  !!Depth_rep == "S2" | 
+                                  !!Depth_rep == "S3"~ "Shallow"))
+}
+
+for (i in 1:12) {
+  plits_ext[[i]] <- lapply (plits_ext[[i]],add_col_fun,
+                             Depth_rep= Depth_rep)
+}
+
+rm(add_col_fun)
+```
+
+# PREPARE SINGLE DATAFRAME WITH RELATIVE COVER
+
+- Merge in a single data frame
+- Delete rows with NA as "Category"
+
+```{r}
+plits_ext_df <-list()
+for (i in 1:12) {
+  plits_ext_df[[i]] <- as.data.frame(do.call(rbind, plits_ext[[i]]))
+
+}
+plits_ext_df <- as.data.frame(do.call(rbind, plits_ext_df))
+```
+
+- Replace NA in "Abs_cov" and "Rel_cov" with 0
+- Add "Depth_rep" and "Site_depth" columns
+- Merge "sponge" with "other"
+- Remove rows with "sponge", "unknown", "missing" and "shadow"
+
+```{r}
+plits_ext_df[is.na(plits_ext_df)] <- 0
+
+plits_ext_df <- plits_ext_df %>% 
+  drop_na(Category) %>% ## delete rows with NA as Category
+  replace(is.na(.), 0)
+
+plits_ext_df$Transect <- paste(plits_ext_df$Site, plits_ext_df$Depth_rep, sep='_')
+plits_ext_df$Site_depth <- paste(plits_ext_df$Site, plits_ext_df$depth, sep='_')
+plits_ext_df<-   plits_ext_df %>% 
+       mutate(Replicate = case_when(Depth_rep == "D1" | Depth_rep == "S1" ~ 1, 
+                                    Depth_rep == "D2" | Depth_rep == "S2" ~ 2,
+                                    Depth_rep == "D3" | Depth_rep == "S3" ~ 3))
+
+plits_ext_df[plits_ext_df == "sponge"] <- "other"
+
+plits_ext_df <- plits_ext_df %>%                                    
+  group_by(Transect, Category) %>%
+  mutate(Abs_cov = sum(Abs_cov)) %>%
+  ungroup() %>%
+  as.data.frame()
+
+plits_ext_df <- plits_ext_df[!duplicated(plits_ext_df[c(1,7)]),]
+
+plits_ext_df <- plits_ext_df  %>% 
+  filter(Category != "shadow" & Category != "missing")
+
+rm(i, k)
+```
+## RECALCULATE RELATIVE COVER WITHOUT UNDEFINED CATEGORIES (unknown, shadow, missing)
+
+```{r}
+plits_ext_df$Transect <- as.factor(plits_ext_df$Transect)
+
+plits_ext_df <-  plits_ext_df %>%
+  group_by(Transect) %>%
+  mutate(Rel_cov = round(Abs_cov/sum(Abs_cov, na.rm = T),3))
+```
+
+## ROTATE DF
+Follow the link for explanation of dcast function https://seananderson.ca/2013/10/19/reshape/
+
+```{r}
+rel_cov_input <- plits_ext_df[,-2] #delete Abs_cov column
+
+str(rel_cov_input)
+
+rel_cov_input$Replicate <- as.factor(rel_cov_input$Replicate)
+rel_cov_input$Transect <- as.factor(rel_cov_input$Transect)
+
+rel_cov_input$Category <- 
+  factor(rel_cov_input$Category,                                        levels=as.character(unique(rel_cov_input$Category)[]))
+
+rel_cov_input <- reshape2::dcast(rel_cov_input, 
+                        Transect + Site + Depth_rep + depth + Site_depth + Replicate  
+                          ~ Category, value.var = "Rel_cov")
+```
+
+## ADD STANDARD DEVIATION
+
+```{r}
+rel_cov_input <- rel_cov_input %>%
+  group_by(Site, depth) %>% 
+  mutate(sd_alg = round(sd(algae),2),
+         sd_boulder = round(sd(boulder),2),
+         sd_hc = round(sd(hard_coral),2),
+         sd_other = round(sd(other),2),
+         sd_rubble = round(sd(rubble),2),
+         sd_sand = round(sd(sand),2),
+         sd_softc = round(sd(soft_coral),2),
+         sd_unknown = round(sd(unknown),2),
+         sd_zoanth = round(sd(zoanthids),2))
+```
+
+# EXPORT REL_COV_INPUT DATAFRAME (wide format -> matrix) AS EXCEL FILE
+
+```{r, eval = F}
+write_xlsx(rel_cov_input,
+           here("Multi-taxa_data","PLITs","3-Clean_data","rel_cov_input.xlsx"))
+```
+
+# EXPORT PLIT_EXT_DF (long format) WITH STANDARD DEVIATION
+
+Add standard deviation 
+
+```{r}
+plits_ext_df <- plits_ext_df %>%
+  group_by(Site, depth, Category) %>% 
+  mutate(sd_rel_cov= round(sd(Rel_cov),2))
+```
+
+Export plit_ext_df
+
+```{r, eval = F}
+write_xlsx(plits_ext_df,
+           here("Multi-taxa_data","PLITs","3-Clean_data","plits_ext_df.xlsx"))
+```
+
+

@@ -1,0 +1,757 @@
+---
+title: "Analysis by funtional group per depth within site"
+author: "Claudia Campanini"
+date: '2022-07-26'
+output: 
+  html_document: 
+      toc: yes
+      number_sections: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load libraries
+
+```{r libraries}
+library(readxl) #read xlsx files
+library(tidyverse) #aggregate fc et al.
+library(ggplot2)
+library(dplyr)
+library(dplyr)
+library(MASS)
+```
+
+# Stacked bar chart
+
+Load the input dataframe
+
+```{r}
+#setwd("C:/Users/claud/Qsync/QSync Claudia/Thesis/Let_the_benthos_speak")
+
+func_mean_depth<- read_excel("func_mean_depth_input.xlsx")
+
+str(func_mean_depth) 
+func_mean_depth$Site <- ordered(func_mean_depth$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+func_mean_depth$Depth[func_mean_depth$Depth == "Deep"] <- "D"
+func_mean_depth$Depth[func_mean_depth$Depth == "Shallow"] <- "S"
+func_mean_depth[,c(2:4)] <- lapply(func_mean_depth[,c(2:4)], as.factor) 
+
+str(func_mean_depth)
+
+```
+
+## Hard coral stacked bar chart
+
+```{r}
+
+#remotes::install_github("wilkelab/cowplot")
+#install.packages("colorspace")
+library(colorspace)
+
+#install.packages("colorspace")
+#remotes::install_github("clauswilke/colorblindr")
+library(colorblindr)
+
+palette10plasma=c("#f0f921","#fdca26","#fb9f3a","#ed7953","#d8576b",
+                  "#bd3786","#9c179e","#7201a8","#46039f","#0d0887")
+
+plasma5 = sequential_hcl(5, palette= "plasma")
+plasma5
+ag_GrnYl5 = sequential_hcl(5, palette= "ag_GrnYl")
+ag_GrnYl5
+sequential_hcl(1, palette= "Emrld") # --> "#0B4151"
+
+  
+plasma_ag_GrnYl_11 = c("#001889","#91008D","#D24E71","#EDA200","gold1", #plasma
+                        "#EDEF5C","#82CC6C","#17A77E","#007E7D","#255668","#0B4151")
+
+ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
+       aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+  geom_bar(position="stack",stat="identity", color = "black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [m]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_y_continuous(label = c("0","5","10","15"))+
+  scale_fill_manual(values=plasma_ag_GrnYl_11)
+```
+
+## Hard coral stacked bar chart in percentage
+
+See palette from
+<https://cran.r-project.org/web/packages/colorspace/vignettes/colorspace.html#Usage_with_ggplot2>
+
+```{r}
+hc_func_stacked <- ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
+       aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+  geom_bar(position="fill",stat="identity",color="black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [%]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_fill_manual(values=plasma_ag_GrnYl_11)+
+  scale_y_continuous(label = c("0","25","50","75","100"))
+
+cvd_grid(hc_func_stacked)
+
+hc_func_stacked
+
+#ggsave("hard_coral_growth_forms_stacked.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```
+
+## Hard coral stacked bar chart in percentage
+
+```{r}
+hc_mean_depth <- subset(func_mean_depth,func_mean_depth$Category == "hard_coral")
+
+hc_mean_depth <- hc_mean_depth %>% 
+  group_by(Depth,Site) %>% 
+  mutate(Perc_func = round(mean_cat_tot/sum(mean_cat_tot)*100, 0))
+
+ggplot(hc_mean_depth, aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+  geom_bar(position="fill",stat="identity")+
+  geom_text(aes(x=Depth, y= mean_cat_tot, label = Perc_func), 
+            data = subset(hc_mean_depth,hc_mean_depth$Perc_func>= 10),
+            size = 3.5, position = position_fill(vjust = 0.5),color="black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [%]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_y_continuous(label = c("0","25","50","75","100"))
+
+```
+
+## Hard coral stacked bar chart in percentage with labels
+
+```{r}
+hc_mean_depth <- subset(func_mean_depth,func_mean_depth$Category == "hard_coral")
+
+hc_mean_depth <- hc_mean_depth %>% 
+  group_by(Depth,Site) %>% 
+  mutate(Perc_func = round(mean_cat_tot/sum(mean_cat_tot)*100, 0))
+
+ggplot(hc_mean_depth, aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+  geom_bar(position="fill",stat="identity")+
+  geom_text(aes(x=Depth, y= mean_cat_tot, label = Perc_func), 
+            data = hc_mean_depth,
+            size = 3.5, position = position_fill(vjust = 0.5),color="black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [%]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_y_continuous(label = c("0","25","50","75","100"))
+
+```
+
+# Algae stacked bar chart
+
+```{r}
+alg_mean_depth <- subset(func_mean_depth,func_mean_depth$Category == "algae")
+
+alg_mean_depth <- alg_mean_depth %>% 
+  group_by(Depth,Site) %>% 
+  mutate(Perc_func = round(mean_cat_tot/sum(mean_cat_tot)*100, 0))
+
+RedGreen5 = diverging_hcl(5, palette= "Red-Green")
+RedGreen3 = c("#841859","#7CC57D","#005600")
+
+algae_func_stacked <- ggplot(alg_mean_depth,aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+  geom_bar(position="fill",stat="identity",alpha=0.7,color="black")+
+  geom_text(aes(x=Depth, y= mean_cat_tot, label = Perc_func), 
+            data = subset(alg_mean_depth,alg_mean_depth$Perc_func > 2),
+            size = 2.5, position = position_fill(vjust = 0.5),color="black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean algae cover by functional group [%]")+
+  guides(fill=guide_legend(title="Functional groups"))+
+  scale_fill_manual(values=RedGreen3)+
+  scale_y_continuous(label=c(0,25,50,75,100))
+
+cvd_grid(algae_func_stacked)
+
+algae_func_stacked
+
+#ggsave("algae_func_stacked.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```
+
+# nMDS
+
+Load packages
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+#install.packages("vegan3d")
+library(vegan3d)
+library(MASS)
+library(dplyr)
+
+library(readxl)   # to import excel datasets
+```
+
+Load input dataframe
+
+```{r}
+func_input <- read_excel("func_input.xlsx")
+
+func_input <- func_input %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+func_input <- func_input[ ,c(1:5, 20, 6:19)]
+
+func_input[,c(1:6)] <- lapply(func_input[,c(1:6)], as.factor)
+
+func_input$Pressure<-ordered(func_input$Pressure,levels=c("Low", "Medium", "High"))
+
+func_input$Site <- ordered(func_input$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+str(func_input)
+
+
+#create a df with the independent variables
+ind_df <- as.data.frame(func_input[,c(1:6)])
+str(ind_df)
+
+```
+
+Convert the database `func_input`to a matrix
+
+```{r}
+func_mat <- func_input[,-c(1:6)]
+rownames(func_mat) <- func_input$Trans
+func_mat <- as.matrix(func_mat)
+str(func_mat)
+class(func_mat)
+```
+
+## Run the Nonmetric Multidimensional scaling
+
+```{r}
+##metaMDS (isoMDS with random start, reduced  stress)----
+set.seed(69) #random number to start
+func_nmds_br=metaMDS(func_mat,distance = "bray",k=2) #Bray-Curtis resemblance matrix;k=2 means 2 dimensional
+```
+
+## Evaluate the nMDS mapping based on the stress and goodness of fit
+
+```{r}
+stressplot(func_nmds_br) #evaluating NMDS mapping: stressplot
+func_nmds_br_gof=goodness(func_nmds_br) #evaluating NMDS mapping: goodness of fit
+func_nmds_br_gof #smaller the value, the lower stress and better fit
+plot(func_nmds_br, type="t", main="goodness of fit") # create a plot for goodness of fit visualization:
+points(func_nmds_br, display="site", cex=func_nmds_br_gof*100) #display the goodness of fit on the plot
+#Stress lesser, better (>0.2 poor,0.2-0.1 moderate,0.1-0.05 good,<0.05 excellent); 
+#K level higher, stress lesser
+```
+
+Stress = `r func_nmds_br$stress` \< 0.2
+
+Check Stress for each additional dimension
+
+```{r}
+k_vec=1:10
+stress=numeric(length(k_vec))
+relfunc_dij=metaMDSdist(func_mat, trace=FALSE)
+set.seed(69)
+for(i in seq_along(k_vec)) {
+  func_nmds_br_loop=metaMDSiter(relfunc_dij, k=i, trace=FALSE)
+  stress[i]=func_nmds_br_loop$stress
+}
+plot(k_vec,stress,type="b",ylab="Stress",xlab="Dimensions") #select the K correspondent to the most drastic drop in stress
+```
+
+## nMDS plot with `ggplot()` and `geom_mark_ellipse()` from `ggforce`
+
+N.B. Visualisation with ggplot()\` first require the creation of an
+input dataframe with nMDS scores
+
+```{r}
+scores(func_nmds_br)
+func_ndms_scores <- as.data.frame(scores(func_nmds_br)$sites)  #Using the scores function from vegan to extract the site scores and convert to a data.frame
+func_ndms_scores$transect <- rownames(func_ndms_scores) # create a column of transect names
+func_ndms_scores$site <- ind_df$site
+func_ndms_scores$depth <- ind_df$depth  #  add the grp variable created earlier
+str(func_ndms_scores)  #look at the data
+
+
+NMDS1 <- func_nmds_br$points[,1] ##also found using: > scores(faMDS)
+NMDS2 <- func_nmds_br$points[,2]
+nmds_df<-cbind(ind_df, NMDS1, NMDS2)
+
+```
+
+nMDS plot with colorblind-friendly
+
+```{r}
+#install.packages("ggforce")
+library(ggforce)
+library(ggplot2)
+
+
+func_ndms_ggplot<-ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=3)+##separates overlapping points
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
+  theme_classic()+
+   ggtitle("nMDS of hard coral and algae cover by functional group") +
+  annotate("text", x=-1.73, y=-0.4, 
+           label=paste('Stress =',round(func_nmds_br$stress,3)),
+           size=5)+ #add stress to plot
+  annotate("text", x=-1.49, y=-0.47,
+           label=bquote('Non-metric fit,'~ R^2~"= 0.921"),
+           size=5)+ #add goodness of fit to plot
+  theme(plot.title = element_text(size=15, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  guides(color = guide_legend(order = 1,title="Site"),
+         fill = guide_legend(order = 1,title="Site"),
+         shape = guide_legend(order = 2,title="Depth"))+
+  ylim(-0.7,0.7)
+
+func_ndms_ggplot
+```
+
+Use
+
+```{r}
+pal12 <- c("#000000","#004949","#009292","#ffb6db",
+ "#490092","#006ddb","#b66dff","#b6dbff",
+ "#920000","#924900","#24ff24","#ffff6d")
+
+library(ggnewscale) #necessary for new_scale_color 
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=2.5)+##separates overlapping points
+  scale_color_manual(values= pal12)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"))+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  theme_classic()+
+  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.5,0.8))+
+  scale_y_continuous(limits = c(-0.5,.6))+
+  annotate("text", x=-1.4, y=-0.45, 
+           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.921")),
+           size=3, hjust=0) #add goodness of fit to plot
+
+```
+
+```{r}
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
+  scale_color_manual(values= pal12)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"))+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  theme_classic()+
+  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.5,0.8))+
+  scale_y_continuous(limits = c(-0.5,.6))+
+  annotate("text", x=-1.45, y=-0.45, 
+           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.921")),
+           size=3, hjust=0) #add goodness of fit to plot
+
+rm(pal12)
+```
+
+
+Test a colorblind-friendly palette using `colorblindr` package
+
+```{r}
+
+
+#remotes::install_github("wilkelab/cowplot")
+#install.packages("colorspace")
+library(colorspace)
+
+#install.packages("colorspace")
+#remotes::install_github("clauswilke/colorblindr")
+library(colorblindr)
+
+cvd_grid(func_ndms_ggplot)
+
+```
+
+Save the plot as tiff
+
+```{r}
+func_ndms_ggplot
+
+#ggsave("func_nmds.tiff", units="in", width=7, height=4.5, dpi=300, compression = 'lzw')
+```
+
+# PERMANOVA
+
+Load packages
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+#install.packages("vegan3d")
+library(vegan3d)
+library(MASS)
+library(dplyr)
+
+#install.packages("pairwiseAdonis")
+library(devtools) #to install pairwiseAdonis from GitHub
+library(pairwiseAdonis)
+#install.packages("Rtools")
+# library(remotes) #to use install_github
+# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+library(pairwiseAdonis)
+
+library(readxl)   # to import excel datasets
+
+```
+
+Load input data frame
+
+```{r}
+func_input <- read_excel("func_input.xlsx")
+
+func_input <- func_input %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+func_input <- func_input[ ,c(1:5, 20, 6:19)]
+
+func_input[,c(1:6)] <- lapply(func_input[,c(1:6)], as.factor)
+
+func_input$Pressure<-ordered(func_input$Pressure,levels=c("Low", "Medium", "High"))
+
+func_input$Site <- ordered(func_input$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+str(func_input)
+
+
+#create a df with the independent variables
+ind_df <- as.data.frame(func_input[,c(1:6)])
+str(ind_df)
+
+
+```
+
+Convert the database `func_input`to a matrix
+
+```{r}
+func_mat <- func_input[,-c(1:6)]
+rownames(func_mat) <- func_input$Trans
+func_mat <- as.matrix(func_mat)
+str(func_mat)
+class(func_mat)
+```
+
+## PERMANOVA among the 4 sites
+
+### Question 1: is there a significant difference in relative algae and coral cover by functional groups among sites?
+
+```{r}
+set.seed(69) 
+perm=how(nperm=999)
+func_site_pmv=adonis2(func_mat~Site, 
+                        data=ind_df,
+                        permutations =perm,
+                        method="bray")
+                        
+func_site_pmv
+```
+
+P-value `r func_site_pmv$Pr[1]` \< 0.05, so there is a significant
+difference among sites.
+
+### Question 2: is there a significant difference in relative algae and coral cover by functional group between depth withing sites?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69) 
+perm=how(nperm=999)
+func_depth_pmv <- adonis(func_mat~Depth, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$Site,
+                           method="bray")
+func_depth_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69) 
+h <- how(blocks = ind_df$Site, nperm = 999)
+func_blocks_pmv <- adonis2(func_mat~Depth,
+                             data=ind_df,
+                             permutations =h,
+                             method="bray")
+
+func_blocks_pmv
+```
+
+### Question 3: is there a significant difference in relative cover by functional group among anthropogenic pressure level?
+
+```{r}
+set.seed(69)
+perm=how(nperm=999)
+func_pressure_pmv=adonis2(func_mat~Pressure, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray")
+                        
+func_pressure_pmv
+```
+### Question 4: is there a significant difference in relative cover by functional group among sites within pressure levels?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69)
+perm=how(nperm=999)
+func_site_pressure_pmv <- adonis(func_mat~Site, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$Pressure,
+                           methods="bray")
+func_site_pressure_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69)
+h <- how(blocks = ind_df$Pressure, nperm = 999)
+func_site_pressure_pmv <- adonis2(func_mat~Site,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray")
+
+func_site_pressure_pmv
+```
+
+## Permutation test of multivariate homogeneity of groups dispersions (variances)
+
+Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
+K. Clarke. Permanova+ for primer: Guide to software and statisticl
+methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
+PERMANOVA test using permutations assumes only that the samples are
+exchangeable under a true null hypothesis12. The assumption of
+exchangeability is tantamount to assuming that the multivariate
+observations (samples) are independent and identically distributed
+(i.i.d.) under a true null hypothesis. Thus, although there are no
+explicit assumptions regarding the distributions of the original
+variables (they are certainly not assumed to be normally distributed),
+independence and homogeneity of dispersions (in the space of the
+resemblance measure) are directly implied by the permutation procedure.
+Clearly, if samples have very different dispersions in different groups,
+then they are not really exchangeable. Also, if the samples are
+unequally correlated with one another (e.g., temporally or spatially),
+then randomly shuffling them will destroy this kind of inherent
+structure.*
+
+```{r}
+set.seed(69) 
+densityplot(permustats(func_site_pmv)) #density plot of permutation results to to check if assumptions are met?
+
+func_dist = vegdist(func_mat,method="bray")
+
+func_bd=betadisper(func_dist,ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(func_bd)
+
+boxplot(func_bd) #check data dispersion based on sites
+anova(func_bd) #F-test on distribution of sites
+
+```
+
+### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
+
+```{r}
+set.seed(69) 
+permutest(func_bd) #permutative test on dispersion based on sites, if significance, PERMANOVA results may be driven by  dispersion issue
+set.seed(69) 
+permutest(func_bd, pairwise=TRUE) #pairwise of dispersion test
+```
+
+From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
+for primer: Guide to software and statisticl methods. Primer-E Limited,
+2008: \* If significant heterogeneity were detected by PERMDISP and
+differences among groups were also detected using PERMANOVA, then the
+latter could have been caused by differences in location, differences in
+dispersion, or some combination of the two. \*
+
+### Boxplot with within-site distance from centroids made with `ggplot()`
+
+Create an input dataframe for the boxplot with mean relative cover by
+category and depth within site
+
+```{r}
+func_bd$distances #Extract betadisper scores
+
+distcent_df <- data.frame(Distance_to_centroid=func_bd$distances,
+                          Site=func_bd$group) #create a df for the plot
+
+
+distcent_df <- distcent_df %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+distcent_df[,2]<-ordered(distcent_df[,2],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+distcent_df$Pressure<-ordered(distcent_df$Pressure,levels=c("Low", "Medium", "High"))
+
+distcent_df_mean <- distcent_df %>%
+  group_by(Site, Pressure) %>%
+  summarise(Mean_dist = round(mean(Distance_to_centroid),2),
+            SD = round(sd(Distance_to_centroid),2)) %>%
+  ungroup()
+
+
+colnames(distcent_df_mean) <- c("Site","Pressure","Mean distance to centroid","SD")
+```
+
+Boxplot with `geom_boxplot` from `ggplot2`
+
+```{r}
+box<- ggplot(data=distcent_df,aes(x=Site,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+   
+  geom_jitter(aes(color=Pressure),alpha=0.7)+
+  theme_classic()+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none")+ #remove legend
+  scale_fill_manual(values=c("green", "orange", "red"))+
+  scale_color_manual(values=c("green", "orange", "red"))
+box  
+```
+
+Add a table with mean distance from centroid with `annotate` from
+`ggpmisc`
+
+For guides on `annotate` see the
+[vignette](https://cran.r-project.org/web/packages/ggpp/vignettes/grammar-extensions.html#geom_table-and-stat_fmt_table)
+
+```{r}
+library(ggpmisc)
+
+box+
+  annotate(geom = "table", x=9,y = 0.43, label = list(distcent_df_mean), 
+            vjust = 1, hjust = 0,
+            fill="grey96")+
+  labs(title="Boxplot of mean distance to centroid by site")+
+  theme(plot.title  = element_text(hjust = 0.5, face= "bold", size =14))
+
+#ggsave("func_distcent_boxplot.tiff", units="in", width=7, height=4, dpi=300, compression = 'lzw')
+```
+
+### Post hoc test for PERMANOVA (`pairwise.adonis`)
+
+```{r}
+set.seed(69) 
+func_pmv_phoc_holm= pairwise.adonis(func_mat,ind_df$Site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "holm", 
+                                  reduce = NULL)
+
+func_pmv_phoc_holm
+
+set.seed(69) 
+func_pmv_phoc_bonf= pairwise.adonis(func_mat,ind_df$Site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "bonferroni", 
+                                  reduce = NULL)
+
+func_pmv_phoc_bonf 
+```
+
+I can use Bonferroni because it is more conservative and it is the
+adjustment adopted for the other analyses.
+
+N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
+
+# SIMPER: Similarity of percentage
+
+From the vignette: *The simper functions performs pairwise comparisons
+of groups of sampling units and finds the contribution of each species
+to the average between-group Bray-Curtis dissimilarity. Although the
+method is called simper, it really studied dissimilarities instead of
+similarities (Clarke 1993).*
+
+## SIMPER PER SITE:
+
+```{r}
+func_sim_site=simper(func_mat,group=ind_df$Site) #Distinguish categories which caused the differences in relative cover among sites
+func_sim_site
+summary(func_sim_site) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER per depth
+
+```{r}
+func_sim_depth=simper(func_mat,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
+func_sim_depth
+summary(func_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER per pressure exposure
+```{r}
+func_sim_pres=simper(func_mat,group=ind_df$Pressure) #Distinguish categories which caused the differences in relative cover among sites
+func_sim_pres
+summary(func_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+# References
+
+```{r}
+#install.packages("report")
+library(report)
+report(sessionInfo())
+```
