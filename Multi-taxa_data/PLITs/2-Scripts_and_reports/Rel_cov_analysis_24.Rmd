@@ -1,0 +1,873 @@
+---
+title: "Relative cover analysis"
+author: "Claudia Campanini"
+date: 
+output: 
+  html_document: 
+    toc: yes
+    number_sections: yes
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load some basic libraries
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readxl)   # to import excel datasets
+library(writexl) # to export df to excel files (write_xlsx)
+library(here)
+```
+# MEAN RELATIVE BENTHIC COVER BY CATEGORY
+
+Load input file 
+
+```{r}
+cov_df <- read_excel(here("Multi-taxa_data","PLITs","3-Clean_data","plits_ext_df.xlsx"))
+str(cov_df)
+```
+## PER SITE
+Follow the link for explanation of dcast function https://seananderson.ca/2013/10/19/reshape/
+
+```{r}
+mean_rel_cov_site <- cov_df %>%
+  group_by(Site, Category) %>%
+  summarise(Mean_rel_cov=round(mean(Rel_cov),2))
+
+library(reshape2) #needed for dcast function
+mean_rel_cov_site <- dcast(mean_rel_cov_site, Site ~ Category)
+
+mean_rel_cov_site <- mean_rel_cov_site %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+mean_rel_cov_site$Site<-ordered(mean_rel_cov_site$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+mean_rel_cov_site <- mean_rel_cov_site[,c(1,11,2:10)] #re-ordering columns
+
+mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,levels
+                                      =c("Low","Medium","High"))
+
+mean_rel_cov_site <- mean_rel_cov_site[order(mean_rel_cov_site$Site),]
+mean_rel_cov_site
+```
+Export table with mean relative benthic cover by category per site within Depth level
+
+```{r, eval= F}
+write_xlsx(mean_rel_cov_site, here("Multi-taxa_data","PLITs","3-Clean_data","mean_rel_cov_site.xlsx"))
+```
+
+## PER SITE WITHIN Depth
+
+```{r}
+mean_rel_cov_df <- cov_df %>%
+  group_by(Site_depth, Category) %>%
+  summarise(Mean_rel_cov=round(mean(Rel_cov),2))
+
+Site_depth <- mean_rel_cov_df$Site_depth
+
+library(tidyr) # needed for separate_wider_delim function
+mean_rel_cov_df <- mean_rel_cov_df %>%
+  separate_wider_delim(Site_depth, "_", names = c("Site", "Depth")) %>%
+  mutate(Site_depth=Site_depth)
+
+rm(Site_depth)
+
+mean_rel_cov_df <- 
+  mean_rel_cov_df %>%
+  mutate(Pressure = case_when(Site == "HI" | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low", 
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"
+                              )
+         ) 
+  
+mean_rel_cov_df$Site_depth <- as.factor(mean_rel_cov_df$Site_depth)
+
+mean_rel_cov_df$Pressure <- ordered(mean_rel_cov_df$Pressure,
+                                    levels=c("Low","Medium","High"))
+
+mean_rel_cov_wide <- dcast(mean_rel_cov_df, 
+                           Site_depth + Pressure ~ Category, 
+                           value.var = "Mean_rel_cov")
+
+mean_rel_cov_wide <- mean_rel_cov_wide[order(mean_rel_cov_wide$Site),]
+
+mean_rel_cov_wide
+```
+
+Export table with mean relative benthic cover by category per site within Depth level
+
+```{r, eval= F}
+write_xlsx(mean_rel_cov_site, here("Multi-taxa_data","PLITs","3-Clean_data","mean_rel_cov_Site_depth.xlsx"))
+```
+
+## STACKED BARPLOTS
+
+Load the color-blind-friendly palette with black:
+
+```{r}
+relcovPalette <- c("#009E73","#E69F00","#D55E00", "#56B4E9", "#F0E442", "#0072B2", "#CC79A7","#000000","#999999") #I changed the order compared to the original version
+```
+
+Stacked barplot of the mean relative benthic cover
+
+N.B. I set a conditional labelling so that only mean relative cover
+values \>0.15 are shown in the plot
+
+```{r}
+mean_rel_cov_df <- mean_rel_cov_df %>%                               # Replacing values
+  mutate(Depth = replace(Depth, Depth == "Deep", "D")) %>%                     # Replacing values
+  mutate(Depth = replace(Depth, Depth == "Shallow", "S"))
+
+mean_rel_cov_df$Site<-ordered(mean_rel_cov_df$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_rel_cov)) + 
+  geom_bar(position="fill", stat="identity",alpha=.8, color = "black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean relative benthic cover",
+       title= "Stacked bar chart of mean relative benthic cover \n by depth within site")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_fill_manual(labels = c("algae",
+                                "boulder",
+                                "hard coral",
+                                "other",
+                                "rubble",
+                                "sand",
+                                "soft coral",
+                                "unknown",
+                                "zoantharians"), values=relcovPalette)+
+  scale_y_continuous(limits = c(0, 1), 
+                     breaks = c(0, 0.25, 0.50, 0.75,1),
+                     labels = c(0, 25, 50, 75,100))
+```
+
+
+```{r, eval= F}
+ggsave("relcov_stacked.tiff", 
+       units ="in", width = 5, height = 4, dpi = 300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
+
+# nMDS
+
+Load packages
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+#install.packages("htmltools")
+library(htmltools)
+library(MASS)
+library(dplyr)
+library(readxl)   # to import excel datasets
+```
+
+## Format the data
+
+Load relative benthic cover data
+
+```{r}
+#Relative benthic cover dataframe
+
+cov_df <- read_excel(here("Multi-taxa_data","PLITs","3-Clean_data","Rel_cov_input.xlsx"))
+str(cov_df)
+
+cov_df <- cov_df %>% 
+  rename(Depth = depth)
+
+cov_df <- cov_df %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+cov_df <- cov_df[ ,c(1:6, 25, 7:24)]
+
+cov_df$Site<-ordered(cov_df$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+cov_df$Pressure<-ordered(cov_df$Pressure,levels=c("Low", "Medium", "High"))
+
+cov_df[,c(1,3:6)] <- lapply(cov_df[,c(1,3:6)], as.factor)  ## as.factor() could also be used
+
+cov_df[,8:25] <- lapply(cov_df[,8:25], as.numeric)
+
+cov_df <- cov_df[,-c(17:25)]
+
+str(cov_df)
+
+#create a df with the independent variables
+ind_df <- as.data.frame(cov_df[,c(1:7)])
+str(ind_df)
+```
+
+Convert the database `cov_df`to a matrix
+
+```{r}
+cov_mat <- cov_df[,-c(1:7)]
+rownames(cov_mat) <- cov_df$Transect
+cov_mat <- as.matrix(cov_mat)
+str(cov_mat)
+class(cov_mat)
+```
+## Format and export data for Primer
+
+```{r}
+cov_mat_primer <- t(cov_mat)
+```
+
+```{r}
+ind_df_primer <- ind_df %>%
+  mutate(Pressure_depth = paste(Pressure, Depth, sep='_')) 
+
+ind_df_primer <- ind_df_primer[,-c(1)]
+ind_df_primer <- t(ind_df_primer)
+```
+
+```{r, eval =F}
+#export each data frame to separate sheets in same Excel file
+openxlsx::write.xlsx(list("cov_mat_primer" = cov_mat_primer,
+                          "ind_df_primer" = ind_df_primer),
+                     file = here("Multi-taxa_data","PLITs","3-Clean_data",
+                   "cov_primer.xlsx")) 
+```
+
+## Run the Nonmetric Multidimensional scaling
+
+```{r}
+##metaMDS (isoMDS with random start, reduced  stress)----
+set.seed(69) #random number to start
+cov_nmds_br=metaMDS(cov_mat,distance = "bray",k=2) #Bray-Curtis resemblance matrix;k=2 means 2 dimensional
+```
+
+## Evaluate the nMDS mapping based on the stress and goodness of fit
+
+```{r}
+stressplot(cov_nmds_br) #evaluating NMDS mapping: stressplot
+cov_nmds_br_gof=goodness(cov_nmds_br) #evaluating NMDS mapping: goodness of fit
+cov_nmds_br_gof #smaller the value, the lower stress and better fit
+plot(cov_nmds_br, type="t", main="goodness of fit") # create a plot for goodness of fit visualization:
+points(cov_nmds_br, display="site", cex=cov_nmds_br_gof*100) #display the goodness of fit on the plot
+#Stress lesser, better (>0.2 poor,0.2-0.1 moderate,0.1-0.05 good,<0.05 excellent); 
+#K level higher, stress lesser
+cov_nmds_br$stress
+```
+Stress = `r cov_nmds_br$stress` \< 0.1, not excellent (<0.05), but still a good ordination
+
+Check Stress for each additional dimension
+
+```{r}
+k_vec=1:10
+stress=numeric(length(k_vec))
+relcov_dij=metaMDSdist(cov_mat, trace=FALSE)
+set.seed(69)
+for(i in seq_along(k_vec)) {
+  cov_nmds_br_loop=metaMDSiter(relcov_dij, k=i, trace=FALSE)
+  stress[i]=cov_nmds_br_loop$stress
+}
+plot(k_vec,stress,type="b",ylab="Stress",xlab="Dimensions") #select the K correspondent to the most drastic drop in stress
+rm(k_vec)
+```
+
+## Plot the nMDS with basic R function `plot()`
+
+```{r}
+cov_nmds_br=metaMDS(cov_mat) #Run NMDS
+plot(cov_nmds_br, type="text") #NMDS rough plot
+cov_nmds_br$stress
+```
+
+## nMDS plot with `ggplot() and` with `geom_mark_ellipse()` from `ggforce`
+
+Create input data frame with nMDS scores necessary for visualisation
+with \`ggplot()\`
+
+```{r}
+cov_ndms_scores <- as.data.frame(scores(cov_nmds_br)$sites)  #Using the scores function from vegan to extract the site scores and convert to a data.frame
+cov_ndms_scores$transect <- rownames(cov_ndms_scores) # create a column of transect names
+cov_ndms_scores$site <- ind_df$Site
+cov_ndms_scores$Depth <- ind_df$Depth  #  add the grp variable created earlier
+str(cov_ndms_scores)  #look at the data
+
+
+NMDS1 <- cov_nmds_br$points[,1] ##also found using: > scores(cov_nmds_br)
+NMDS2 <- cov_nmds_br$points[,2]
+nmds_df<-cbind(ind_df, NMDS1, NMDS2)
+rm(NMDS1,NMDS2)
+```
+
+nMDS plot
+
+```{r}
+
+str(cov_nmds_br)
+
+library(ggplot2)
+#install.packages("ggforce")
+library(ggforce)
+
+cov_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=3)+##separates overlapping points
+  geom_mark_ellipse(aes(fill=Site, color=Site), expand = 0)+ # https://luisdva.github.io/rstats/Grouping-points/
+  theme_classic()+
+  ggtitle("nMDS of relative benthic cover")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  guides(color = guide_legend(order = 1,title="Site"),
+         fill = guide_legend(order = 1,title="Site"),
+         shape = guide_legend(order = 2,title="Depth"))+
+  annotate("text", x=-0.45, y=-0.9, 
+           label=paste('Stress =',round(cov_nmds_br$stress,3)),
+           size=4)+
+  annotate("text", x=-0.35, y=-1,
+           label=bquote('Non-metric fit,'~ R^2~"= 0.998"),
+           size=4) #add goodness of fit to plot
+
+cov_ndms_ggplot
+```
+
+nMDS with ellipses based on the pressure level
+
+```{r}
+pal12 <- c("#000000","#004949","#009292","#ffb6db",
+ "#490092","#006ddb","#b66dff","#b6dbff",
+ "#920000","#924900","#24ff24","#ffff6d") #Cols from https://stackoverflow.com/questions/65013406/how-to-generate-30-distinct-colors-that-are-color-blind-friendly 
+
+library(ggnewscale) #necessary for new_scale_color 
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=2.5)+##separates overlapping points
+  scale_color_manual(values= pal12)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"))+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  theme_classic()+
+  ggtitle("nMDS of relative benthic cover")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-.8,1.8))+
+  scale_y_continuous(limits = c(-.7,.9))+
+  annotate("text", x=1.5, y=-0.6, 
+           label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+
+rm(pal12)
+```
+
+```{r}
+library(ggnewscale) #necessary for new_scale_color 
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  scale_color_manual(values= c("green","yellow","red"))+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  theme_classic()+
+  ggtitle("nMDS of relative benthic cover")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-.8,1.8))+
+  scale_y_continuous(limits = c(-.7,.9))+
+    annotate("text", x=1.5, y=-0.6, 
+           label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+```
+
+```{r, eval = F}
+ggsave("ndms_relcov_pressure.tiff", 
+       units ="in", width = 5, height = 4, dpi = 300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
+
+# PERMANOVA AND POST-HOC PAIRWISE PERMANOVA
+
+Load libraries
+
+```{r}
+#VEGAN----
+library(vegan)#load package
+library(MASS)
+library(dplyr)
+
+#install.packages("pairwiseAdonis")
+library(devtools) #to install pairwiseAdonis from GitHub
+library(pairwiseAdonis)
+#install.packages("Rtools")
+# library(remotes) #to use install_github
+# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
+library(pairwiseAdonis)
+
+library(readxl)   # to import excel datasets
+```
+
+Load and format data
+
+```{r}
+#Relative benthic cover dataframe
+
+cov_df <- read_excel(here("Multi-taxa_data","PLITs","3-Clean_data","Rel_cov_input.xlsx"))
+str(cov_df)
+
+cov_df <- cov_df %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High")) %>%
+  rename(Depth = depth)
+
+cov_df <- cov_df[ ,c(1:6, 25, 7:24)]
+
+cov_df$Site<-ordered(cov_df$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+cov_df$Pressure<-ordered(cov_df$Pressure,levels=c("Low", "Medium", "High"))
+
+cov_df[,c(1,3:6)] <- lapply(cov_df[,c(1,3:6)], as.factor)  ## as.factor() could also be used
+
+cov_df[,8:25] <- lapply(cov_df[,8:25], as.numeric)
+
+cov_df <- cov_df[,-c(17:25)]
+
+str(cov_df)
+
+#create a df with the independent variables
+ind_df <- as.data.frame(cov_df[,c(1:7)])
+str(ind_df)
+```
+Convert the database `cov_df`to a matrix
+
+```{r}
+cov_mat <- cov_df[,-c(1:7)]
+rownames(cov_mat) <- cov_df$Transect
+cov_mat <- as.matrix(cov_mat)
+str(cov_mat)
+class(cov_mat)
+```
+
+Create a df with explanatory (independent) variables
+
+```{r}
+ind_df <- as.data.frame(cov_df[,c(1:7)])
+str(ind_df)
+```
+
+## PERMANOVA among the 12 sites
+
+### Question 1: is there a significant difference in benthic cover among sites?
+
+```{r}
+set.seed(69) 
+perm=how(nperm=999)
+relcov_site_pmv=adonis2(cov_mat~Site, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray", 
+                        by = "margin")
+                        
+relcov_site_pmv
+```
+P-value `r relcov_site_pmv$Pr[1]` \< 0.05, so there is a significant
+difference among sites.
+
+### Question 2: is there a significant difference in benthic cover between depth withing sites?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69) 
+perm=how(nperm=999)
+relcov_Depth_pmv <- adonis(cov_mat~Depth, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$Site,
+                           methods="bray",
+                           by = "margin")
+relcov_Depth_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69) 
+h <- how(blocks = ind_df$Site, nperm = 999)
+relcov_blocks_pmv <- adonis2(cov_mat~Depth,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray",
+                             by = "margin")
+
+relcov_blocks_pmv
+```
+
+### Question 3: is there a significant difference in relative benthic cover among anthropogenic pressure level?
+
+```{r}
+set.seed(69)
+perm=how(nperm=999)
+relcov_pressure_pmv=adonis2(cov_mat~Pressure, 
+                        data=ind_df,
+                        permutations =perm,
+                        methods="bray",
+                        by = "margin")
+                        
+relcov_pressure_pmv
+```
+
+### Question 4: is there a significant difference in relative benthic cover among sites within pressure levels?
+
+```{r}
+#SCRIPT WITH adonis()
+set.seed(69)
+perm=how(nperm=999)
+relcov_site_pressure_pmv <- adonis(cov_mat~Site, 
+                           data=ind_df,
+                           permutations =perm,
+                           strata=ind_df$Pressure,
+                           methods="bray",
+                           by = "margin")
+relcov_site_pressure_pmv$aov.tab
+
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69)
+h <- how(blocks = ind_df$Pressure, nperm = 999)
+relcov_site_pressure_pmv <- adonis2(cov_mat~Site,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray",
+                             by = "margin")
+
+relcov_site_pressure_pmv
+```
+
+## Permutation test of multivariate homogeneity of groups dispersions (variances)
+
+Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
+K. Clarke. Permanova+ for primer: Guide to software and statistical
+methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
+PERMANOVA test using permutations assumes only that the samples are
+exchangeable under a true null hypothesis12. The assumption of
+exchangeability is tantamount to assuming that the multivariate
+observations (samples) are independent and identically distributed
+(i.i.d.) under a true null hypothesis. Thus, although there are no
+explicit assumptions regarding the distributions of the original
+variables (they are certainly not assumed to be normally distributed),
+independence and homogeneity of dispersions (in the space of the
+resemblance measure) are directly implied by the permutation procedure.
+Clearly, if samples have very different dispersions in different groups,
+then they are not really exchangeable. Also, if the samples are
+unequally correlated with one another (e.g., temporally or spatially),
+then randomly shuffling them will destroy this kind of inherent
+structure.*
+
+```{r}
+set.seed(69) 
+densityplot(permustats(relcov_site_pmv)) #density plot of permutation results to to check if assumptions are met?
+
+relcov_dist = vegdist(cov_mat,method="bray")
+
+relcov_bd=betadisper(relcov_dist,ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(relcov_bd)
+
+plot(relcov_bd)
+anova(relcov_bd) #F-test on distribution of sites
+```
+
+### Boxplot of within-site distance from centroid visualization with `ggplot()`
+
+Create an input dataframe for the boxplot with mean relative cover by
+category and depth within site
+
+```{r}
+
+relcov_bd$distances #Extract betadisper scores
+
+distcent_df <- data.frame(Distance_to_centroid=relcov_bd$distances,Sites=ind_df$Site, Pressure=ind_df$Pressure) 
+Sites <- relcov_bd$group
+distcent_df[,2]<-factor(distcent_df[,2],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+distcent_df[,3]<-factor(distcent_df[,3],levels=c("Low","Medium","High"))
+
+distcent_mean_df <- distcent_df %>%
+  group_by(Sites) %>% 
+  summarise(`Mean distance to centroid`=round(mean(Distance_to_centroid),2),
+         SD=round(mean(Distance_to_centroid),2)) %>%
+  mutate(Pressure = case_when(Sites == 'HI' | 
+                              Sites == "S1" | 
+                              Sites == "S2" |
+                              Sites == "ZP"~ "Low", 
+                              Sites == 'ZA' | 
+                              Sites == "YO" | 
+                              Sites == "MI" ~ "Medium",
+                              Sites == 'SK' |
+                              Sites == 'SN' | 
+                              Sites == "AW" | 
+                              Sites == "G1" |
+                              Sites == "G2"~ "High"))
+  
+distcent_mean_df <- distcent_mean_df[,c(1,4,2,3)]
+
+relcov_site_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  scale_color_manual(values= c("green","yellow3","red"))+
+  theme_classic()+
+  labs(title="Boxplot of mean distance to centroid by site")+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
+
+relcov_site_box
+
+ggpubr:: ggarrange(relcov_site_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
+```
+
+```{r, eval=F}
+ggsave("relcov_site_box.tiff", 
+       units="in", width=12, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
+
+### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
+
+```{r}
+set.seed(69) 
+permutest(relcov_bd) #permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue
+permutest(relcov_bd, pairwise=TRUE) #pairwise of dispersion test
+```
+
+From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
+for primer: Guide to software and statistical methods. Primer-E Limited,
+2008: \* If significant heterogeneity were detected by PERMDISP and
+differences among groups were also detected using PERMANOVA, then the
+latter could have been caused by differences in location, differences in
+dispersion, or some combination of the two. \*
+
+
+### Post hoc test for PERMANOVA (`pairwise.adonis`)
+
+```{r}
+set.seed(69) 
+relcov_pmv_phoc_holm= pairwise.adonis(cov_mat,ind_df$Site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "holm", 
+                                  reduce = NULL)
+
+relcov_pmv_phoc_holm
+
+set.seed(69) 
+relcov_pmv_phoc_bonf= pairwise.adonis(cov_mat,ind_df$Site,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "bonferroni", 
+                                  reduce = NULL)
+
+relcov_pmv_phoc_bonf 
+```
+
+I can use Bonferroni because it is more conservative and it is the
+adjustment adopted for the other analyses.
+
+N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
+
+## Permutation test of multivariate homogeneity of groups dispersions (variances)
+
+Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
+K. Clarke. Permanova+ for primer: Guide to software and statisticl
+methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
+PERMANOVA test using permutations assumes only that the samples are
+exchangeable under a true null hypothesis12. The assumption of
+exchangeability is tantamount to assuming that the multivariate
+observations (samples) are independent and identically distributed
+(i.i.d.) under a true null hypothesis. Thus, although there are no
+explicit assumptions regarding the distributions of the original
+variables (they are certainly not assumed to be normally distributed),
+independence and homogeneity of dispersions (in the space of the
+resemblance measure) are directly implied by the permutation procedure.
+Clearly, if samples have very different dispersions in different groups,
+then they are not really exchangeable. Also, if the samples are
+unequally correlated with one another (e.g., temporally or spatially),
+then randomly shuffling them will destroy this kind of inherent
+structure.*
+
+```{r}
+set.seed(69) 
+densityplot(permustats(relcov_pressure_pmv)) #density plot of permutation results to to check if assumptions are met?
+
+relcov_dist = vegdist(cov_mat,method="bray")
+
+relcov_bd_pres=betadisper(relcov_dist,ind_df$Pressure)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(relcov_bd_pres)
+
+plot(relcov_bd_pres)
+anova(relcov_bd_pres) #F-test on distribution of sites
+
+```
+
+### Boxplot of within-site distance from centroid visualization with `ggplot()`
+
+Create an input dataframe for the boxplot with mean relative cover by
+category and depth within site
+
+```{r}
+
+relcov_bd_pres$distances #Extract betadisper scores
+
+distcent_df_pres <- data.frame(
+  Distance_to_centroid = relcov_bd_pres$distances, 
+  Pressure = ind_df$Pressure) 
+
+distcent_df_pres$Pressure  <- factor(distcent_df_pres$Pressure,
+                                     levels = c("Low","Medium","High"))
+
+distcent_mean_df_pres <- distcent_df %>%
+  group_by(Pressure) %>% 
+  summarise(`Mean distance to centroid`=round(mean(Distance_to_centroid),2),
+         SD=round(mean(Distance_to_centroid),2))
+
+relcov_pres_box <- ggplot(data=distcent_df_pres,aes(x=Pressure,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_point(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("green","yellow","red"))+
+  scale_color_manual(values= c("green","yellow3","red"))+
+  theme_classic()+
+  labs(title="Boxplot of mean distance to centroid by pressure")+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
+
+relcov_pres_box
+```
+
+### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
+
+```{r}
+set.seed(69) 
+permutest(relcov_bd) #permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue
+permutest(relcov_bd, pairwise=TRUE) #pairwise of dispersion test
+```
+
+From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
+for primer: Guide to software and statistical methods. Primer-E Limited,
+2008: \* If significant heterogeneity were detected by PERMDISP and
+differences among groups were also detected using PERMANOVA, then the
+latter could have been caused by differences in location, differences in
+dispersion, or some combination of the two. \*
+
+### Post hoc test for PERMANOVA (`pairwise.adonis`)
+
+```{r}
+set.seed(69) 
+relcov_pmv_pres_phoc_holm= pairwise.adonis(cov_mat,ind_df$Pressure,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "holm", 
+                                  reduce = NULL)
+
+relcov_pmv_pres_phoc_holm
+
+set.seed(69) 
+relcov_pmv_pres_phoc_bonf= pairwise.adonis(cov_mat,ind_df$Pressure,
+                                  sim.function = "vegdist", 
+                                  sim.method = "bray", 
+                                  p.adjust.m = "bonferroni", 
+                                  reduce = NULL)
+
+relcov_pmv_pres_phoc_bonf 
+```
+
+# SIMPER: Similarity of percentage
+
+From the vignette: *The simper functions performs pairwise comparisons
+of groups of sampling units and finds the contribution of each species
+to the average between-group Bray-Curtis dissimilarity. Although the
+method is called simper, it really studied dissimilarities instead of
+similarities (Clarke 1993).*
+
+## SIMPER per site
+
+```{r}
+relcov_sim=simper(cov_mat, group=ind_df$Site) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim
+str(relcov_sim)
+summary(relcov_sim) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER per depth
+```{r}
+relcov_sim_depth=simper(cov_mat,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim_depth
+summary(relcov_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+## SIMPER per pressure exposure
+```{r}
+relcov_sim_pres=simper(cov_mat,group=ind_df$Pressure) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim_pres
+summary(relcov_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+# References
+
+```{r}
+#install.packages("report")
+library(report)
+report(sessionInfo())
+```
+
