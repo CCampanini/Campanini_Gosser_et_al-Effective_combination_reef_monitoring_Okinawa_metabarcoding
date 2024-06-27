@@ -247,15 +247,22 @@ class(cov_mat)
 ## Format and export data for Primer
 
 ```{r}
-cov_mat_primer <- t(cov_mat)
+cov_mat_primer <- data.frame(t(cov_mat))
+cov_mat_primer$Category <- colnames(cov_mat)
+cov_mat_primer <- cov_mat_primer[,c(70,1:69)]
 ```
 
 ```{r}
 ind_df_primer <- ind_df %>%
   mutate(Pressure_depth = paste(Pressure, Depth, sep='_')) 
 
-ind_df_primer <- ind_df_primer[,-c(1)]
-ind_df_primer <- t(ind_df_primer)
+ind_df_primer <- ind_df_primer[,-c(1,3,6)] # remove transect, transect depth, replicate
+ind_df_primer <- ind_df_primer[,c(4,1:3,5)]
+ind_df_primer <- data.frame(t(ind_df_primer))
+ind_df_rownames <- rownames(ind_df_primer)
+ind_df_primer$Factor <- ind_df_rownames
+ind_df_primer <- ind_df_primer[,c(70,1:69)]
+rm(ind_df_rownames)
 ```
 
 ```{r, eval =F}
