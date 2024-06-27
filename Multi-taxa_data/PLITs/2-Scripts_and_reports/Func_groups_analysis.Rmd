@@ -38,7 +38,7 @@ str(func_mean_depth)
 func_mean_depth$Site <- ordered(func_mean_depth$Site, levels= c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 func_mean_depth$Depth[func_mean_depth$Depth == "Deep"] <- "D"
 func_mean_depth$Depth[func_mean_depth$Depth == "Shallow"] <- "S"
-func_mean_depth[,c(2:4)] <- lapply(func_mean_depth[,c(2:4)], as.factor) 
+func_mean_depth[,c(2:3)] <- lapply(func_mean_depth[,c(2:3)], as.factor) 
 
 str(func_mean_depth)
 
@@ -47,7 +47,16 @@ str(func_mean_depth)
 ## Hard coral stacked bar chart
 
 ```{r}
+hc_mean_depth <- subset(func_mean_depth,func_mean_depth$Category == "hard_coral")
 
+hc_mean_depth$Functional_group[hc_mean_depth$Functional_group == "plate"] <- "solitary"
+
+hc_mean_depth$Functional_group <- ordered(hc_mean_depth$Functional_group, levels= c("encrusting", "solitary", "submassive", "massive", "laminar","table", "foliose", "digitate","corymbose", "hispidose" , "branching"))
+```
+
+
+
+```{r}
 #remotes::install_github("wilkelab/cowplot")
 #install.packages("colorspace")
 library(colorspace)
@@ -66,20 +75,58 @@ ag_GrnYl5
 sequential_hcl(1, palette= "Emrld") # --> "#0B4151"
 
   
-plasma_ag_GrnYl_11 = c("#001889","#91008D","#D24E71","#EDA200","gold1", #plasma
-                        "#EDEF5C","#82CC6C","#17A77E","#007E7D","#255668","#0B4151")
+plasma_ag_GrnYl_11 = c("#46039f","#9c179e","#d8576b","#ed7953","#EDA200","gold1", #plasma
+                        "#EDEF5C","#82CC6C","#17A77E","#007E7D","#0B4151")
 
-ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
-       aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
+ggplot(hc_mean_depth, 
+       aes(x=Depth, y=mean_cat_tot/100, fill=Functional_group)) +
   geom_bar(position="stack",stat="identity", color = "black")+
   facet_grid(~ Site)+
   theme_classic()+
   labs(x="Depth",
        y="Mean hard coral cover by growth form [m]")+
   guides(fill=guide_legend(title="Growth form"))+
-  scale_y_continuous(label = c("0","5","10","15"))+
-  scale_fill_manual(values=plasma_ag_GrnYl_11)
+  scale_fill_manual(values=plasma_ag_GrnYl_11)+
+  scale_y_continuous(breaks = seq(0,15,3))
 ```
+
+```{r}
+palette11plasma=c("#f0f921","gold1","#fdca26","#fb9f3a","#ed7953","#d8576b",
+                  "#bd3786","#9c179e","#7201a8","#46039f","#0d0887")
+
+ggplot(hc_mean_depth, 
+       aes(x=Depth, y=mean_cat_tot/100, fill=Functional_group)) +
+  geom_bar(position="stack",stat="identity", color = "black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [m]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_fill_manual(values=palette11plasma)+
+  scale_y_continuous(breaks = seq(0,15,3))
+```
+```{r}
+plasma_ag_GrnYl_11 = c("#001889","#91008D","#D24E71","#EDA200","gold1", "#EDEF5C","#82CC6C","#17A77E","#007E7D","#255668","#0B4151")
+
+hc_mean_depth$Functional_group <- as.character(hc_mean_depth$Functional_group)
+
+hc_mean_depth$Functional_group <- as.factor(hc_mean_depth$Functional_group)
+
+hc_mean_depth$Functional_group <- ordered(hc_mean_depth$Functional_group, levels= c("encrusting", "solitary", "submassive", "massive", "laminar","table", "foliose", "digitate","corymbose", "hispidose" , "branching"))
+
+ggplot(hc_mean_depth, 
+       aes(x=Depth, y=mean_cat_tot/100, fill=Functional_group)) +
+  geom_bar(position="stack",stat="identity", color = "black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean hard coral cover by growth form [m]")+
+  guides(fill=guide_legend(title="Growth form"))+
+  scale_fill_manual(values=plasma_ag_GrnYl_11)+
+  scale_y_continuous(breaks = seq(0,15,3))
+```
+
+
 
 ## Hard coral stacked bar chart in percentage
 
@@ -122,9 +169,11 @@ RedGreen3 = c("#841859","#7CC57D","#005600")
 
 algae_func_stacked <- ggplot(alg_mean_depth,aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
   geom_bar(position="fill",stat="identity",alpha=0.7,color="black")+
-  geom_text(aes(x=Depth, y= mean_cat_tot, label = Perc_func), 
+  geom_text(aes(x=Depth, y= mean_cat_tot, 
+                label = Perc_func), 
             data = subset(alg_mean_depth,alg_mean_depth$Perc_func > 2),
-            size = 2.5, position = position_fill(vjust = 0.5),color="black")+
+            size = 2.5, 
+            position = position_fill(vjust = 0.5),color="black")+
   facet_grid(~ Site)+
   theme_classic()+
   labs(x="Depth",
@@ -137,7 +186,22 @@ cvd_grid(algae_func_stacked)
 
 algae_func_stacked
 ```
+```{r}
 
+algae_func_stacked <- 
+  ggplot(alg_mean_depth,
+         aes(x=Depth, y=mean_cat_tot/100, fill=Functional_group)) +
+  geom_bar(position="stack",stat="identity",alpha=0.7,color="black")+
+  facet_grid(~ Site)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean algae cover by functional group [m]")+
+  guides(fill=guide_legend(title="Functional groups"))+
+  scale_y_continuous(breaks = seq(0,25,5),limits=c(0,25))+
+  scale_fill_manual(values=RedGreen3)
+
+algae_func_stacked
+```
 
 ```{r, eval = F}
 ggsave("algae_func_stacked.tiff", 
@@ -402,8 +466,6 @@ str(func_input)
 #create a df with the independent variables
 ind_df <- as.data.frame(func_input[,c(1:6)])
 str(ind_df)
-
-
 ```
 
 Convert the database `func_input`to a matrix
@@ -414,6 +476,33 @@ rownames(func_mat) <- func_input$Trans
 func_mat <- as.matrix(func_mat)
 str(func_mat)
 class(func_mat)
+```
+## Format and export data for Primer
+
+```{r}
+func_mat_primer <- data.frame(t(func_mat))
+func_mat_primer$Category <- colnames(func_mat)
+func_mat_primer <- func_mat_primer[,c(70,1:69)]
+```
+
+```{r}
+ind_df_primer <- ind_df %>%
+  mutate(Pressure_depth = paste(Pressure, Depth, sep='_')) 
+
+ind_df_primer <- ind_df_primer[,c(6,2,3,5,7)] # remove transect, replicate and reorder
+ind_df_primer <- data.frame(t(ind_df_primer))
+ind_df_rownames <- rownames(ind_df_primer)
+ind_df_primer$Factor <- ind_df_rownames
+ind_df_primer <- ind_df_primer[,c(70,1:69)]
+rm(ind_df_rownames)
+```
+
+```{r, eval =F}
+#export each data frame to separate sheets in same Excel file
+openxlsx::write.xlsx(list("func_mat_primer" = func_mat_primer,
+                          "ind_df_primer" = ind_df_primer),
+                     file = here("Multi-taxa_data","PLITs","3-Clean_data",
+                   "func_primer.xlsx")) 
 ```
 
 ## PERMANOVA among the 4 sites
