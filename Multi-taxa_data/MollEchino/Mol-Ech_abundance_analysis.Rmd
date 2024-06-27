@@ -768,7 +768,7 @@ head(inv_mat)
 str(ind_df)
 ```
 
-## PERMANOVA among the 4 sites
+## PERMANOVA among the 12 sites
 
 ### Question 1: is there a significant difference in mollusks and echinoderm abundance among sites?
 
@@ -983,7 +983,7 @@ inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$site,
 inv_pmv_phoc_bonf
 ```
 
-### Post-hoc tert FOR PERMANOVA PER SITES
+### Post-hoc test FOR PERMANOVA PER PRESSURE
 N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
 
 ```{r}
