@@ -1,0 +1,115 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: edna_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S7 Jaccard (+d)
+
+Group factor: PressDepth
+Number of permutations: 9999
+
+Number of groups: 6
+Number of samples: 67
+
+DEVIATIONS FROM CENTROID
+F: 13.026  df1: 5  df2: 61
+P(perm): 0.0001
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(low_shallow,low_deep)	  2.8724	 0.0086				
+(low_shallow,medium_shallow)	  1.9612	 0.1523				
+(low_shallow,medium_deep)	  8.1981	 0.0001				
+(low_shallow,high_shallow)	  1.9012	 0.0645				
+(low_shallow,high_deep)	  2.1564	 0.0258				
+(low_deep,medium_shallow)	 0.30895	 0.8058				
+(low_deep,medium_deep)	  7.6317	 0.0001				
+(low_deep,high_shallow)	  1.0217	 0.3517				
+(low_deep,high_deep)	  1.0396	 0.3284				
+(medium_shallow,medium_deep)	  4.3996	 0.0054				
+(medium_shallow,high_shallow)	 0.89081	 0.4606				
+(medium_shallow,high_deep)	 0.89964	 0.4468				
+(medium_deep,high_shallow)	  7.8341	 0.0003				
+(medium_deep,high_deep)	  8.8348	 0.0001				
+(high_shallow,high_deep)	0.042612	 0.9595				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+low_shallow	  14	 42.093	  0.565
+low_deep	  15	 45.259	0.92419
+medium_shallow	   8	 45.925	 2.4298
+medium_deep	   6	   32.7	 1.1713
+high_shallow	  12	 43.957	0.83033
+high_deep	  12	 44.004	 0.6942
+
+Sample	Group	Distance
+CapeZanpa_shallow_seawater_3	low_shallow	  41.099
+CapeZanpa_shallow_seawater_2	low_shallow	  42.408
+CapeZanpa_shallow_seawater_1	low_shallow	  43.741
+Zatsun_shallow_seawater_3	low_shallow	  42.764
+Zatsun_shallow_seawater_2	low_shallow	  43.809
+Zatsun_shallow_seawater_1	low_shallow	  41.931
+Sakibaru2_shallow_seawater_3	low_shallow	  41.965
+Sakibaru2_shallow_seawater_1	low_shallow	  44.116
+Sakibaru1_shallow_seawater_3	low_shallow	  42.408
+Sakibaru1_shallow_seawater_2	low_shallow	  37.956
+Sakibaru1_shallow_seawater_1	low_shallow	  38.472
+Hizushi_shallow_seawater_3	low_shallow	  40.104
+Hizushi_shallow_seawater_2	low_shallow	  43.033
+Hizushi_shallow_seawater_1	low_shallow	  45.499
+CapeZanpa_deep_seawater_3	low_deep	  43.976
+CapeZanpa_deep_seawater_2	low_deep	   44.54
+CapeZanpa_deep_seawater_1	low_deep	  46.843
+Zatsun_deep_seawater_3	low_deep	  44.574
+Zatsun_deep_seawater_2	low_deep	  41.755
+Zatsun_deep_seawater_1	low_deep	  42.958
+Sakibaru2_deep_seawater_3	low_deep	  41.429
+Sakibaru2_deep_seawater_2	low_deep	  43.619
+Sakibaru2_deep_seawater_1	low_deep	  39.964
+Sakibaru1_deep_seawater_3	low_deep	   50.34
+Sakibaru1_deep_seawater_2	low_deep	  52.316
+Sakibaru1_deep_seawater_1	low_deep	  50.619
+Hizushi_deep_seawater_3	low_deep	  47.456
+Hizushi_deep_seawater_2	low_deep	  44.116
+Hizushi_deep_seawater_1	low_deep	  44.378
+Yonama_shallow_seawater_3	medium_shallow	   41.21
+Yonama_shallow_seawater_2	medium_shallow	  42.227
+Sukuta_shallow_seawater_3	medium_shallow	  57.186
+Sukuta_shallow_seawater_2	medium_shallow	  52.211
+Sukuta_shallow_seawater_1	medium_shallow	  51.706
+Mizugama_shallow_seawater_3	medium_shallow	  38.747
+Mizugama_shallow_seawater_2	medium_shallow	  44.661
+Mizugama_shallow_seawater_1	medium_shallow	  39.454
+Yonama_deep_seawater_1	medium_deep	  28.281
+Yonama_deep_seawater_3	medium_deep	  34.393
+Yonama_deep_seawater_2	medium_deep	    35.3
+Mizugama_deep_seawater_3	medium_deep	  31.359
+Mizugama_deep_seawater_2	medium_deep	   35.57
+Mizugama_deep_seawater_1	medium_deep	  31.295
+Sunabe_shallow_seawater_3	high_shallow	  50.203
+Sunabe_shallow_seawater_2	high_shallow	  46.286
+Sunabe_shallow_seawater_1	high_shallow	   44.62
+GinowanPort2_shallow_seawater_3	high_shallow	  42.416
+GinowanPort2_shallow_seawater_2	high_shallow	  41.653
+GinowanPort2_shallow_seawater_1	high_shallow	  46.958
+GinowanPort1_shallow_seawater_3	high_shallow	   40.77
+GinowanPort1_shallow_seawater_2	high_shallow	  40.873
+GinowanPort1_shallow_seawater_1	high_shallow	  41.887
+Awa_shallow_seawater_3	high_shallow	  45.055
+Awa_shallow_seawater_2	high_shallow	  44.733
+Awa_shallow_seawater_1	high_shallow	  42.036
+Sunabe_deep_seawater_3	high_deep	  43.548
+Sunabe_deep_seawater_2	high_deep	  43.543
+Sunabe_deep_seawater_1	high_deep	  42.701
+GinowanPort2_deep_seawater_3	high_deep	  44.572
+GinowanPort2_deep_seawater_2	high_deep	  44.323
+GinowanPort2_deep_seawater_1	high_deep	  46.719
+GinowanPort1_deep_seawater_3	high_deep	  42.863
+GinowanPort1_deep_seawater_2	high_deep	  44.465
+GinowanPort1_deep_seawater_1	high_deep	  38.747
+Awa_deep_seawater_3	high_deep	  42.104
+Awa_deep_seawater_2	high_deep	  46.953
+Awa_deep_seawater_1	high_deep	  47.504
+

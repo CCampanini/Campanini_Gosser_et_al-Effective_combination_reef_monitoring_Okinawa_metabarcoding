@@ -1,0 +1,117 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: func_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity
+
+Group factor: Pressure_depth
+Number of permutations: 9999
+
+Number of groups: 6
+Number of samples: 69
+
+DEVIATIONS FROM CENTROID
+F: 4.7284  df1: 5  df2: 63
+P(perm): 0.0043
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(High_Deep,High_Shallow)	 2.0902	 0.0613				
+(High_Deep,Low_Deep)	 1.0265	  0.383				
+(High_Deep,Low_Shallow)	0.92449	 0.4432				
+(High_Deep,Medium_Deep)	   2.14	 0.0913				
+(High_Deep,Medium_Shallow)	 1.1388	 0.3262				
+(High_Shallow,Low_Deep)	 3.2953	 0.0061				
+(High_Shallow,Low_Shallow)	 3.3017	 0.0058				
+(High_Shallow,Medium_Deep)	0.13751	 0.9054				
+(High_Shallow,Medium_Shallow)	 1.1735	 0.2998				
+(Low_Deep,Low_Shallow)	0.24385	 0.7999				
+(Low_Deep,Medium_Deep)	 3.4549	  0.005				
+(Low_Deep,Medium_Shallow)	 2.6942	 0.0193				
+(Low_Shallow,Medium_Deep)	 3.5255	 0.0051				
+(Low_Shallow,Medium_Shallow)	 2.7718	 0.0165				
+(Medium_Deep,Medium_Shallow)	 1.3095	 0.2809				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	    SE
+High_Deep	  12	 16.075	2.2331
+High_Shallow	  15	 22.201	1.9186
+Low_Deep	   9	 13.076	1.5624
+Low_Shallow	   9	 13.535	1.0498
+Medium_Deep	  12	  22.59	2.0693
+Medium_Shallow	  12	 19.186	1.5734
+
+Sample	Group	Distance
+AW_D1	High_Deep	  32.019
+AW_D2	High_Deep	   16.71
+AW_D3	High_Deep	  22.755
+G1_D1	High_Deep	  9.5797
+G1_D2	High_Deep	  9.2998
+G1_D3	High_Deep	   11.88
+G2_D1	High_Deep	  10.473
+G2_D2	High_Deep	   23.56
+G2_D3	High_Deep	  13.351
+SN_D1	High_Deep	  16.333
+SN_D2	High_Deep	  4.9611
+SN_D3	High_Deep	  21.983
+AW_S1	High_Shallow	  23.132
+AW_S2	High_Shallow	  26.579
+AW_S3	High_Shallow	  27.407
+G1_S1	High_Shallow	  39.595
+G1_S2	High_Shallow	  24.502
+G1_S3	High_Shallow	  17.983
+G2_S1	High_Shallow	  28.067
+G2_S2	High_Shallow	  17.163
+G2_S3	High_Shallow	  31.349
+SK_S1	High_Shallow	  21.078
+SK_S2	High_Shallow	  16.198
+SK_S3	High_Shallow	  15.052
+SN_S1	High_Shallow	  15.425
+SN_S2	High_Shallow	  17.104
+SN_S3	High_Shallow	  12.379
+HI_D1	Low_Deep	   15.54
+HI_D2	Low_Deep	  14.017
+HI_D3	Low_Deep	  16.021
+S1_D1	Low_Deep	  14.019
+S1_D2	Low_Deep	  10.865
+S1_D3	Low_Deep	  3.2201
+S2_D1	Low_Deep	  19.343
+S2_D2	Low_Deep	  15.233
+S2_D3	Low_Deep	  9.4305
+HI_S1	Low_Shallow	  10.447
+HI_S2	Low_Shallow	   13.97
+HI_S3	Low_Shallow	  12.319
+S1_S1	Low_Shallow	  11.133
+S1_S2	Low_Shallow	  14.899
+S1_S3	Low_Shallow	  14.662
+S2_S1	Low_Shallow	  9.4487
+S2_S2	Low_Shallow	  15.062
+S2_S3	Low_Shallow	  19.877
+MI_D1	Medium_Deep	  23.908
+MI_D2	Medium_Deep	  40.531
+MI_D3	Medium_Deep	  26.489
+YO_D1	Medium_Deep	  12.902
+YO_D2	Medium_Deep	  16.383
+YO_D3	Medium_Deep	  19.529
+ZA_D1	Medium_Deep	  21.297
+ZA_D2	Medium_Deep	  16.331
+ZA_D3	Medium_Deep	  23.059
+ZP_D1	Medium_Deep	  21.768
+ZP_D2	Medium_Deep	  28.689
+ZP_D3	Medium_Deep	  20.199
+MI_S1	Medium_Shallow	  27.074
+MI_S2	Medium_Shallow	  17.252
+MI_S3	Medium_Shallow	   15.92
+YO_S1	Medium_Shallow	  27.819
+YO_S2	Medium_Shallow	  9.2851
+YO_S3	Medium_Shallow	  12.878
+ZA_S1	Medium_Shallow	  23.309
+ZA_S2	Medium_Shallow	   17.99
+ZA_S3	Medium_Shallow	  22.988
+ZP_S1	Medium_Shallow	  20.125
+ZP_S2	Medium_Shallow	    18.1
+ZP_S3	Medium_Shallow	  17.496
+

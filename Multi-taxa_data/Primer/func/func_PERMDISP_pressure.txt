@@ -1,0 +1,102 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: func_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity
+
+Group factor: Pressure
+Number of permutations: 9999
+
+Number of groups: 3
+Number of samples: 69
+
+DEVIATIONS FROM CENTROID
+F: 9.4366  df1: 2  df2: 66
+P(perm): 0.0005
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(High,Low)	 4.9115	 0.0002				
+(High,Medium)	0.20443	 0.8508				
+(Low,Medium)	 3.5862	 0.0007				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	    SE
+High	  27	 22.096	1.1456
+Low	  18	 14.424	0.8319
+Medium	  24	 21.695	1.6369
+
+Sample	Group	Distance
+AW_D1	High	   28.78
+AW_D2	High	  17.848
+AW_D3	High	  20.363
+AW_S1	High	  22.984
+AW_S2	High	  32.797
+AW_S3	High	  31.227
+G1_D1	High	  16.122
+G1_D2	High	  17.688
+G1_D3	High	  19.773
+G1_S1	High	  35.097
+G1_S2	High	  17.368
+G1_S3	High	  22.587
+G2_D1	High	  18.082
+G2_D2	High	  30.618
+G2_D3	High	  19.907
+G2_S1	High	  28.329
+G2_S2	High	   19.87
+G2_S3	High	  24.904
+SK_S1	High	   27.55
+SK_S2	High	   13.49
+SK_S3	High	  22.451
+SN_D1	High	  17.613
+SN_D2	High	  16.064
+SN_D3	High	  14.669
+SN_S1	High	  19.872
+SN_S2	High	  24.288
+SN_S3	High	  16.251
+HI_D1	Low	  12.219
+HI_D2	Low	  13.668
+HI_D3	Low	  13.962
+HI_S1	Low	   14.12
+HI_S2	Low	   16.38
+HI_S3	Low	  15.806
+S1_D1	Low	  16.804
+S1_D2	Low	  15.561
+S1_D3	Low	  6.6478
+S1_S1	Low	  10.834
+S1_S2	Low	  14.573
+S1_S3	Low	   13.88
+S2_D1	Low	  22.871
+S2_D2	Low	  15.013
+S2_D3	Low	  11.109
+S2_S1	Low	  10.767
+S2_S2	Low	  18.707
+S2_S3	Low	  16.716
+MI_D1	Medium	  29.758
+MI_D2	Medium	  44.796
+MI_D3	Medium	  29.839
+MI_S1	Medium	  20.826
+MI_S2	Medium	  15.794
+MI_S3	Medium	  12.271
+YO_D1	Medium	  10.269
+YO_D2	Medium	  12.374
+YO_D3	Medium	  23.813
+YO_S1	Medium	  33.876
+YO_S2	Medium	  15.489
+YO_S3	Medium	  12.011
+ZA_D1	Medium	  23.596
+ZA_D2	Medium	  17.135
+ZA_D3	Medium	  20.775
+ZA_S1	Medium	  24.977
+ZA_S2	Medium	  20.527
+ZA_S3	Medium	  25.698
+ZP_D1	Medium	  18.694
+ZP_D2	Medium	  29.092
+ZP_D3	Medium	  16.552
+ZP_S1	Medium	  15.585
+ZP_S2	Medium	  23.318
+ZP_S3	Medium	  23.604
+

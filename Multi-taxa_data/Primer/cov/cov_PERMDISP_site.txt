@@ -1,0 +1,174 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: cov_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site
+Number of permutations: 9999
+
+Number of groups: 12
+Number of samples: 69
+
+DEVIATIONS FROM CENTROID
+F: 6.3332  df1: 11  df2: 57
+P(perm): 0.0004
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(AW,G1)	  2.7493	 0.0177				
+(AW,G2)	  3.9236	 0.0027				
+(AW,HI)	  1.3593	 0.2339				
+(AW,MI)	   8.707	 0.0026				
+(AW,S1)	 0.78994	 0.4581				
+(AW,S2)	  4.4989	 0.0048				
+(AW,SK)	  1.6973	 0.2589				
+(AW,SN)	  4.0391	  0.008				
+(AW,YO)	  2.0984	  0.072				
+(AW,ZA)	   2.091	 0.1312				
+(AW,ZP)	   5.351	 0.0027				
+(G1,G2)	  1.9506	 0.0706				
+(G1,HI)	  2.3264	 0.0444				
+(G1,MI)	  2.1311	 0.0942				
+(G1,S1)	  2.4922	 0.0395				
+(G1,S2)	 0.86331	 0.4907				
+(G1,SK)	  1.3017	  0.382				
+(G1,SN)	  1.5169	 0.1876				
+(G1,YO)	0.040416	 0.9722				
+(G1,ZA)	  1.4603	 0.2685				
+(G1,ZP)	 0.73146	 0.5271				
+(G2,HI)	  3.6645	 0.0023				
+(G2,MI)	 0.78303	 0.4473				
+(G2,S1)	  3.7657	 0.0024				
+(G2,S2)	  2.7615	 0.0018				
+(G2,SK)	  2.3287	 0.0457				
+(G2,SN)	 0.62752	 0.5299				
+(G2,YO)	  1.7302	  0.144				
+(G2,ZA)	  3.1107	 0.0019				
+(G2,ZP)	  1.6374	 0.1134				
+(HI,MI)	  8.2306	 0.0023				
+(HI,S1)	 0.56966	 0.5905				
+(HI,S2)	  3.6795	 0.0028				
+(HI,SK)	 0.90108	 0.4597				
+(HI,SN)	  3.7124	  0.011				
+(HI,YO)	  1.7741	  0.153				
+(HI,ZA)	  1.3344	 0.1942				
+(HI,ZP)	  4.8088	 0.0028				
+(MI,S1)	  8.4083	 0.0024				
+(MI,S2)	  5.2236	 0.0031				
+(MI,SK)	  5.0573	 0.0128				
+(MI,SN)	0.036784	 0.9566				
+(MI,YO)	  1.6063	  0.212				
+(MI,ZA)	  5.4528	 0.0013				
+(MI,ZP)	  1.8538	 0.0788				
+(S1,S2)	  4.0011	 0.0026				
+(S1,SK)	  1.2276	 0.3577				
+(S1,SN)	    3.84	 0.0111				
+(S1,YO)	  1.9013	 0.1111				
+(S1,ZA)	  1.6355	 0.1587				
+(S1,ZP)	  5.0192	 0.0022				
+(S2,SK)	  1.7397	 0.2246				
+(S2,SN)	  2.5403	 0.0304				
+(S2,YO)	 0.69751	 0.8603				
+(S2,ZA)	  1.1917	  0.283				
+(S2,ZP)	  2.4599	 0.0267				
+(SK,SN)	  2.3094	 0.0825				
+(SK,YO)	  1.0008	 0.7669				
+(SK,ZA)	 0.38614	 0.6711				
+(SK,ZP)	  2.8287	  0.023				
+(SN,YO)	   1.283	 0.3499				
+(SN,ZA)	  2.9661	 0.0222				
+(SN,ZP)	  1.1161	 0.3197				
+(YO,ZA)	  1.1736	 0.5649				
+(YO,ZP)	 0.53144	 0.7051				
+(ZA,ZP)	   3.062	 0.0108				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+AW	   6	 2.5571	0.41473
+G1	   6	 6.9591	 1.5465
+G2	   6	 12.839	 2.5875
+HI	   6	 3.2793	 0.3321
+MI	   6	 10.709	0.83937
+S1	   6	 2.9961	0.36995
+S2	   6	 5.5504	0.52028
+SK	   3	 3.9309	0.81767
+SN	   6	 10.788	 1.9953
+YO	   6	 7.0647	 2.1077
+ZA	   6	  4.423	0.79015
+ZP	   6	 8.3023	0.99034
+
+Sample	Group	Distance
+AW_D1	AW	  4.4986
+AW_D2	AW	  1.7663
+AW_D3	AW	  1.7622
+AW_S1	AW	  2.5198
+AW_S2	AW	  2.5991
+AW_S3	AW	  2.1963
+G1_D1	G1	  12.745
+G1_D2	G1	  2.7607
+G1_D3	G1	  3.0051
+G1_S1	G1	  7.2697
+G1_S2	G1	  6.8036
+G1_S3	G1	    9.17
+G2_D1	G2	  9.7227
+G2_D2	G2	  22.943
+G2_D3	G2	  6.4766
+G2_S1	G2	  18.012
+G2_S2	G2	   11.52
+G2_S3	G2	  8.3592
+HI_D1	HI	   2.798
+HI_D2	HI	  1.9984
+HI_D3	HI	  3.8485
+HI_S1	HI	  3.8385
+HI_S2	HI	  4.1434
+HI_S3	HI	  3.0489
+MI_D1	MI	  13.083
+MI_D2	MI	   9.325
+MI_D3	MI	  11.362
+MI_S1	MI	  12.752
+MI_S2	MI	  9.9126
+MI_S3	MI	   7.819
+S1_D1	S1	  3.2499
+S1_D2	S1	  3.1714
+S1_D3	S1	  3.8883
+S1_S1	S1	  3.2612
+S1_S2	S1	   3.174
+S1_S3	S1	  1.2318
+S2_D1	S2	  4.8248
+S2_D2	S2	  6.7656
+S2_D3	S2	  6.3097
+S2_S1	S2	  3.4105
+S2_S2	S2	  5.4644
+S2_S3	S2	  6.5274
+SK_S1	SK	   2.538
+SK_S2	SK	  5.3694
+SK_S3	SK	  3.8853
+SN_D1	SN	  8.7235
+SN_D2	SN	   16.83
+SN_D3	SN	  12.954
+SN_S1	SN	  10.743
+SN_S2	SN	  2.4774
+SN_S3	SN	  13.003
+YO_D1	YO	  6.6115
+YO_D2	YO	  8.3823
+YO_D3	YO	  16.662
+YO_S1	YO	  3.0809
+YO_S2	YO	  2.7345
+YO_S3	YO	  4.9175
+ZA_D1	ZA	  6.6581
+ZA_D2	ZA	  1.9445
+ZA_D3	ZA	  5.6551
+ZA_S1	ZA	  5.1826
+ZA_S2	ZA	  4.9575
+ZA_S3	ZA	  2.1403
+ZP_D1	ZP	   4.859
+ZP_D2	ZP	  8.7484
+ZP_D3	ZP	  11.244
+ZP_S1	ZP	  6.3605
+ZP_S2	ZP	  10.516
+ZP_S3	ZP	  8.0866
+

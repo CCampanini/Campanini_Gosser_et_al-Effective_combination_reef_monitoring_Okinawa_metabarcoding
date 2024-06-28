@@ -1,0 +1,174 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem1
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: site
+Number of permutations: 9999
+
+Number of groups: 12
+Number of samples: 69
+
+DEVIATIONS FROM CENTROID
+F: 5.5198  df1: 11  df2: 57
+P(perm): 0.0005
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(AW,G1)	  2.4443	  0.063				
+(AW,G2)	  1.6973	 0.0964				
+(AW,HI)	  1.1674	 0.3706				
+(AW,MI)	 0.29817	 0.7345				
+(AW,S1)	  3.3252	 0.0041				
+(AW,S2)	 0.61672	 0.6042				
+(AW,SK)	  3.2837	 0.0139				
+(AW,SN)	  0.7561	 0.4645				
+(AW,YO)	  1.8979	 0.0844				
+(AW,ZA)	 0.75953	 0.5344				
+(AW,ZP)	  1.2546	 0.0861				
+(G1,G2)	  1.1061	 0.3794				
+(G1,HI)	  3.2918	 0.0077				
+(G1,MI)	  2.4182	 0.0661				
+(G1,S1)	  4.7557	 0.0029				
+(G1,S2)	  2.5048	 0.0538				
+(G1,SK)	  3.8447	 0.0141				
+(G1,SN)	  2.9186	 0.0408				
+(G1,YO)	  3.8493	 0.0022				
+(G1,ZA)	  3.1208	 0.0139				
+(G1,ZP)	  3.4257	  0.007				
+(G2,HI)	  2.8216	 0.0116				
+(G2,MI)	  1.6464	 0.1428				
+(G2,S1)	  4.9659	 0.0026				
+(G2,S2)	  1.8418	 0.1373				
+(G2,SK)	   4.322	 0.0123				
+(G2,SN)	  2.3169	   0.03				
+(G2,YO)	  3.6467	 0.0018				
+(G2,ZA)	  2.6281	 0.0204				
+(G2,ZP)	  3.0454	 0.0045				
+(HI,MI)	  1.6811	 0.1586				
+(HI,S1)	  2.0565	 0.0968				
+(HI,S2)	 0.18412	 0.8712				
+(HI,SK)	  2.4293	 0.0816				
+(HI,SN)	 0.31486	 0.8137				
+(HI,YO)	 0.60164	 0.6547				
+(HI,ZA)	 0.59953	 0.6298				
+(HI,ZP)	0.050505	 0.9416				
+(MI,S1)	  4.6275	 0.0015				
+(MI,S2)	 0.85553	 0.5041				
+(MI,SK)	  4.6716	 0.0132				
+(MI,SN)	  1.1344	 0.3707				
+(MI,YO)	  2.7322	 0.0084				
+(MI,ZA)	  1.3211	 0.1923				
+(MI,ZP)	  1.9086	 0.1505				
+(S1,S2)	  1.4282	 0.1459				
+(S1,SK)	  1.3273	 0.2948				
+(S1,SN)	  2.1463	 0.0506				
+(S1,YO)	  1.7764	   0.13				
+(S1,ZA)	  3.3491	 0.0252				
+(S1,ZP)	  2.5395	 0.0427				
+(S2,SK)	  1.5224	 0.2801				
+(S2,SN)	0.046847	 0.9733				
+(S2,YO)	 0.56546	 0.7058				
+(S2,ZA)	 0.17357	 0.8839				
+(S2,ZP)	 0.16208	 0.9172				
+(SK,SN)	  2.3271	 0.0341				
+(SK,YO)	  2.5633	 0.0896				
+(SK,ZA)	    3.78	 0.0234				
+(SK,ZP)	  3.0833	 0.0492				
+(SN,YO)	 0.87896	 0.5494				
+(SN,ZA)	 0.17291	 0.8779				
+(SN,ZP)	 0.30188	 0.8093				
+(YO,ZA)	  1.4628	 0.2662				
+(YO,ZP)	 0.77097	 0.4533				
+(ZA,ZP)	 0.64706	 0.5798				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	    SE
+AW	   6	 19.319	2.4598
+G1	   6	  31.44	4.3057
+G2	   6	 25.722	2.8602
+HI	   6	 15.406	2.2776
+MI	   6	 20.216	1.7326
+S1	   6	 9.9073	1.4005
+S2	   6	 16.293	4.2462
+SK	   3	 6.5772	2.2093
+SN	   6	  16.53	2.7495
+YO	   6	 13.722	1.6275
+ZA	   6	 17.082	1.6211
+ZP	   6	  15.55	1.7251
+
+Sample	Group	Distance
+AW_D1	AW	  18.707
+AW_D2	AW	  18.899
+AW_D3	AW	  20.678
+AW_S1	AW	   11.28
+AW_S2	AW	  16.667
+AW_S3	AW	  29.685
+G1_D1	G1	  44.975
+G1_D2	G1	  31.045
+G1_D3	G1	  43.592
+G1_S1	G1	  20.724
+G1_S2	G1	  22.721
+G1_S3	G1	  25.581
+G2_D1	G2	  25.198
+G2_D2	G2	  18.533
+G2_D3	G2	   38.03
+G2_S1	G2	  27.721
+G2_S2	G2	  25.275
+G2_S3	G2	  19.575
+HI_D1	HI	  13.336
+HI_D2	HI	  22.815
+HI_D3	HI	  17.182
+HI_S1	HI	  14.137
+HI_S2	HI	  6.3756
+HI_S3	HI	  18.589
+MI_D1	MI	  27.995
+MI_D2	MI	  21.368
+MI_D3	MI	  17.981
+MI_S1	MI	  17.023
+MI_S2	MI	  20.322
+MI_S3	MI	  16.608
+S1_D1	S1	   5.374
+S1_D2	S1	  12.201
+S1_D3	S1	   9.631
+S1_S1	S1	  10.113
+S1_S2	S1	  14.951
+S1_S3	S1	   7.174
+S2_D1	S2	  34.641
+S2_D2	S2	  9.2237
+S2_D3	S2	  15.981
+S2_S1	S2	   17.11
+S2_S2	S2	  3.9167
+S2_S3	S2	  16.886
+SK_S1	SK	  9.8021
+SK_S2	SK	   2.349
+SK_S3	SK	  7.5805
+SN_D1	SN	  17.147
+SN_D2	SN	  28.207
+SN_D3	SN	  11.296
+SN_S1	SN	  10.139
+SN_S2	SN	   12.91
+SN_S3	SN	  19.481
+YO_D1	YO	  14.165
+YO_D2	YO	   15.47
+YO_D3	YO	  19.308
+YO_S1	YO	   7.803
+YO_S2	YO	  14.821
+YO_S3	YO	  10.761
+ZA_D1	ZA	  14.511
+ZA_D2	ZA	  14.984
+ZA_D3	ZA	  21.862
+ZA_S1	ZA	  18.062
+ZA_S2	ZA	  11.876
+ZA_S3	ZA	  21.195
+ZP_D1	ZP	  12.416
+ZP_D2	ZP	  14.148
+ZP_D3	ZP	   11.98
+ZP_S1	ZP	  13.283
+ZP_S2	ZP	  19.032
+ZP_S3	ZP	  22.441
+

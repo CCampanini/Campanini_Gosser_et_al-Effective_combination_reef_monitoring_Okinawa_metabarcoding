@@ -1,0 +1,99 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: func_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity
+
+Group factor: Depth
+Number of permutations: 9999
+
+Number of groups: 2
+Number of samples: 69
+
+DEVIATIONS FROM CENTROID
+F: 0.24566  df1: 1  df2: 67
+P(perm): 0.6464
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(Deep,Shallow)	0.49564	 0.6393				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	    SE
+Deep	  33	 21.527	1.1483
+Shallow	  36	 20.687	1.2338
+
+Sample	Group	Distance
+AW_D1	Deep	  32.609
+AW_D2	Deep	  17.935
+AW_D3	Deep	  20.886
+G1_D1	Deep	  19.908
+G1_D2	Deep	  18.622
+G1_D3	Deep	  20.135
+G2_D1	Deep	  16.284
+G2_D2	Deep	  27.746
+G2_D3	Deep	  17.574
+HI_D1	Deep	   15.26
+HI_D2	Deep	  18.665
+HI_D3	Deep	  17.195
+MI_D1	Deep	  22.349
+MI_D2	Deep	  43.831
+MI_D3	Deep	  31.332
+S1_D1	Deep	  25.516
+S1_D2	Deep	  23.177
+S1_D3	Deep	  17.466
+S2_D1	Deep	  31.483
+S2_D2	Deep	  16.307
+S2_D3	Deep	  19.765
+SN_D1	Deep	  19.089
+SN_D2	Deep	  20.092
+SN_D3	Deep	  18.823
+YO_D1	Deep	  12.406
+YO_D2	Deep	   17.56
+YO_D3	Deep	  15.688
+ZA_D1	Deep	    19.3
+ZA_D2	Deep	  15.136
+ZA_D3	Deep	    22.9
+ZP_D1	Deep	  24.139
+ZP_D2	Deep	  32.685
+ZP_D3	Deep	  18.513
+AW_S1	Shallow	  25.149
+AW_S2	Shallow	  30.464
+AW_S3	Shallow	  28.555
+G1_S1	Shallow	  36.137
+G1_S2	Shallow	  28.413
+G1_S3	Shallow	  18.002
+G2_S1	Shallow	  34.079
+G2_S2	Shallow	  22.781
+G2_S3	Shallow	  30.233
+HI_S1	Shallow	  10.995
+HI_S2	Shallow	  10.914
+HI_S3	Shallow	  10.381
+MI_S1	Shallow	  22.535
+MI_S2	Shallow	   15.96
+MI_S3	Shallow	  14.797
+S1_S1	Shallow	  15.825
+S1_S2	Shallow	  18.028
+S1_S3	Shallow	  19.371
+S2_S1	Shallow	  11.007
+S2_S2	Shallow	  14.222
+S2_S3	Shallow	  23.276
+SK_S1	Shallow	  24.365
+SK_S2	Shallow	   15.82
+SK_S3	Shallow	  14.533
+SN_S1	Shallow	  14.245
+SN_S2	Shallow	  19.095
+SN_S3	Shallow	  10.044
+YO_S1	Shallow	  34.222
+YO_S2	Shallow	  16.389
+YO_S3	Shallow	  11.469
+ZA_S1	Shallow	  26.175
+ZA_S2	Shallow	  22.425
+ZA_S3	Shallow	  26.354
+ZP_S1	Shallow	  18.245
+ZP_S2	Shallow	  25.082
+ZP_S3	Shallow	  25.146
+

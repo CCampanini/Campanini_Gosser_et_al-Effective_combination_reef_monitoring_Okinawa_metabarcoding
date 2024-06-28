@@ -1,0 +1,59 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: edna_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S7 Jaccard (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PERMANOVA table of results
+	  	          	      	        	       	Unique
+Source	df	        SS	    MS	Pseudo-F	P(perm)	 perms
+Pr	 2	     22874	 11437	  2.3059	  0.002	  9849
+De	 1	    1812.4	1812.4	  1.0283	 0.4397	  9919
+Si(Pr)	 9	     45964	5107.1	  3.6822	 0.0001	  9692
+PrxDe	 2	    3703.5	1851.8	  1.0499	 0.4211	  9915
+Si(Pr)xDe**	 8	     14178	1772.2	  1.2778	 0.0001	  9488
+Res	44	     61026	  1387	        	       	      
+Total	66	1.5215E+05	      	        	       	      
+
+** Term has one or more empty cells
+
+Details of the expected mean squares (EMS) for the model
+Source	EMS
+Pr	1*V(Res) + 5.2514*V(Si(Pr)) + 20.552*S(Pr)
+De	1*V(Res) + 2.8193*V(Si(Pr)xDe) + 29.277*S(De)
+Si(Pr)	1*V(Res) + 5.468*V(Si(Pr))
+PrxDe	1*V(Res) + 2.8299*V(Si(Pr)xDe) + 10.066*S(PrxDe)
+Si(Pr)xDe	1*V(Res) + 2.8929*V(Si(Pr)xDe)
+Res	1*V(Res)
+
+Construction of Pseudo-F ratio(s) from mean squares
+Source	Numerator	Denominator	Num.df	Den.df
+Pr	1*Pr	0.9604*Si(Pr) + 0.039603*Res	     2	   9.2
+De	1*De	0.97456*Si(Pr)xDe + 0.025435*Res	     1	  8.33
+Si(Pr)	1*Si(Pr)	1*Res	     9	    44
+PrxDe	1*PrxDe	0.97823*Si(Pr)xDe + 0.021773*Res	     2	  8.28
+Si(Pr)xDe	1*Si(Pr)xDe	1*Res	     8	    44
+
+Estimates of components of variation
+Source	Estimate	Sq.root
+S(Pr)	  315.16	 17.753
+S(De)	   1.706	 1.3062
+V(Si(Pr))	  680.35	 26.083
+S(PrxDe)	  8.7362	 2.9557
+V(Si(Pr)xDe)	  133.18	  11.54
+V(Res)	    1387	 37.242
+

@@ -1,0 +1,104 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: edna_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S7 Jaccard (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)'
+
+Within level 'medium' of factor 'Pressure'
+	      	       	Unique
+Groups	     t	P(perm)	 perms
+CapeZanpa, Zatsun	 1.976	 0.0023	  8838
+CapeZanpa, Yonama	1.9189	 0.0021	  8884
+CapeZanpa, Sukuta	 1.712	  0.001	   830
+Zatsun, Yonama	1.0683	 0.3472	  8956
+Zatsun, Sukuta	1.9153	 0.0014	   829
+Yonama, Sukuta	1.7607	 0.0018	   560
+
+Denominators
+Groups	Denominator	Den.df
+CapeZanpa, Zatsun	1*Res	     8
+CapeZanpa, Yonama	1*Res	     7
+CapeZanpa, Sukuta	1*Res	     6
+Zatsun, Yonama	1*Res	     7
+Zatsun, Sukuta	1*Res	     6
+Yonama, Sukuta	1*Res	     5
+
+Average Similarity between/within groups
+	CapeZanpa	Zatsun	Yonama	Sukuta
+CapeZanpa	   47.207	      	      	      
+Zatsun	   39.182	53.227	      	      
+Yonama	   39.283	53.026	53.682	      
+Sukuta	   23.336	21.199	21.805	30.693
+
+Within level 'high' of factor 'Pressure'
+	      	       	Unique
+Groups	     t	P(perm)	 perms
+Sunabe, Mizugama	1.4541	 0.0046	  8869
+Sunabe, GinowanPort2	2.6142	 0.0022	  8823
+Sunabe, GinowanPort1	2.5967	 0.0018	  8863
+Sunabe, Awa	2.3905	  0.003	  8857
+Mizugama, GinowanPort2	2.3987	 0.0027	  8892
+Mizugama, GinowanPort1	2.3758	 0.0023	  8880
+Mizugama, Awa	2.3127	 0.0021	  8875
+GinowanPort2, GinowanPort1	1.0313	 0.4515	  8795
+GinowanPort2, Awa	2.5513	 0.0021	  8814
+GinowanPort1, Awa	2.5914	 0.0019	  8810
+
+Denominators
+Groups	Denominator	Den.df
+Sunabe, Mizugama	1*Res	     8
+Sunabe, GinowanPort2	1*Res	     8
+Sunabe, GinowanPort1	1*Res	     8
+Sunabe, Awa	1*Res	     8
+Mizugama, GinowanPort2	1*Res	     8
+Mizugama, GinowanPort1	1*Res	     8
+Mizugama, Awa	1*Res	     8
+GinowanPort2, GinowanPort1	1*Res	     8
+GinowanPort2, Awa	1*Res	     8
+GinowanPort1, Awa	1*Res	     8
+
+Average Similarity between/within groups
+	Sunabe	Mizugama	GinowanPort2	GinowanPort1	   Awa
+Sunabe	50.941	        	            	            	      
+Mizugama	46.281	  49.265	            	            	      
+GinowanPort2	26.228	  28.429	      40.942	            	      
+GinowanPort1	29.233	  31.397	      43.404	      45.203	      
+Awa	36.129	  36.083	      27.467	      29.566	51.225
+
+Within level 'low' of factor 'Pressure'
+	      	       	Unique
+Groups	     t	P(perm)	 perms
+Sakubaru2, Sakubaru1	1.2194	 0.0369	  8873
+Sakubaru2, Hizushi	1.3453	 0.0123	  8898
+Sakubaru1, Hizushi	1.4564	 0.0027	  8886
+
+Denominators
+Groups	Denominator	Den.df
+Sakubaru2, Sakubaru1	1*Res	     7
+Sakubaru2, Hizushi	1*Res	     7
+Sakubaru1, Hizushi	1*Res	     8
+
+Average Similarity between/within groups
+	Sakubaru2	Sakubaru1	Hizushi
+Sakubaru2	   42.334	         	       
+Sakubaru1	   38.478	   39.385	       
+Hizushi	   37.925	   35.723	 41.485
+

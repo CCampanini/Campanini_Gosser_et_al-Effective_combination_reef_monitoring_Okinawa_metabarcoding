@@ -1,0 +1,104 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: cov_res_matrix
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)'
+
+Within level 'High' of factor 'Pressure'
+	      	       	Unique
+Groups	     t	P(perm)	 perms
+AW, G1	3.5575	 0.0017	  8877
+AW, G2	9.7696	 0.0019	  8855
+AW, SK	2.2312	 0.0405	   829
+AW, SN	3.3285	 0.0068	  8894
+G1, G2	5.7755	 0.0025	  8842
+G1, SK	1.0843	 0.3289	   830
+G1, SN	1.9351	 0.0413	  8941
+G2, SK	7.5702	 0.0008	   825
+G2, SN	2.9525	 0.0138	  8895
+SK, SN	1.7619	 0.0773	   830
+
+Denominators
+Groups	Denominator	Den.df
+AW, G1	1*Res	     8
+AW, G2	1*Res	     8
+AW, SK	1*Res	     6
+AW, SN	1*Res	     8
+G1, G2	1*Res	     8
+G1, SK	1*Res	     6
+G1, SN	1*Res	     8
+G2, SK	1*Res	     6
+G2, SN	1*Res	     8
+SK, SN	1*Res	     6
+
+Average Similarity between/within groups
+	    AW	    G1	    G2	    SK	    SN
+AW	96.089	      	      	      	      
+G1	86.128	88.892	      	      	      
+G2	65.465	72.029	80.896	      	      
+SK	91.692	90.142	67.358	93.252	      
+SN	79.046	82.445	75.824	80.277	83.101
+
+Within level 'Low' of factor 'Pressure'
+	      	       	Unique
+Groups	     t	P(perm)	 perms
+HI, S1	6.8611	  0.003	  8829
+HI, S2	5.1402	 0.0018	  8837
+S1, S2	2.5783	 0.0024	  8939
+
+Denominators
+Groups	Denominator	Den.df
+HI, S1	1*Res	     8
+HI, S2	1*Res	     8
+S1, S2	1*Res	     8
+
+Average Similarity between/within groups
+	    HI	    S1	    S2
+HI	95.112	      	      
+S1	86.273	95.392	      
+S2	84.618	90.666	91.567
+
+Within level 'Medium' of factor 'Pressure'
+	      	       	Unique
+Groups	     t	P(perm)	 perms
+MI, YO	2.9622	 0.0039	  8937
+MI, ZA	5.1082	 0.0021	  8895
+MI, ZP	5.9091	 0.0012	  8920
+YO, ZA	2.0185	 0.0589	  8963
+YO, ZP	1.8187	 0.0829	  8940
+ZA, ZP	2.4271	 0.0036	  8872
+
+Denominators
+Groups	Denominator	Den.df
+MI, YO	1*Res	     8
+MI, ZA	1*Res	     8
+MI, ZP	1*Res	     8
+YO, ZA	1*Res	     8
+YO, ZP	1*Res	     8
+ZA, ZP	1*Res	     8
+
+Average Similarity between/within groups
+	    MI	    YO	    ZA	    ZP
+MI	84.733	      	      	      
+YO	81.813	88.908	      	      
+ZA	83.645	87.783	93.114	      
+ZP	81.096	87.839	89.745	88.477
+

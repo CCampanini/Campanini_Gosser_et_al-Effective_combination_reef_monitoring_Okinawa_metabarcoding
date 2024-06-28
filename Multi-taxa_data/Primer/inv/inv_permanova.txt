@@ -1,0 +1,59 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem1
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+pressure	pr	Fixed	     3
+site	si	Random	    12
+depth	de	Fixed	     2
+
+PERMANOVA table of results
+	  	      	      	        	       	Unique
+Source	df	    SS	    MS	Pseudo-F	P(perm)	 perms
+pr	 2	5143.4	2571.7	  2.1808	 0.0637	  9572
+de	 1	  1936	  1936	  1.9663	  0.117	  9943
+si(pr)	 9	 10681	1186.8	  3.8784	 0.0001	  9900
+prxde	 2	2628.2	1314.1	  1.3346	 0.2677	  9950
+si(pr)xde**	 8	7876.8	 984.6	  3.2177	 0.0001	  9892
+Res	46	 14076	305.99	        	       	      
+Total	68	 42904	      	        	       	      
+
+** Term has one or more empty cells
+
+Details of the expected mean squares (EMS) for the model
+Source	EMS
+pr	1*V(Res) + 5.6182*V(si(pr)) + 21.818*S(pr)
+de	1*V(Res) + 3*V(si(pr)xde) + 32.4*S(de)
+si(pr)	1*V(Res) + 5.6667*V(si(pr))
+prxde	1*V(Res) + 3*V(si(pr)xde) + 10.909*S(prxde)
+si(pr)xde	1*V(Res) + 3*V(si(pr)xde)
+Res	1*V(Res)
+
+Construction of Pseudo-F ratio(s) from mean squares
+Source	Numerator	Denominator	Num.df	Den.df
+pr	1*pr	0.99144*si(pr) + 0.0085561*Res	     2	  9.04
+de	1*de	1*si(pr)xde	     1	     8
+si(pr)	1*si(pr)	1*Res	     9	    46
+prxde	1*prxde	1*si(pr)xde	     2	     8
+si(pr)xde	1*si(pr)xde	1*Res	     8	    46
+
+Estimates of components of variation
+Source	Estimate	Sq.root
+S(pr)	  63.821	 7.9888
+S(de)	  29.365	  5.419
+V(si(pr))	  155.43	 12.467
+S(prxde)	  30.203	 5.4957
+V(si(pr)xde)	   226.2	  15.04
+V(Res)	  305.99	 17.493
+
