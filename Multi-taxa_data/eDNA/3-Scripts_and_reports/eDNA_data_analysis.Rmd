@@ -63,7 +63,6 @@ Okinawa_env$herma_score <- as.factor(Okinawa_env$herma_score)
 Okinawa_env$other_pressures <- as.factor(Okinawa_env$other_pressures)
 ```
 
-
 #Plot for taxonomic ranks
 
 # Count occurrences of each taxonomic rank
@@ -283,7 +282,8 @@ evenness <- H/log(richness)
 ```{r}
 alpha <- cbind(shannon = H, richness = richness, pielou = evenness, Okinawa_env)
 head(alpha)
-alpha$Location<-ordered(alpha$Location,levels=c("Hizushi", "Sakibaru1", "Sakibaru2", "CapeZanpa", "Zatsun", "Yonama", "Mizugama","Sukuta", "Sunabe", "Awa", "GinowanPort1", "GinowanPort2"))
+alpha$Location<-ordered(alpha$Location,levels=c("Hizushi", "Sakubaru1", "Sakubaru2", "CapeZanpa", "Zatsun", "Yonama", "Mizugama","Sukuta", "Sunabe", "Awa", "GinowanPort1", "GinowanPort2"))
+alpha$impact<-ordered(alpha$impact,levels=c("low","medium","high"))
 ```
 
 ## Plot alpha diversity
@@ -333,7 +333,100 @@ plot_grid(plot.shan_loc + theme(legend.position = "none"),
           ncol = 3)   
 ```
 
-   
+###  Plot alpha diversity as violinplots based on pressure
+
+```{r}
+violin_rich_pressure <- ggplot(alpha, 
+                        aes(x = impact, y = richness, 
+                            fill = impact,
+                            color = impact)
+                        ) +
+  geom_violin(alpha = 0.8, 
+              trim = F,
+              draw_quantiles = F) +
+  geom_jitter(width = 0.2, 
+              height = 0, 
+              size = 2,
+              alpha = 0.6) +
+  ylab("Species Richness (#ESV)") +
+  xlab("Pressure level") +
+  scale_x_discrete(label = c("Low","Medium","High"))+
+  scale_fill_manual(values = c(rgb(0.6, 0.8, 0.6),
+                               rgb(1, 0.85, 0.4),
+                               rgb(1, 0.6, 0.6)
+                               )
+                    )+
+  scale_color_manual(values= c(rgb(0.2, 0.3, 0.4), 
+                               rgb(0.99, 0.65, 0.04), 
+                               rgb(0.86, 0.2, 0.13)),  
+                    )+
+  theme_classic()+
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 15))+
+  guides(fill = "none",
+         color = "none")
+  
+
+violin_rich_pressure
+```
+```{r}
+ggsave("violin_rich_pressure.tiff",
+       units="in", width=5, height=7, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA","4-Output")
+       )
+```
+
+### Alpha diversity violin plot per pressure per depth
+
+```{r}
+violin_rich_pressure_depth <- ggplot(alpha, 
+                        aes(x = depth, y = richness, 
+                            fill = impact,
+                            color = impact)
+                        ) +
+  geom_violin(aes(alpha = depth),
+              trim = F,
+              draw_quantiles = F) +
+  geom_jitter(width = 0.2, 
+              height = 0, 
+              size = 2,
+              alpha = 0.6) +
+  facet_grid(~ impact)+
+  ylab("Species Richness (#ESV)") +
+  xlab("Depth within pressure level") +
+  scale_x_discrete(label = c("Deep", "Shallow"))+
+  scale_fill_manual(values = c(rgb(0.6, 0.8, 0.6),
+                               rgb(1, 0.85, 0.4),
+                               rgb(1, 0.6, 0.6)
+                               )
+                    )+
+  scale_color_manual(values= c(rgb(0.2, 0.3, 0.4), 
+                               rgb(0.99, 0.65, 0.04), 
+                               rgb(0.86, 0.2, 0.13)),  
+                    )+
+  scale_alpha_manual(values=c(1,.6))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 15),
+        panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2)
+        )+
+  guides(fill = "none",
+         color = "none",
+         alpha = "none")
+  
+
+violin_rich_pressure_depth
+```
+
+```{r}
+ggsave("violin_rich_pressure_depth.tiff",
+       units="in", width=5, height=7, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA","4-Output")
+       )
+```
+
 
 # Test for differences
 # Kruskal-Wallis test for all components
@@ -450,7 +543,6 @@ df_div_stat_impact
 ```{r}
 Ok.j <- t(otu_table(Ok))
 Ok.jac <- vegdist(Ok.j, method = "jaccard", binary = T)
-Ok.jac
 ```
 
 #Dendrogram
@@ -537,6 +629,7 @@ perm.Ok
 ```
 
 ```{r}
+set.seed(69) #random number to start
 perm.Ok <- adonis2(Ok.jac ~ impact/Location*depth, 
                    data = Okinawa_env, 
                    permutations = 9999, 
@@ -544,6 +637,7 @@ perm.Ok <- adonis2(Ok.jac ~ impact/Location*depth,
 perm.Ok
 ```
 ```{r}
+set.seed(69) #random number to start
 perm.Ok <- adonis2(Ok.jac ~ depth*(impact/Location), 
                    data = Okinawa_env, 
                    permutations = 9999, 
@@ -734,7 +828,7 @@ pie_charts <- family_counts %>%
 pie_charts[[3]]  # Show the pie chart for the first site
 ```
 
-# Save the pie charts as images in the "Piecharts_site" folder
+### Save the pie charts as images in the "Piecharts_site" folder
 
 ```{r}
 lapply(1:length(pie_charts), 
@@ -747,6 +841,193 @@ lapply(1:length(pie_charts),
   )
 ```
 
+# Venn diagram
+
+```{r}
+ok_venn_df <- (Okinawa_Tax$ID)
+               
+Ok_merge_impact <- merge_samples(Ok, "impact")
+Ok_merge_impact_melt <- psmelt(Ok_merge_impact)
+
+Ok_esv_impact_venn <- Ok_merge_impact_melt[,c(1:3)] 
+Ok_esv_impact_venn <- subset(Ok_esv_impact_venn,
+                             Ok_esv_impact_venn$Abundance != 0) # delete rows w/ abundance=0
+Ok_esv_impact_venn <- Ok_esv_impact_venn[,-3] # remove abundance
+```
+
+```{r}
+esv_high <- subset(Ok_esv_impact_venn,
+                         Ok_esv_impact_venn$Sample== "high")$OTU
+esv_low <- subset(Ok_esv_impact_venn,
+                         Ok_esv_impact_venn$Sample== "low")$OTU
+esv_medium <- subset(Ok_esv_impact_venn,
+                         Ok_esv_impact_venn$Sample== "medium")$OTU
+
+esv_venn_list <- list(low = esv_low,
+                      medium = esv_medium,
+                      high = esv_high
+                      )
+```
+
+
+```{r, eval = F}
+install.packages("ggvenn")
+```
+```{r}
+library(ggvenn)
+ggvenn(
+  esv_venn_list, 
+  fill_color = c("#0073C2FF", "#EFC000FF", "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4
+  )
+```
+
+```{r, eval =F}
+install.packages("eulerr")
+```
+
+
+```{r}
+library(eulerr)
+esv_venn_extracted <- euler(c("Low" = 281,
+                              "Medium" = 248,
+                              "High" = 231,
+                              "Low&High" = 40,
+                              "Low&Medium" = 59,
+                              "Medium&High" = 65,
+                              "Low&Medium&High" = 173),
+                              shape = "ellipse"
+                              )
+
+esv_impact_venn <- plot(esv_venn_extracted,
+                        quantities = list(type = "counts"),
+                        fill = c(rgb(0.6, 0.8, 0.6),
+                                 rgb(1, 0.85, 0.4),
+                                 rgb(1, 0.6, 0.6)
+                                 ),
+                        edges = list(col = "white",
+                                        alpha = 0,
+                                        lex = 2)
+)
+
+esv_impact_venn
+```
+
+
+
+
+```{r}
+library(ggVennDiagram)
+ggVennDiagram(esv_venn_list, label_alpha = 0)
+```
+
+
+
+```{r}
+esv_counts_total <- Ok_merge_impact_melt %>%
+  group_by(Sample) %>%
+  summarize(TotalESV = sum(Abundance > 0)) %>%
+  ungroup()
+```
+
+
+## Create pie charts based on taxonomic richness on the family level merge based on Location
+
+```{r}
+Ok_merge <- merge_samples(Ok, "Location")
+Ok_merge_fam <- tax_glom(Ok_merge, "Family")
+otu_table(Ok_merge_fam) <- ifelse(otu_table(Ok_merge_fam) > 0 ,1,0)
+Ok_merge_fam_melt <- psmelt(Ok_merge_fam)
+colours <- viridis(20)
+```
+
+Step 1: Calculate the number of taxonomic families assigned at each site
+
+```{r}
+family_counts_total <- Ok_merge_fam_melt %>%
+  group_by(Sample, Phylum) %>%
+  summarize(TotalFamilies = sum(Abundance > 0)) %>%
+  ungroup()
+```
+
+Step 2: Create a pie chart for the total dataset
+
+```{r}
+pie_chart_total <- ggplot(family_counts_total, 
+                          aes(x = "", y = TotalFamilies, fill = Phylum)) +
+  geom_bar(stat = "identity") +
+  coord_polar("y", start = 0) +
+  ggtitle("Total Dataset") +
+  scale_fill_manual(values = colours) +  # Specify the color palette
+  theme_void()
+
+pie_chart_total
+```
+
+## Create pie charts based on taxonomic richness on the family level for each location
+
+Calculate total families for each location
+
+```{r}
+total_families <- Ok_merge_fam_melt %>%
+  group_by(Sample, Phylum) %>%
+  summarise(TotalFamilies = sum(Abundance > 0)) %>%
+  ungroup() %>%
+  group_by(Sample) %>%
+  summarise(TotalFamilies = sum(TotalFamilies))
+```
+
+Determine the threshold for each location
+
+```{r}
+total_families <- total_families %>%
+  mutate(Threshold = 0.1 * TotalFamilies)
+```
+
+Filter phyla based on threshold for each location
+
+```{r}
+family_counts <- Ok_merge_fam_melt %>%
+  group_by(Sample, Phylum) %>%
+  summarise(TotalFamilies = sum(Abundance > 0)) %>%
+  ungroup() %>%
+  left_join(total_families, by = "Sample")
+```
+
+Plot
+
+```{r}
+pie_charts <- family_counts %>%
+  group_split(Sample) %>%
+  map(~ {
+    site_data <- .
+    ggplot(site_data, aes(x = "", y = TotalFamilies.x, fill = Phylum)) +
+      geom_bar(stat = "identity") +
+      geom_text(aes(label = paste("Total Number of Families:", unique(TotalFamilies.y))), 
+               x = 0, y = 0, vjust = -24, hjust = 1, size = 4) +  # Add text annotation for total families
+      coord_polar("y", start = 0) +
+      ggtitle(unique(site_data$Sample)) +
+      scale_fill_manual(values = ifelse(site_data$TotalFamilies.x > site_data$Threshold, colours, "grey50")) +  # Highlight phyla above threshold
+      theme_void() +
+      theme(legend.position = "none", plot.margin = margin(2, 2, 2, 2, "cm"))
+  })
+
+# Show or save the pie charts
+pie_charts[[3]]  # Show the pie chart for the first site
+```
+
+### Save the pie charts as images in the "Piecharts_site" folder
+
+```{r}
+lapply(1:length(pie_charts), 
+       function(i) {
+  ggsave(paste0("pie_chart_site_", i, ".png"), 
+         pie_charts[[i]],
+         path = here ("Multi-taxa_data","eDNA","4-Output","Piecharts_site")
+  )
+         }
+  )
+```
 
 # ANCOMBC analysis for differential abundance of groups
 
