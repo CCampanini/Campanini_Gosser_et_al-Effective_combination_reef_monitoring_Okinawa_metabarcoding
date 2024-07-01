@@ -63,9 +63,11 @@ Okinawa_env$herma_score <- as.factor(Okinawa_env$herma_score)
 Okinawa_env$other_pressures <- as.factor(Okinawa_env$other_pressures)
 ```
 
-#Plot for taxonomic ranks
+# Plot for taxonomic ranks
 
-# Count occurrences of each taxonomic rank
+## Count occurrences of each taxonomic rank
+
+```{r}
 all_counts <- Okinawa_Tax %>%
   count(Phylum, Class, Order, Family, Genus, Species, ID) %>%
   summarise(Phylum = sum(!is.na(Phylum)),
@@ -96,7 +98,6 @@ unique_counts <- Okinawa_Tax %>%
             Species = n_distinct(Species), 
             ESVs = n_distinct(ID))
 
-
 # Reshape the data for plotting
 unique_counts_long <- unique_counts %>%
   pivot_longer(cols = everything(), names_to = "Taxonomic rank", values_to = "Count")
@@ -115,7 +116,11 @@ labels_df <- combined_counts %>%
   mutate(label = paste(Count.x, Count.y, sep = "/")) %>%
   select(`Taxonomic rank`, label)
 
-# Create a stacked bar chart
+```
+
+## Create a stacked bar chart
+
+```{r}
 ggplot(combined_counts, aes(x = `Taxonomic rank`)) +
      geom_bar(aes(y = Count.x, fill = "Total Counts"), stat = "identity", alpha = 0.5) +
      geom_bar(aes(y = Count.y, fill = "Unique Counts"), stat = "identity") +
@@ -124,11 +129,9 @@ ggplot(combined_counts, aes(x = `Taxonomic rank`)) +
      scale_fill_manual(values = c("Total Counts" = "#19a483", "Unique Counts" = "#19a483")) +
      labs(x = "Taxonomic rank", y = "Count") +
      theme_classic()
-     
+```
 
-######
-# Further analysis with Phyloseq
-######
+# Analysis with Phyloseq
 
 ```{r}
 esv_mat <- as.matrix(column_to_rownames(Okinawa_Otu, "ID"))
@@ -143,13 +146,14 @@ Ok <- phyloseq(ESV, TAX, samples)
 metadata <- data.frame(sample_data(Ok))
 ```
 
-#just to check it worked
+## just to check it worked
 ```{r}
 Ok
 sample_names(Ok)
 sample_variables(Ok)
 head(sample_data(Ok))
 ```
+
 ## Cleaning up the taxonomy table to fix empty cells
 
 ```{r}
@@ -188,7 +192,6 @@ tax_table(Ok) <- as.matrix(tax.clean)
 View(tax_table(Ok))
 ```
 
-
 # Read abundance of the samples
 
 ```{r}
@@ -213,7 +216,6 @@ Ok %>%
 
 ### Bar chart relative abundances
 
-
 ```{r}
 Okrel = transform_sample_counts(Ok, function(x) x / sum(x))
 Ok2 <- psmelt(Okrel)
@@ -222,8 +224,6 @@ ggplot(Ok2, aes(x = Sample, y = Abundance, fill = Phylum)) +
   scale_fill_viridis_d() +  # Using viridis color palette
   labs(x = "Sample", y = "Abundance", fill = "Phylum") 
 ```
-
-
 
 # Hierarchical clustering tree based on taxonomic distances
 
@@ -644,6 +644,7 @@ perm.Ok <- adonis2(Ok.jac ~ depth*(impact/Location),
                    by = "terms")
 perm.Ok
 ```
+
 ## PERMDISP
 
 ```{r}
@@ -665,6 +666,7 @@ library(pairwiseAdonis)
 pperm.Ok <- pairwise.adonis2(Ok.jac ~ Location, data = Okinawa_env, permutations = 999)
 pperm.Ok
 ```
+
 #dbrda
 
 ```{r}
@@ -920,9 +922,6 @@ esv_impact_venn
 library(ggVennDiagram)
 ggVennDiagram(esv_venn_list, label_alpha = 0)
 ```
-
-
-
 ```{r}
 esv_counts_total <- Ok_merge_impact_melt %>%
   group_by(Sample) %>%
@@ -930,104 +929,6 @@ esv_counts_total <- Ok_merge_impact_melt %>%
   ungroup()
 ```
 
-
-## Create pie charts based on taxonomic richness on the family level merge based on Location
-
-```{r}
-Ok_merge <- merge_samples(Ok, "Location")
-Ok_merge_fam <- tax_glom(Ok_merge, "Family")
-otu_table(Ok_merge_fam) <- ifelse(otu_table(Ok_merge_fam) > 0 ,1,0)
-Ok_merge_fam_melt <- psmelt(Ok_merge_fam)
-colours <- viridis(20)
-```
-
-Step 1: Calculate the number of taxonomic families assigned at each site
-
-```{r}
-family_counts_total <- Ok_merge_fam_melt %>%
-  group_by(Sample, Phylum) %>%
-  summarize(TotalFamilies = sum(Abundance > 0)) %>%
-  ungroup()
-```
-
-Step 2: Create a pie chart for the total dataset
-
-```{r}
-pie_chart_total <- ggplot(family_counts_total, 
-                          aes(x = "", y = TotalFamilies, fill = Phylum)) +
-  geom_bar(stat = "identity") +
-  coord_polar("y", start = 0) +
-  ggtitle("Total Dataset") +
-  scale_fill_manual(values = colours) +  # Specify the color palette
-  theme_void()
-
-pie_chart_total
-```
-
-## Create pie charts based on taxonomic richness on the family level for each location
-
-Calculate total families for each location
-
-```{r}
-total_families <- Ok_merge_fam_melt %>%
-  group_by(Sample, Phylum) %>%
-  summarise(TotalFamilies = sum(Abundance > 0)) %>%
-  ungroup() %>%
-  group_by(Sample) %>%
-  summarise(TotalFamilies = sum(TotalFamilies))
-```
-
-Determine the threshold for each location
-
-```{r}
-total_families <- total_families %>%
-  mutate(Threshold = 0.1 * TotalFamilies)
-```
-
-Filter phyla based on threshold for each location
-
-```{r}
-family_counts <- Ok_merge_fam_melt %>%
-  group_by(Sample, Phylum) %>%
-  summarise(TotalFamilies = sum(Abundance > 0)) %>%
-  ungroup() %>%
-  left_join(total_families, by = "Sample")
-```
-
-Plot
-
-```{r}
-pie_charts <- family_counts %>%
-  group_split(Sample) %>%
-  map(~ {
-    site_data <- .
-    ggplot(site_data, aes(x = "", y = TotalFamilies.x, fill = Phylum)) +
-      geom_bar(stat = "identity") +
-      geom_text(aes(label = paste("Total Number of Families:", unique(TotalFamilies.y))), 
-               x = 0, y = 0, vjust = -24, hjust = 1, size = 4) +  # Add text annotation for total families
-      coord_polar("y", start = 0) +
-      ggtitle(unique(site_data$Sample)) +
-      scale_fill_manual(values = ifelse(site_data$TotalFamilies.x > site_data$Threshold, colours, "grey50")) +  # Highlight phyla above threshold
-      theme_void() +
-      theme(legend.position = "none", plot.margin = margin(2, 2, 2, 2, "cm"))
-  })
-
-# Show or save the pie charts
-pie_charts[[3]]  # Show the pie chart for the first site
-```
-
-### Save the pie charts as images in the "Piecharts_site" folder
-
-```{r}
-lapply(1:length(pie_charts), 
-       function(i) {
-  ggsave(paste0("pie_chart_site_", i, ".png"), 
-         pie_charts[[i]],
-         path = here ("Multi-taxa_data","eDNA","4-Output","Piecharts_site")
-  )
-         }
-  )
-```
 
 # ANCOMBC analysis for differential abundance of groups
 
@@ -1044,10 +945,12 @@ if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 BiocManager::install(version = "3.19")
 
+BiocManager::install("ANCOMBC")
+
 devtools::install_github("FrederickHuangLin/ANCOMBC")
 ```
 
-ANCOMB analysis
+## ANCOM-BC2 analysis per phylum
 
 ```{r}
 library(ANCOMBC)
@@ -1065,14 +968,19 @@ pseudo_sens = out$pseudo_sens_tab
 ```
 
 
-# remove genus having no significant p-values among comparisons
-#any_true_impact <- res_pair$diff_impactmedium == TRUE|
- #res_pair$diff_impacthigh == TRUE|
-  #res_pair$diff_impacthigh_impactmedium == TRUE
+### remove genus having no significant p-values among comparisons
 
-#res_pair_impact <- filter(res_pair,any_true_impact)
+```{r, eval = F }
+any_true_impact <- res_pair$diff_impactmedium == TRUE|
+ res_pair$diff_impacthigh == TRUE|
+  res_pair$diff_impacthigh_impactmedium == TRUE
 
-# preparation for drawing a boxplot of W（log fold change divided by standard error）
+res_pair_impact <- filter(res_pair,any_true_impact)
+```
+
+### preparation for drawing a boxplot of W（log fold change divided by standard error）
+
+```{r}
 PG_mediumvslow <- data.frame(res_pair$W_impactmedium,
                            res_pair$q_impactmedium,
                            row.names = res_pair$taxon) %>%
@@ -1102,25 +1010,36 @@ PG_mediumvshigh <- data.frame(res_pair$W_impacthigh_impactmedium,
          star=ifelse(q_value<.001, "***", 
                      ifelse(q_value<.01, "**",
                             ifelse(q_value<.05, "*", ""))))
+```
 
-# Combine dataframes into a dataframe, and set factors
-#impact
+
+### Combine dataframes into a dataframe, and set factorsimpact
+
+```{r}
 df_ancom_impact <- rbind(PG_mediumvslow,PG_highvslow,PG_mediumvshigh) %>%
   mutate(taxon = rep(rownames(PG_mediumvslow),3))
 df_ancom_impact$comparison <- factor(df_ancom_impact$comparison,levels = c("Impact\nlow_vs_medium","Impact\nlow_vs_high","Impact\nmedium_vs_high"))
 df_ancom_impact$taxon <- factor(df_ancom_impact$taxon,levels = rev(rownames(PG_mediumvslow)))
+```
 
-# Extract taxonomy information from phyloseq object
+### Extract taxonomy information from phyloseq object
+
+```{r}
 taxonomy <- as.data.frame(tax_table(Ok))
 taxonomy$ESVs <- rownames(taxonomy)
-# Merge taxonomy with dataframe
-df_ancom_impact_taxon <- merge(df_ancom_impact, taxonomy, by.x = "taxon", by.y = "ESVs", all.x = TRUE)
+```
 
-# plot impact                        
+### Merge taxonomy with dataframe
+```{r}
+df_ancom_impact_taxon <- merge(df_ancom_impact, taxonomy, by.x = "taxon", by.y = "ESVs", all.x = TRUE)
+```
+
+### plot impact
+```{r}
 bar_ancom_impact <- "NULL"
 bar_ancom_impact <- df_ancom_impact_taxon %>%
   ggplot(aes(x = taxon, y = W_statistics)) +
-  geom_col(aes(fill = factor(ifelse(W_statistics > 0, "Positive", "Negative"))),size = 5) +
+  geom_col(aes(fill = factor(ifelse(W_statistics > 0, "Positive", "Negative"))),linewidth = 5) +
   labs(x = "ESVs", y = "W_statistics") +
   facet_grid(. ~ comparison) +
   geom_text(aes(y = W_statistics + 4 * sign(W_statistics), label = star), 
@@ -1134,12 +1053,24 @@ bar_ancom_impact <- df_ancom_impact_taxon %>%
   coord_flip() +
   scale_fill_manual(values = c("Positive" = "#009F81", "Negative" = "#9F1111"))
 bar_ancom_impact
-ggsave("ANCOM_period_Family.png", width = 16, height = 12)
+```
+### Export ANCOM-BC2 plot 
 
+```{r}
+ggsave("ANCOM-BC2_period_Family.tiff",
+       units="in", width=16, height=12, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA","4-Output")
+       )
+```
 
-##### #On the ESV level
-Ok@sam_data[["impact"]] <- factor(Ok@sam_data[["impact"]], levels = c("low", "medium", "high"))
-#Ancombc analysis
+## ANCOMB on the ESV level
+
+```{r}
+Ok@sam_data[["impact"]] <- factor(Ok@sam_data[["impact"]], 
+                                  levels = c("low", "medium", "high"))
+```
+
+```{r}
 out_esv = ancombc2(Ok, pseudo_sens = FALSE, fix_formula = "impact",
                p_adj_method = "holm", s0_perc = 0.05, prv_cut = 0.10, lib_cut = 0,
                group = "impact", alpha = 0.05, verbose = TRUE, global = TRUE, pairwise = TRUE)
@@ -1151,15 +1082,20 @@ row.names(res_pair_esv)<-res_prim_esv$taxon
 res_dunn_esv = out_esv$res_dunn
 res_trend_esv = out_esv$res_trend
 pseudo_sens_esv = out_esv$pseudo_sens_tab
+```
+### remove genus having no significant p-values among comparisons
 
-# remove genus having no significant p-values among comparisons
+```{r}
 any_true_impact_esv <- res_pair_esv$q_impactmedium <.05|
   res_pair_esv$q_impacthigh <.05|
     res_pair_esv$q_impacthigh_impactmedium <.05
 
 res_pair_impact_esv <- filter(res_pair_esv,any_true_impact_esv)
+```
 
-# preparation for drawing a boxplot of W（log fold change divided by standard error）
+### preparation for drawing a boxplot of W（log fold change divided by standard error）
+
+```{r}
 PG_mediumvslow_esv <- data.frame(res_pair_impact_esv$W_impactmedium,
                              res_pair_impact_esv$q_impactmedium,
                              row.names = res_pair_impact_esv$taxon)  %>%
@@ -1189,21 +1125,41 @@ PG_mediumvshigh_esv <- data.frame(res_pair_impact_esv$W_impacthigh_impactmedium,
          star=ifelse(q_value<.001, "***", 
                      ifelse(q_value<.01, "**",
                             ifelse(q_value<.05, "*", ""))))
+```
 
-# Combine dataframes into a dataframe, and set factors
-#impact
-df_ancom_impact_esv <- rbind(PG_mediumvslow_esv,PG_highvslow_esv,PG_mediumvshigh_esv) %>%
-mutate(taxon = rep(rownames(PG_mediumvslow_esv),3))
-df_ancom_impact_esv$comparison <- factor(df_ancom_impact_esv$comparison,levels = c("Impact\nlow_vs_medium","Impact\nlow_vs_high","Impact\nmedium_vs_high"))
-df_ancom_impact_esv$taxon <- factor(df_ancom_impact_esv$taxon,levels = rev(rownames(PG_mediumvslow_esv)))
+### Combine dataframes into a dataframe, and set factors impact
 
-# Extract taxonomy information from phyloseq object
+```{r}
+df_ancom_impact_esv <-rbind(PG_mediumvslow_esv,
+                            PG_highvslow_esv,
+                            PG_mediumvshigh_esv) %>%
+  mutate(taxon = rep(rownames(PG_mediumvslow_esv),3))
+
+df_ancom_impact_esv$comparison <- factor(df_ancom_impact_esv$comparison,
+                                         levels = c("Impact\nlow_vs_medium",
+                                                  "Impact\nlow_vs_high",
+                                                  "Impact\nmedium_vs_high"))
+
+df_ancom_impact_esv$taxon <- factor(df_ancom_impact_esv$taxon,
+                                    levels = rev(rownames(PG_mediumvslow_esv)))
+```
+
+### Extract taxonomy information from phyloseq object
+
+```{r}
 taxonomy_esv <- as.data.frame(tax_table(Ok))
 taxonomy_esv$ESVs <- rownames(taxonomy_esv)
-# Merge taxonomy with dataframe
-df_ancom_impact_taxon_esv <- merge(df_ancom_impact_esv, taxonomy_esv, by.x = "taxon", by.y = "ESVs", all.x = TRUE)
+```
 
-# plot impact                        
+### Merge taxonomy with dataframe
+
+```{r}
+df_ancom_impact_taxon_esv <- merge(df_ancom_impact_esv, taxonomy_esv, by.x = "taxon", by.y = "ESVs", all.x = TRUE)
+```
+
+### plot impact    
+
+```{r}
 bar_ancom_impact_esv <- "NULL"
 bar_ancom_impact_esv <- df_ancom_impact_taxon_esv %>%
   ggplot(aes(x = taxon, y = W_statistics)) +
@@ -1221,14 +1177,35 @@ bar_ancom_impact_esv <- df_ancom_impact_taxon_esv %>%
   coord_flip() +
   scale_fill_manual(values = c("Positive" = "#009F81", "Negative" = "#9F1111"))
 bar_ancom_impact_esv
-ggsave("ANCOM_period__esv.png", width = 16, height = 12)
+```
+### Export ANCOM-BC2 plot 
+
+```{r}
+ggsave("ANCOM-BC2_period__esv.tiff",
+       units="in", width=16, height=12, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA","4-Output")
+       )
+```
+
+### Extract and export ESV list with higher significance (***)
+
+```{r}
+ESV_higher_ANCOM_BC2 <- subset(df_ancom_impact_taxon_esv,
+                           df_ancom_impact_taxon_esv$star == "***")
+
+writexl::write_xlsx(ESV_higher_ANCOM_BC2,
+           path = here ("Multi-taxa_data",
+                        "eDNA",
+                        "4-Output",
+                        "ESV_higher_ANCOM_BC2.xlsx")
+)
+```
 
 
 
+# Spatial mantel with restricted null model considering spatial autocorrelation
 
-
-#Spatial mantel with restricted null model considering spatial autocorrelation
-#Mantel test
+## Mantel test
 library(fields)
 library(reshape2)
 library(ade4)
@@ -1236,6 +1213,7 @@ library(adespatial)
 library(spdep)
 Ok_dist <- read.csv("Analysis/Ok_dist.csv",  row.names=1)
 head(Ok_dist)
+
 #create distance matrix
 Dist.km <- as.dist(rdist.earth(Ok_dist, miles=F))
 #correlation between straight-line geographic distance and dissimilarity in species composition
