@@ -561,14 +561,95 @@ ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
   theme_classic()+
   labs(x="Depth within pressure levels",
        y="Mean abundance by class")+
-  scale_fill_manual(values= c(low= rgb(0.57, 0.82, 0.31), medium = "chocolate", high = "#9F1111"))+
-  scale_color_manual(values= c(low= rgb(0.57, 0.82, 0.31), medium = "chocolate", high = "#9F1111"),  guide ="none")+
+  scale_fill_manual(values= c(Low= rgb(0.57, 0.82, 0.31), Medium = "chocolate", High = "#9F1111"))+
+  scale_color_manual(values= c(Low= rgb(0.57, 0.82, 0.31), Medium = "chocolate", High = "#9F1111"),  guide ="none")+
   scale_alpha_manual(values=c(1,.6))+
   guides(fill="none", alpha= "none")+
   theme(panel.grid.major.y = element_line(color = "grey",
                                           size = 0.5,
                                           linetype = 2),
         strip.placement = "outside")
+```
+
+```{r}
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, 
+           fill=pressure, 
+           label=mean, 
+           color=pressure)) +
+  geom_bar(aes(alpha=depth), 
+           position="dodge",
+           stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), 
+                width=.2,
+                position="dodge")+
+  facet_grid(class ~ pressure, 
+             scales = "free", 
+             switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within pressure levels",
+       y="Mean abundance by class")+
+  scale_x_discrete(labels = c("Deep", "Shallow"))+
+  scale_fill_manual(values= c(Low= rgb(0.6, 0.8, 0.6), 
+                              Medium = rgb(1, 0.85, 0.4),
+                              High = rgb(1,0.6,0.6)
+                              )
+                    )+
+  scale_color_manual(values= c(Low= rgb(0.2, 0.3, 0.4), 
+                               Medium = rgb(0.99, 0.65, 0.04),  
+                               High = "#9F1111"),  
+                     guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+```{r}
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, 
+           fill=pressure, 
+           label=mean, 
+           color=pressure)) +
+  geom_bar(aes(alpha=depth), 
+           position="dodge",
+           stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), 
+                width=.2,
+                position="dodge")+
+  facet_grid(class ~ pressure, 
+             scales = "free", 
+             switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within pressure levels",
+       y="Mean abundance by class (# individuals)")+
+  scale_x_discrete(labels = c("Deep", "Shallow"))+
+  scale_fill_manual(values= c(Low= rgb(0.6, 0.8, 0.6), 
+                              Medium = rgb(1, 0.85, 0.4),
+                              High = rgb(1,0.6,0.6)
+                              )
+                    )+
+  scale_color_manual(values= c(Low= rgb(0.2, 0.3, 0.4), 
+                               Medium = rgb(0.99, 0.65, 0.04),  
+                               High = "#9F1111"),  
+                     guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(axis.text = element_text(size = 10),
+        panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+Export plot for poster
+
+```{r, eval= F}
+ggsave("mol-ech_abundance_pressure_barplot_poster.tiff", 
+       units = "in", width = 4, height = 6, dpi = 300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
 ## Export clean data
@@ -629,6 +710,8 @@ rownames(inv_mat) <- inv_df$transect
 ind_df <- inv_df[,c(1:5)]
 
 ```
+## Format and export data for Primer
+
 ```{r}
 inv_mat_primer <- data.frame(t(inv_mat))
 inv_mat_primer$Class <- colnames(inv_mat)
@@ -639,7 +722,7 @@ inv_mat_primer <- inv_mat_primer[,c(70,1:69)]
 ind_df_primer <- ind_df %>%
   mutate(pressure_depth = paste(pressure, depth, sep='_'))
 
-ind_df_primer <- ind_df_primer[,-c(1)] # remove transect column
+ind_df_primer <- ind_df_primer[,c(5,2:4,6)] # remove transect column
 ind_df_primer <- data.frame(t(ind_df_primer))
 ind_df_rownames <- rownames(ind_df_primer)
 ind_df_primer$Factor <- ind_df_rownames
@@ -846,6 +929,18 @@ inv_permanova <- adonis2(inv_mat ~ pressure/site*depth,
 
 inv_permanova
 ```
+```{r}
+#ALTERNATIVE SCRIPT WITH adonis2()
+set.seed(69)
+h <- how(nperm = 9999, blocks = ind_df$pressure)
+inv_permanova <- adonis2(inv_mat ~ pressure/site*depth,
+                             data=ind_df,
+                             permutations =h,
+                             methods="bray")
+
+inv_permanova
+```
+
 
 ```{r}
 #ALTERNATIVE SCRIPT WITH adonis2()
@@ -945,10 +1040,7 @@ inv_dist = vegdist(inv_mat,
 PERMDISP PER PRESSURE
 
 ```{r}
-inv_bd_tot = dist_bdisp(inv_dist, 
-                    c(ind_df$pressure,
-                      ind_df$site,
-                      ind_df$depth))  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+inv_bd_pressure = betadisper(inv_dist, ind_df$pressure)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
 str(inv_bd_pressure)
 
 plot(inv_bd_pressure)
