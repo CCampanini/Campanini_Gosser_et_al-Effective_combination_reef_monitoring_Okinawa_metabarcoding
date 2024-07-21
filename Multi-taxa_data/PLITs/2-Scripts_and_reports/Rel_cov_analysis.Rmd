@@ -57,9 +57,14 @@ mean_rel_cov_site <- mean_rel_cov_site %>%
                               Site == "G1" |
                               Site == "G2"~ "High"))
 
-mean_rel_cov_site[,1]<-factor(mean_rel_cov_site[,1],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+mean_rel_cov_site$Site<-ordered(mean_rel_cov_site$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
 mean_rel_cov_site <- mean_rel_cov_site[,c(1,11,2:10)] #re-ordering columns
+
+mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,levels
+                                      =c("Low","Medium","High"))
+
+mean_rel_cov_site <- mean_rel_cov_site[order(mean_rel_cov_site$Site),]
 mean_rel_cov_site
 ```
 Export table with mean relative benthic cover by category per site within Depth level
@@ -84,7 +89,8 @@ mean_rel_cov_df <- mean_rel_cov_df %>%
 
 rm(Site_depth)
 
-mean_rel_cov_df <- mean_rel_cov_df %>%
+mean_rel_cov_df <- 
+  mean_rel_cov_df %>%
   mutate(Pressure = case_when(Site == "HI" | 
                               Site == "S1" | 
                               Site == "S2" ~ "Low", 
@@ -96,12 +102,21 @@ mean_rel_cov_df <- mean_rel_cov_df %>%
                               Site == 'SN' | 
                               Site == "AW" | 
                               Site == "G1" |
-                              Site == "G2"~ "High")) 
+                              Site == "G2"~ "High"
+                              )
+         ) 
   
 mean_rel_cov_df$Site_depth <- as.factor(mean_rel_cov_df$Site_depth)
-mean_rel_cov_df$Pressure <- ordered(mean_rel_cov_df$Pressure,levels=c("Low","Medium","High"))
 
-mean_rel_cov_wide <- dcast(mean_rel_cov_df, Site_depth + Pressure ~ Category, value.var = "Mean_rel_cov")
+mean_rel_cov_df$Pressure <- ordered(mean_rel_cov_df$Pressure,
+                                    levels=c("Low","Medium","High"))
+
+mean_rel_cov_wide <- dcast(mean_rel_cov_df, 
+                           Site_depth + Pressure ~ Category, 
+                           value.var = "Mean_rel_cov")
+
+mean_rel_cov_wide <- mean_rel_cov_wide[order(mean_rel_cov_wide$Site),]
+
 mean_rel_cov_wide
 ```
 
@@ -129,6 +144,8 @@ mean_rel_cov_df <- mean_rel_cov_df %>%                               # Replacing
   mutate(Depth = replace(Depth, Depth == "Deep", "D")) %>%                     # Replacing values
   mutate(Depth = replace(Depth, Depth == "Shallow", "S"))
 
+mean_rel_cov_df$Site<-ordered(mean_rel_cov_df$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
 ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_rel_cov)) + 
   geom_bar(position="fill", stat="identity",alpha=.8, color = "black")+
   facet_grid(~ Site)+
@@ -136,9 +153,6 @@ ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_r
   labs(x="Depth",
        y="Mean relative benthic cover",
        title= "Stacked bar chart of mean relative benthic cover \n by depth within site")+
-  geom_text(aes(Depth, Mean_rel_cov, label = Mean_rel_cov*100), 
-            data = subset(mean_rel_cov_df,mean_rel_cov_df$Mean_rel_cov>= .15),
-            size = 2.5, position = position_fill(vjust = 0.8),color="black")+
   theme(plot.title = element_text(hjust = 0.5))+
   scale_fill_manual(labels = c("algae",
                                 "boulder",
@@ -524,7 +538,7 @@ relcov_pressure_pmv=adonis2(cov_mat~Pressure,
 relcov_pressure_pmv
 ```
 
-### Question 4: is there a significant difference in relative benthic cover abundance among sites within pressure levels?
+### Question 4: is there a significant difference in relative benthic cover among sites within pressure levels?
 
 ```{r}
 #SCRIPT WITH adonis()
@@ -728,11 +742,11 @@ category and depth within site
 relcov_bd_pres$distances #Extract betadisper scores
 
 distcent_df_pres <- data.frame(
-  Distance_to_centroid=relcov_bd_pres$distances, 
-  Pressure=ind_df$Pressure) 
+  Distance_to_centroid = relcov_bd_pres$distances, 
+  Pressure = ind_df$Pressure) 
 
-distcent_df_pres$Pressure<-factor(distcent_df_pres$Pressure,
-                             levels=c("Low","Medium","High"))
+distcent_df_pres$Pressure  <- factor(distcent_df_pres$Pressure,
+                                     levels = c("Low","Medium","High"))
 
 distcent_mean_df_pres <- distcent_df %>%
   group_by(Pressure) %>% 
