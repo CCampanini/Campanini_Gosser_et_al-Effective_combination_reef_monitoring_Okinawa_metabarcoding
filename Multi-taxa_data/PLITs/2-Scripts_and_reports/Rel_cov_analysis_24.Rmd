@@ -24,6 +24,7 @@ library(readxl)   # to import excel datasets
 library(writexl) # to export df to excel files (write_xlsx)
 library(here)
 ```
+
 # MEAN RELATIVE BENTHIC COVER BY CATEGORY
 
 Load input file 
@@ -55,13 +56,15 @@ mean_rel_cov_site <- mean_rel_cov_site %>%
                               Site == 'SN' | 
                               Site == "AW" | 
                               Site == "G1" |
-                              Site == "G2"~ "High"))
+                              Site == "G2"~ "High")
+         )
 
 mean_rel_cov_site$Site<-ordered(mean_rel_cov_site$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
 mean_rel_cov_site <- mean_rel_cov_site[,c(1,11,2:10)] #re-ordering columns
 
-mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,levels
+mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,
+                                      levels
                                       =c("Low","Medium","High"))
 
 mean_rel_cov_site <- mean_rel_cov_site[order(mean_rel_cov_site$Site),]
@@ -168,12 +171,155 @@ ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_r
                      labels = c(0, 25, 50, 75,100))
 ```
 
-
 ```{r, eval= F}
 ggsave("relcov_stacked.tiff", 
        units ="in", width = 5, height = 4, dpi = 300, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
+
+## STACKED BAR CHART BY PRESSURE
+
+```{r}
+mean_rel_cov_site <- cov_df %>%
+  group_by(Site, Category) %>%
+  summarise(Mean_rel_cov=round(mean(Rel_cov),2))
+
+library(reshape2) #needed for dcast function
+mean_rel_cov_site <- dcast(mean_rel_cov_site, Site ~ Category)
+
+mean_rel_cov_site <- mean_rel_cov_site %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High")
+         )
+
+mean_rel_cov_site$Site<-ordered(mean_rel_cov_site$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+
+mean_rel_cov_site <- mean_rel_cov_site[,c(1,11,2:10)] #re-ordering columns
+
+mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,
+                                      levels
+                                      =c("Low","Medium","High"))
+
+mean_rel_cov_site <- mean_rel_cov_site[order(mean_rel_cov_site$Site),]
+mean_rel_cov_site
+```
+
+
+```{r}
+mean_rel_cov_pressure <- cov_df %>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                              Site == "S1" | 
+                              Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                              Site == 'ZA' | 
+                              Site == "YO" | 
+                              Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                              Site == 'SN' | 
+                              Site == "AW" | 
+                              Site == "G1" |
+                              Site == "G2"~ "High"))
+
+mean_rel_cov_pressure <- mean_rel_cov_pressure %>%
+  group_by(Pressure, depth, Category) %>%
+  summarise(Mean_rel_cov=round(mean(Rel_cov),2))
+
+library(reshape2) #needed for dcast function
+mean_rel_cov_pressure <- dcast(mean_rel_cov_pressure, 
+                               Site ~ Pressure)
+
+mean_rel_cov_pressure$Pressure<-ordered(mean_rel_cov_pressure$Pressure,
+                                    levels=c("Low","Medium","High"))
+
+mean_rel_cov_site <- mean_rel_cov_site[,c(1,11,2:10)] #re-ordering columns
+
+mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,levels
+                                      =c("Low","Medium","High"))
+
+mean_rel_cov_site <- mean_rel_cov_site[order(mean_rel_cov_site$Site),]
+mean_rel_cov_site
+```
+
+```{r}
+ggplot(mean_rel_cov_pressure, 
+       aes(fill=Category, y=Mean_rel_cov, x=depth, 
+           label=Mean_rel_cov)) + 
+  geom_bar(position="fill", 
+           stat="identity",
+           alpha=.8, 
+           color = "black")+
+  facet_grid(~ Pressure)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean relative benthic cover (%)",
+       fill="Benthic category")+
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom")+
+  guides(fill = guide_legend(title.position = "top"))+
+  scale_fill_manual(labels = c("algae",
+                                "boulder",
+                                "hard coral",
+                                "other",
+                                "rubble",
+                                "sand",
+                                "soft coral",
+                                "unknown",
+                                "zoantharians"), 
+                    values=relcovPalette)+
+  scale_y_continuous(limits = c(0, 1), 
+                     breaks = c(0, 0.25, 0.50, 0.75,1),
+                     labels = c(0, 25, 50, 75,100)
+                     )
+```
+
+```{r}
+ggplot(mean_rel_cov_pressure, 
+       aes(fill=Category, y=Mean_rel_cov, x=depth, 
+           label=Mean_rel_cov)) + 
+  geom_bar(position="fill", 
+           stat="identity",
+           alpha=.8, 
+           color = "black")+
+  facet_grid(~ Pressure)+
+  theme_classic()+
+  labs(x="Depth",
+       y="Mean relative benthic cover (%)",
+       fill="Benthic category")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_fill_manual(labels = c("algae",
+                                "boulder",
+                                "hard coral",
+                                "other",
+                                "rubble",
+                                "sand",
+                                "soft coral",
+                                "unknown",
+                                "zoantharians"), 
+                    values=relcovPalette)+
+  scale_y_continuous(limits = c(0, 1), 
+                     breaks = c(0, 0.25, 0.50, 0.75,1),
+                     labels = c(0, 25, 50, 75,100)
+                     )
+```
+
+Export 
+
+```{r, eval= F}
+ggsave("relcov_stacked_pressure.tiff", 
+       units ="in", width = 5, height = 6, dpi = 300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
+
 
 # nMDS
 
@@ -833,7 +979,7 @@ relcov_pmv_pres_phoc_bonf= pairwise.adonis(cov_mat,ind_df$Pressure,
 relcov_pmv_pres_phoc_bonf 
 ```
 
-# SIMPER: Similarity of percentage
+ SIMPER: Similarity of percentage
 
 From the vignette: *The simper functions performs pairwise comparisons
 of groups of sampling units and finds the contribution of each species
