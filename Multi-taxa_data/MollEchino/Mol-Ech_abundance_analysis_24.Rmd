@@ -847,7 +847,7 @@ pal12 <- c("#000000","#004949","#009292","#ffb6db",
  "#920000","#924900","#24ff24","#ffff6d")
 
 ggplot(nmds_df, aes(NMDS1, NMDS2))+
-  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site,shape=depth),
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),
              size=2.5)+##separates overlapping points
   guides(color = guide_legend(order=1, title = "Site", ncol =2),
          shape = guide_legend(order=2, title = "Depth"))+
@@ -855,9 +855,8 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
   ggnewscale::new_scale_color() +
   geom_mark_ellipse(aes(fill=pressure, color=pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
   scale_color_manual(values= c("green","yellow","red"),
-                     guide_legend(title = "Pressure"))+
-  scale_fill_manual(values= c("green","yellow","red"), 
-                    guide_legend(title = "Pressure"))+
+                      aesthetics = c("colour", "fill"),
+                     guide = guide_legend(title = "Pressure"))+
   theme_classic()+
   theme(plot.title = element_text(size=14, face="bold",hjust=.5),
         legend.title = element_text(color = "black", size = 12),
@@ -1006,9 +1005,6 @@ inv_site_pressure_blocks_pmv <- adonis2(inv_mat ~ pressure/site*depth,
 inv_site_pressure_blocks_pmv
 ```
 
-P-value `r inv_site_pmv$Pr[1]` \< 0.05, so there is a significant
-difference among sites.
-
 ## Permutation test of multivariate homogeneity of groups dispersions (variances)
 
 Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
@@ -1118,10 +1114,10 @@ Create an input dataframe for the boxplot with mean relative cover by
 category and depth within site
 
 ```{r}
-inv_bd$distances #Extract betadisper scores
+inv_bd_site$distances #Extract betadisper scores
 
-distcent_df <- data.frame(Distance_to_centroid=inv_bd$distances,Sites=ind_df$site, Pressure=ind_df$pressure) 
-Sites <- inv_bd$group
+distcent_df <- data.frame(Distance_to_centroid=inv_bd_site$distances,Sites=ind_df$site, Pressure=ind_df$pressure) 
+Sites <- inv_bd_site$group
 distcent_df[,2]<-factor(distcent_df[,2],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 distcent_df[,3]<-factor(distcent_df[,3],levels=c("Low","Medium","High"))
 
