@@ -149,7 +149,8 @@ mean_rel_cov_df <- mean_rel_cov_df %>%                               # Replacing
 
 mean_rel_cov_df$Site<-ordered(mean_rel_cov_df$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
-ggplot(mean_rel_cov_df, aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_rel_cov)) + 
+ggplot(mean_rel_cov_df, 
+       aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_rel_cov)) + 
   geom_bar(position="fill", stat="identity",alpha=.8, color = "black")+
   facet_grid(~ Site)+
   theme_classic()+
@@ -234,26 +235,14 @@ mean_rel_cov_pressure <- mean_rel_cov_pressure %>%
   group_by(Pressure, depth, Category) %>%
   summarise(Mean_rel_cov=round(mean(Rel_cov),2))
 
-library(reshape2) #needed for dcast function
-mean_rel_cov_pressure <- dcast(mean_rel_cov_pressure, 
-                               Site ~ Pressure)
-
-mean_rel_cov_pressure$Pressure<-ordered(mean_rel_cov_pressure$Pressure,
-                                    levels=c("Low","Medium","High"))
-
-mean_rel_cov_site <- mean_rel_cov_site[,c(1,11,2:10)] #re-ordering columns
-
-mean_rel_cov_site$Pressure <- ordered(mean_rel_cov_site$Pressure,levels
+mean_rel_cov_pressure$Pressure <- ordered(mean_rel_cov_pressure$Pressure,levels
                                       =c("Low","Medium","High"))
-
-mean_rel_cov_site <- mean_rel_cov_site[order(mean_rel_cov_site$Site),]
-mean_rel_cov_site
 ```
 
 ```{r}
 ggplot(mean_rel_cov_pressure, 
-       aes(fill=Category, y=Mean_rel_cov, x=depth, 
-           label=Mean_rel_cov)) + 
+       aes(x=depth, y=Mean_rel_cov,
+           fill=Category, label=Mean_rel_cov)) + 
   geom_bar(position="fill", 
            stat="identity",
            alpha=.8, 
