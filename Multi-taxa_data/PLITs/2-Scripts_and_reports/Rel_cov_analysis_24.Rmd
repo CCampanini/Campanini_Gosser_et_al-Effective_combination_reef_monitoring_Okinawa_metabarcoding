@@ -780,8 +780,8 @@ distcent_mean_df <- distcent_df %>%
          SD=round(mean(Distance_to_centroid),2)) %>%
   mutate(Pressure = case_when(Sites == 'HI' | 
                               Sites == "S1" | 
-                              Sites == "S2" |
-                              Sites == "ZP"~ "Low", 
+                              Sites == "S2" ~ "Low",
+                              Sites == "ZP" |
                               Sites == 'ZA' | 
                               Sites == "YO" | 
                               Sites == "MI" ~ "Medium",
@@ -815,6 +815,10 @@ ggpubr:: ggarrange(relcov_site_box,
 ```{r, eval=F}
 ggsave("relcov_site_box.tiff", 
        units="in", width=12, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+
+ggsave("relcov_site_box.png", 
+       units="in", width=12, height=4, dpi=300,
        path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
 
