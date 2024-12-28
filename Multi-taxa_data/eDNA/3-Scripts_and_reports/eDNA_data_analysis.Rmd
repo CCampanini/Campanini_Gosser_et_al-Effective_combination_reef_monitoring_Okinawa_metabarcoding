@@ -613,16 +613,26 @@ cor(cofresult, Ok.jac)
 Code used to execute the the nmds and save the output 
 
 ```{r, eval = F}
-Ok_nmds = metaMDS(otu_table(Ok), 
+set.seed(69)
+Ok_nmds_2 = metaMDS(otu_table(Ok), 
                   distance = "jac", 
-                  k = 3, 
-                  maxit = 999, 
-                  trymax = 20, 
-                  wascores = TRUE, 
-                  tidy = TRUE
+                  k = 2, # n of dimensions
+                  maxit = 999, # Max n of iterations in the single NMDS run
+                  trymax = 20, # Min and max n of random starts in search of stable solution.
+                  wascores = TRUE, # Computes Weighted Averages scores of species for ordination configuration or for environmental variables (T is default)
+                  tidy = TRUE # Return scores that are compatible with ggplot2
                   )
 
-saveRDS(Ok_nmds, 
+Ok_nmds_3 = metaMDS(otu_table(Ok), 
+                  distance = "jac", 
+                  k = 3, # n of dimensions
+                  maxit = 999, # Max n of iterations in the single NMDS run
+                  trymax = 20, # Min and max n of random starts in search of stable solution.
+                  wascores = TRUE, # Computes Weighted Averages scores of species for ordination configuration or for environmental variables (T is default)
+                  tidy = TRUE # Return scores that are compatible with ggplot2
+                  )
+
+ saveRDS(Ok_nmds_3, 
         file = here("Multi-taxa_data",
                     "eDNA",
                     "4-Output",
@@ -645,23 +655,39 @@ points(pl_Ok, "sites", pch=21, col="red", bg="yellow")
 text(pl_Ok, "species", col="blue", cex=0.9)
 ```
 
+```{r}
+k_vec=1:5
+stress=numeric(length(k_vec))
+relfunc_dij=metaMDSdist(otu_table(Ok), trace=FALSE)
+set.seed(69)
+for(i in seq_along(k_vec)) {
+  edna_nmds_br_loop=metaMDSiter(relfunc_dij, k=i, trace=FALSE)
+  stress[i]=edna_nmds_br_loop$stress
+}
+plot(k_vec,stress,type="b",ylab="Stress",xlab="Dimensions") #select the K correspondent to the most drastic drop in stress
+```
+
 Extract NMDS scores (x and y coordinates)
 ```{r}
-Ok_data.scores <- as.data.frame(scores(Ok_nmds$points))
+Ok_data_scores <- as.data.frame(scores(Ok_nmds$points))
 class(scores(Ok_nmds$points))
+str(Ok_nmds)
+```
+```{r}
+Ok_data_scores <- as.data.frame(scores(Ok_nmds$species))
 str(Ok_nmds)
 ```
 
 Add columns to data frame 
 ```{r}
-Ok_data.scores$depth = Okinawa_env$depth
-Ok_data.scores$Location = Okinawa_env$Location
-Ok_data.scores$impact = Okinawa_env$impact
+Ok_data_scores$depth = Okinawa_env$depth
+Ok_data_scores$Location = Okinawa_env$Location
+Ok_data_scores$impact = Okinawa_env$impact
 ```
 
 
 ```{r}
-plot.nmds = ggplot(Ok_data.scores, aes(x = MDS1, y = MDS2)) +
+plot.nmds = ggplot(Ok_data_scores, aes(x = MDS1, y = MDS2)) +
   geom_point(size = 4, aes(shape = impact, colour = Location), alpha = 0.5) + 
   stat_ellipse(geom = "polygon", aes(fill = impact), alpha = 0.1) +
   scale_color_manual(values = c("#9F0162","#009F81","#FF5AAF","#00FCCF","#8400CD","#008DF9","#00C2F9","#FFB2FD","#A40122","#E20134","#FF6E3A","#FFC33B")) +
