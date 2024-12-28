@@ -164,7 +164,7 @@ alg_mean_depth <- alg_mean_depth %>%
   group_by(Depth,Site) %>% 
   mutate(Perc_func = round(mean_cat_tot/sum(mean_cat_tot)*100, 0))
 
-RedGreen5 = diverging_hcl(5, palette= "Red-Green")
+RedGreen5 = colorspace::diverging_hcl(5, palette= "Red-Green")
 RedGreen3 = c("#841859","#7CC57D","#005600")
 
 algae_func_stacked <- ggplot(alg_mean_depth,aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
@@ -186,9 +186,16 @@ cvd_grid(algae_func_stacked)
 
 algae_func_stacked
 ```
-```{r}
+```{r, eval = F}
+ggsave("algae_func_stacked.tiff", 
+       units = "in", width = 7, height = 4.5, dpi = 300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
 
-algae_func_stacked <- 
+
+
+```{r}
+algae_func_bar <- 
   ggplot(alg_mean_depth,
          aes(x=Depth, y=mean_cat_tot/100, fill=Functional_group)) +
   geom_bar(position="stack",stat="identity",alpha=0.7,color="black")+
@@ -200,12 +207,18 @@ algae_func_stacked <-
   scale_y_continuous(breaks = seq(0,25,5),limits=c(0,25))+
   scale_fill_manual(values=RedGreen3)
 
-algae_func_stacked
+algae_func_bar
 ```
 
 ```{r, eval = F}
-ggsave("algae_func_stacked.tiff", 
+ggsave("algae_func_bar.tiff", 
        units = "in", width = 7, height = 4.5, dpi = 300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
+
+```{r, eval = F}
+ggsave("algae_func_bar.png", 
+       units = "in", width = 7, height = 4.5, dpi = 300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
 
