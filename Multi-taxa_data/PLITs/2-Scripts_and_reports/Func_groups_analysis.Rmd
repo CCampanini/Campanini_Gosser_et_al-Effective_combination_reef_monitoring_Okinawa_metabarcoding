@@ -42,14 +42,13 @@ func_mean_depth[,c(2:3)] <- lapply(func_mean_depth[,c(2:3)], as.factor)
 
 str(func_mean_depth)
 
+func_mean_depth$Functional_group[func_mean_depth$Functional_group == "plate"] <- "solitary"
 ```
 
 ## Hard coral stacked bar chart
 
 ```{r}
 hc_mean_depth <- subset(func_mean_depth,func_mean_depth$Category == "hard_coral")
-
-hc_mean_depth$Functional_group[hc_mean_depth$Functional_group == "plate"] <- "solitary"
 
 hc_mean_depth$Functional_group <- ordered(hc_mean_depth$Functional_group, levels= c("encrusting", "solitary", "submassive", "massive", "laminar","table", "foliose", "digitate","corymbose", "hispidose" , "branching"))
 ```
@@ -152,6 +151,10 @@ hc_func_stacked
 ```{r, eval = F}
 ggsave("hard_coral_growth_forms_stacked.tiff", 
        units = "in", width = 7, height = 4.5, dpi = 300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+
+ggsave("hard_coral_growth_forms_stacked.png", 
+       units = "in", width = 7, height = 4.5, dpi = 300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
 
@@ -703,12 +706,20 @@ box<- ggplot(data=distcent_df,aes(x=Site,y=Distance_to_centroid))+
   scale_fill_manual(values=c("green", "yellow", "red"))+
   scale_color_manual(values=c("green", "yellow3", "red"))
 box  
+
+ggpubr:: ggarrange(box, 
+                   gridExtra::tableGrob(distcent_df_mean), 
+                   ncol = 2, widths = c(1,1))
 ```
 
+
 ```{r, eval = F}
-ggsave("func_boxplot.tiff", 
-       plot = box,
-       units="in", width=7, height=4, dpi=300, compression = 'lzw',
+ggsave("func_boxplot.tiff",
+       units="in", width=12, height=4, dpi=300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+
+ggsave("func_boxplot.png",
+       units="in", width=12, height=4, dpi=300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
 
