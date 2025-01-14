@@ -1,0 +1,47 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem15
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site_depth
+Number of permutations: 9999
+
+Number of groups: 6
+Number of samples: 18
+
+DEVIATIONS FROM CENTROID
+F: 1.459  df1: 5  df2: 12
+P(perm): 0.3871
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(HI_Deep,HI_Shallow)	0.37735	 0.8022				
+(HI_Deep,S1_Deep)	  1.014	  0.505				
+(HI_Deep,S1_Shallow)	0.51892	 0.7066				
+(HI_Deep,S2_Deep)	0.66512	  0.595				
+(HI_Deep,S2_Shallow)	0.70697	 0.6914				
+(HI_Shallow,S1_Deep)	 1.0597	 0.6013				
+(HI_Shallow,S1_Shallow)	 1.9096	 0.1008				
+(HI_Shallow,S2_Deep)	0.59624	 0.8015				
+(HI_Shallow,S2_Shallow)	 1.2939	 0.3949				
+(S1_Deep,S1_Shallow)	 2.5903	 0.1022				
+(S1_Deep,S2_Deep)	0.81125	 0.3969				
+(S1_Deep,S2_Shallow)	 1.8579	 0.1975				
+(S1_Shallow,S2_Deep)	  3.759	 0.0999				
+(S1_Shallow,S2_Shallow)	0.44618	 0.5966				
+(S2_Deep,S2_Shallow)	 1.6379	 0.0956				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+HI_Deep	   3	 5.9555	 1.1925
+HI_Shallow	   3	 5.4687	0.49253
+S1_Deep	   3	 4.5414	0.72335
+S1_Shallow	   3	 6.5971	0.32651
+S2_Deep	   3	  5.151	0.20347
+S2_Shallow	   3	 7.1548	 1.2064
+

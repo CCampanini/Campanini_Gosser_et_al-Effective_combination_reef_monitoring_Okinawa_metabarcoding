@@ -1,0 +1,104 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem3
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Site
+Number of permutations: 9999
+
+Number of groups: 12
+Number of samples: 67
+
+DEVIATIONS FROM CENTROID
+F: 9.8149  df1: 11  df2: 55
+P(perm): 0.0001
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(CapeZanpa,Zatsun)	    3.45	 0.0017				
+(CapeZanpa,Yonama)	  3.4094	 0.0029				
+(CapeZanpa,Sunabe)	  1.2471	 0.2803				
+(CapeZanpa,Sukuta)	  3.8389	 0.0108				
+(CapeZanpa,Sakubaru2)	  2.2467	 0.1174				
+(CapeZanpa,Sakubaru1)	  3.6638	 0.0085				
+(CapeZanpa,Mizugama)	 0.85633	 0.4634				
+(CapeZanpa,Hizushi)	  2.8786	 0.0126				
+(CapeZanpa,GinowanPort2)	  3.5095	 0.0099				
+(CapeZanpa,GinowanPort1)	  1.1662	 0.2923				
+(CapeZanpa,Awa)	   1.584	 0.1842				
+(Zatsun,Yonama)	 0.69566	 0.5445				
+(Zatsun,Sunabe)	 0.74091	 0.5446				
+(Zatsun,Sukuta)	  7.0048	 0.0142				
+(Zatsun,Sakubaru2)	  6.5892	 0.0023				
+(Zatsun,Sakubaru1)	  6.8372	  0.002				
+(Zatsun,Mizugama)	  1.6714	 0.1575				
+(Zatsun,Hizushi)	  6.3161	 0.0014				
+(Zatsun,GinowanPort2)	  7.3827	 0.0022				
+(Zatsun,GinowanPort1)	  4.9611	 0.0025				
+(Zatsun,Awa)	 0.79403	 0.4895				
+(Yonama,Sunabe)	   1.053	 0.4024				
+(Yonama,Sukuta)	  5.8267	 0.0157				
+(Yonama,Sakubaru2)	   5.609	 0.0084				
+(Yonama,Sakubaru1)	  6.2047	 0.0072				
+(Yonama,Mizugama)	   1.917	 0.1422				
+(Yonama,Hizushi)	  5.7341	 0.0046				
+(Yonama,GinowanPort2)	    6.52	 0.0042				
+(Yonama,GinowanPort1)	    4.59	 0.0018				
+(Yonama,Awa)	  1.1611	 0.3612				
+(Sunabe,Sukuta)	  3.0451	  0.096				
+(Sunabe,Sakubaru2)	  2.4009	 0.0546				
+(Sunabe,Sakubaru1)	  3.6123	 0.0021				
+(Sunabe,Mizugama)	 0.49967	 0.6865				
+(Sunabe,Hizushi)	  3.0457	 0.0068				
+(Sunabe,GinowanPort2)	  3.3697	 0.0018				
+(Sunabe,GinowanPort1)	  1.9631	 0.1011				
+(Sunabe,Awa)	0.070076	 0.9431				
+(Sukuta,Sakubaru2)	  2.7966	 0.2658				
+(Sukuta,Sakubaru1)	 0.47318	 0.9498				
+(Sukuta,Mizugama)	  3.3985	 0.0237				
+(Sukuta,Hizushi)	  1.3621	 0.7462				
+(Sukuta,GinowanPort2)	  1.2353	 0.7632				
+(Sukuta,GinowanPort1)	  3.2222	 0.1906				
+(Sukuta,Awa)	  3.7821	 0.0342				
+(Sakubaru2,Sakubaru1)	  2.0332	 0.0634				
+(Sakubaru2,Mizugama)	  2.4252	 0.1008				
+(Sakubaru2,Hizushi)	  1.0828	 0.3258				
+(Sakubaru2,GinowanPort2)	  1.6616	 0.1226				
+(Sakubaru2,GinowanPort1)	  1.1081	 0.3123				
+(Sakubaru2,Awa)	  3.0591	 0.0386				
+(Sakubaru1,Mizugama)	  3.7426	  0.015				
+(Sakubaru1,Hizushi)	 0.96424	 0.3677				
+(Sakubaru1,GinowanPort2)	 0.71152	 0.5015				
+(Sakubaru1,GinowanPort1)	  2.8238	 0.0306				
+(Sakubaru1,Awa)	   4.308	 0.0061				
+(Mizugama,Hizushi)	  3.0832	 0.0325				
+(Mizugama,GinowanPort2)	   3.525	 0.0214				
+(Mizugama,GinowanPort1)	  1.7574	 0.1495				
+(Mizugama,Awa)	 0.65342	  0.575				
+(Hizushi,GinowanPort2)	 0.34788	 0.7141				
+(Hizushi,GinowanPort1)	  1.9353	 0.0613				
+(Hizushi,Awa)	   3.696	 0.0076				
+(GinowanPort2,GinowanPort1)	  2.5269	 0.0241				
+(GinowanPort2,Awa)	  4.1397	  0.007				
+(GinowanPort1,Awa)	   2.463	 0.0649				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+CapeZanpa	   6	 34.082	0.85702
+Zatsun	   6	 30.192	0.73298
+Yonama	   5	 29.271	 1.1584
+Sunabe	   6	 31.618	 1.7803
+Sukuta	   3	 40.017	 1.3801
+Sakubaru2	   5	 36.499	0.56457
+Sakubaru1	   6	 39.152	 1.0864
+Mizugama	   6	 32.728	 1.3289
+Hizushi	   6	 37.761	0.94824
+GinowanPort2	   6	 38.193	0.79829
+GinowanPort1	   6	 35.415	0.75577
+Awa	   6	 31.459	 1.4173
+

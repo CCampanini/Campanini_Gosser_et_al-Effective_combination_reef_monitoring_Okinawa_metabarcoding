@@ -1,0 +1,71 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem13
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site_depth
+Number of permutations: 9999
+
+Number of groups: 9
+Number of samples: 27
+
+DEVIATIONS FROM CENTROID
+F: 1.4825  df1: 8  df2: 18
+P(perm): 0.4565
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(AW_Deep,AW_Shallow)	 1.4833	 0.2971				
+(AW_Deep,G1_Deep)	 4.1192	  0.099				
+(AW_Deep,G1_Shallow)	0.57817	 0.7032				
+(AW_Deep,G2_Deep)	0.13208	 0.8993				
+(AW_Deep,G2_Shallow)	 1.5545	 0.0994				
+(AW_Deep,SK_Shallow)	 1.2185	 0.3057				
+(AW_Deep,SN_Deep)	0.32472	 0.7991				
+(AW_Deep,SN_Shallow)	  1.594	 0.5018				
+(AW_Shallow,G1_Deep)	 2.3356	 0.1037				
+(AW_Shallow,G1_Shallow)	0.22733	 0.8981				
+(AW_Shallow,G2_Deep)	  1.111	 0.5024				
+(AW_Shallow,G2_Shallow)	0.70567	 0.6969				
+(AW_Shallow,SK_Shallow)	0.21989	 0.6936				
+(AW_Shallow,SN_Deep)	 1.5676	 0.1988				
+(AW_Shallow,SN_Shallow)	0.56384	 0.6963				
+(G1_Deep,G1_Shallow)	 1.4201	 0.4066				
+(G1_Deep,G2_Deep)	 3.1536	  0.099				
+(G1_Deep,G2_Shallow)	0.50516	 0.8044				
+(G1_Deep,SK_Shallow)	 2.5094	 0.0999				
+(G1_Deep,SN_Deep)	 3.6733	 0.0973				
+(G1_Deep,SN_Shallow)	0.92855	 0.4102				
+(G1_Shallow,G2_Deep)	0.46519	 0.7993				
+(G1_Shallow,G2_Shallow)	0.71223	 0.6973				
+(G1_Shallow,SK_Shallow)	0.10134	 0.9035				
+(G1_Shallow,SN_Deep)	0.74007	 0.6919				
+(G1_Shallow,SN_Shallow)	0.58699	 0.7014				
+(G2_Deep,G2_Shallow)	 1.3744	 0.5956				
+(G2_Deep,SK_Shallow)	    0.9	 0.6027				
+(G2_Deep,SN_Deep)	0.39873	 0.4045				
+(G2_Deep,SN_Shallow)	 1.3553	 0.5043				
+(G2_Shallow,SK_Shallow)	0.82902	 0.6971				
+(G2_Shallow,SN_Deep)	 1.6626	 0.3027				
+(G2_Shallow,SN_Shallow)	 0.2059	  0.694				
+(SK_Shallow,SN_Deep)	 1.3464	 0.3981				
+(SK_Shallow,SN_Shallow)	0.71261	 0.4028				
+(SN_Deep,SN_Shallow)	 1.6967	 0.3963				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+AW_Deep	   3	 9.6779	0.99161
+AW_Shallow	   3	 7.5347	 1.0509
+G1_Deep	   3	 4.4744	0.78259
+G1_Shallow	   3	 8.1432	 2.4621
+G2_Deep	   3	 9.4543	 1.3716
+G2_Shallow	   3	 5.7224	 2.3433
+SK_Shallow	   3	 7.8698	 1.1038
+SN_Deep	   3	 10.223	 1.3553
+SN_Shallow	   3	 6.3367	 1.8466
+

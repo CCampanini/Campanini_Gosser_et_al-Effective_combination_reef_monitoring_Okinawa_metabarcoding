@@ -1,0 +1,61 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem17
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: site_depth
+Number of permutations: 9999
+
+Number of groups: 8
+Number of samples: 24
+
+DEVIATIONS FROM CENTROID
+F: 4.6567  df1: 7  df2: 16
+P(perm): 0.1173
+
+PAIRWISE COMPARISONS
+Groups	        t	P(perm)				
+(AW_D,AW_S)	  0.42183	 0.8098				
+(AW_D,G1_D)	   1.8344	 0.3106				
+(AW_D,G1_S)	   3.8394	 0.1015				
+(AW_D,G2_D)	  0.35401	 0.8023				
+(AW_D,G2_S)	   2.0469	 0.2998				
+(AW_D,SN_D)	  0.28408	 0.6863				
+(AW_D,SN_S)	   2.4683	 0.0961				
+(AW_S,G1_D)	   1.6465	 0.2023				
+(AW_S,G1_S)	   3.7887	 0.0998				
+(AW_S,G2_D)	0.0052517	      1				
+(AW_S,G2_S)	    2.268	 0.2063				
+(AW_S,SN_D)	  0.19644	 0.9007				
+(AW_S,SN_S)	   2.6429	 0.0989				
+(G1_D,G1_S)	   2.9704	 0.0997				
+(G1_D,G2_D)	   1.6049	  0.496				
+(G1_D,G2_S)	   2.5659	 0.1091				
+(G1_D,SN_D)	   1.7574	 0.2923				
+(G1_D,SN_S)	   2.6707	 0.0998				
+(G1_S,G2_D)	    3.043	 0.0964				
+(G1_S,G2_S)	   1.1237	 0.3097				
+(G1_S,SN_D)	   4.7574	 0.1004				
+(G1_S,SN_S)	  0.99292	 0.6998				
+(G2_D,G2_S)	   1.9392	 0.0975				
+(G2_D,SN_D)	  0.15867	 0.7976				
+(G2_D,SN_S)	   2.2157	 0.2974				
+(G2_S,SN_D)	   2.4773	 0.1014				
+(G2_S,SN_S)	  0.22536	 0.8038				
+(SN_D,SN_S)	    3.002	 0.1019				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	    SE
+AW_D	   3	 14.948	2.2178
+AW_S	   3	 16.415	2.6782
+G1_D	   3	 31.287	8.6265
+G1_S	   3	 5.4593	1.0907
+G2_D	   3	 16.392	3.4234
+G2_S	   3	 8.3559	2.3355
+SN_D	   3	 15.773	1.8736
+SN_S	   3	 7.6713	1.9425
+

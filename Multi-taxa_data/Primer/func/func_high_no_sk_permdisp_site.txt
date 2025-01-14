@@ -1,0 +1,36 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem19
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site
+Number of permutations: 9999
+
+Number of groups: 4
+Number of samples: 24
+
+DEVIATIONS FROM CENTROID
+F: 0.78315  df1: 3  df2: 20
+P(perm): 0.7118
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(AW,G1)	  1.294	 0.3676				
+(AW,G2)	 1.0583	 0.5043				
+(AW,SN)	 1.0331	 0.5036				
+(G1,G2)	0.11959	 0.9498				
+(G1,SN)	0.36481	 0.6846				
+(G2,SN)	0.18057	 0.8896				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	    SE
+AW	   6	  23.79	4.1659
+G1	   6	 17.421	2.6227
+G2	   6	 17.955	3.6128
+SN	   6	 18.752	2.5362
+

@@ -1,0 +1,302 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem3
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Site_Depth
+Number of permutations: 9999
+
+Number of groups: 23
+Number of samples: 67
+
+DEVIATIONS FROM CENTROID
+F: 13.235  df1: 22  df2: 44
+P(perm): 0.0006
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(CapeZanpa_shallow,CapeZanpa_deep)	  1.3629	 0.1015				
+(CapeZanpa_shallow,Zatsun_shallow)	  2.4918	 0.1039				
+(CapeZanpa_shallow,Zatsun_deep)	  1.5307	  0.105				
+(CapeZanpa_shallow,Yonama_shallow)	  9.2727	 0.0985				
+(CapeZanpa_shallow,Yonama_deep)	  2.2081	 0.1045				
+(CapeZanpa_shallow,Sunabe_shallow)	 0.73603	 0.1002				
+(CapeZanpa_shallow,Sunabe_deep)	  2.4163	 0.1938				
+(CapeZanpa_shallow,Sukuta_shallow)	  7.0409	  0.098				
+(CapeZanpa_shallow,Sakubaru2_shallow)	  1.3466	 0.6979				
+(CapeZanpa_shallow,Sakubaru2_deep)	   2.438	 0.1035				
+(CapeZanpa_shallow,Sakubaru1_shallow)	 0.92154	 0.0981				
+(CapeZanpa_shallow,Sakubaru1_deep)	  5.6303	 0.1012				
+(CapeZanpa_shallow,Mizugama_shallow)	  0.1113	      1				
+(CapeZanpa_shallow,Mizugama_deep)	  3.2976	 0.0981				
+(CapeZanpa_shallow,Hizushi_shallow)	  3.8318	 0.1031				
+(CapeZanpa_shallow,Hizushi_deep)	  5.4308	 0.0996				
+(CapeZanpa_shallow,GinowanPort2_shallow)	  1.2414	 0.1001				
+(CapeZanpa_shallow,GinowanPort2_deep)	  2.4884	 0.0991				
+(CapeZanpa_shallow,GinowanPort1_shallow)	  1.1377	  0.101				
+(CapeZanpa_shallow,GinowanPort1_deep)	 0.71882	 0.1019				
+(CapeZanpa_shallow,Awa_shallow)	  1.2578	 0.0997				
+(CapeZanpa_shallow,Awa_deep)	  3.4612	 0.0999				
+(CapeZanpa_deep,Zatsun_shallow)	  3.3875	 0.1036				
+(CapeZanpa_deep,Zatsun_deep)	  2.4895	 0.1051				
+(CapeZanpa_deep,Yonama_shallow)	  7.7884	 0.1023				
+(CapeZanpa_deep,Yonama_deep)	  3.0106	  0.096				
+(CapeZanpa_deep,Sunabe_shallow)	  1.1319	 0.0985				
+(CapeZanpa_deep,Sunabe_deep)	    2.94	 0.0987				
+(CapeZanpa_deep,Sukuta_shallow)	   5.624	 0.1003				
+(CapeZanpa_deep,Sakubaru2_shallow)	   2.233	 0.1059				
+(CapeZanpa_deep,Sakubaru2_deep)	 0.92809	 0.1011				
+(CapeZanpa_deep,Sakubaru1_shallow)	 0.22323	 0.6036				
+(CapeZanpa_deep,Sakubaru1_deep)	  3.9314	 0.1005				
+(CapeZanpa_deep,Mizugama_shallow)	 0.69992	 0.5018				
+(CapeZanpa_deep,Mizugama_deep)	  4.0387	 0.0999				
+(CapeZanpa_deep,Hizushi_shallow)	  2.0107	 0.1022				
+(CapeZanpa_deep,Hizushi_deep)	  2.9924	 0.1004				
+(CapeZanpa_deep,GinowanPort2_shallow)	  0.4915	 0.4045				
+(CapeZanpa_deep,GinowanPort2_deep)	  1.3642	 0.0992				
+(CapeZanpa_deep,GinowanPort1_shallow)	 0.23707	 0.9019				
+(CapeZanpa_deep,GinowanPort1_deep)	  1.6968	 0.0994				
+(CapeZanpa_deep,Awa_shallow)	  2.1771	 0.1044				
+(CapeZanpa_deep,Awa_deep)	  4.1637	 0.0999				
+(Zatsun_shallow,Zatsun_deep)	 0.44137	 0.5054				
+(Zatsun_shallow,Yonama_shallow)	  6.7052	  0.094				
+(Zatsun_shallow,Yonama_deep)	 0.52686	 0.3964				
+(Zatsun_shallow,Sunabe_shallow)	  4.2548	  0.102				
+(Zatsun_shallow,Sunabe_deep)	  1.4949	 0.3998				
+(Zatsun_shallow,Sukuta_shallow)	  8.4786	 0.0989				
+(Zatsun_shallow,Sakubaru2_shallow)	  1.3835	 0.6981				
+(Zatsun_shallow,Sakubaru2_deep)	    4.47	 0.1009				
+(Zatsun_shallow,Sakubaru1_shallow)	  2.6553	 0.0972				
+(Zatsun_shallow,Sakubaru1_deep)	  7.4394	 0.1019				
+(Zatsun_shallow,Mizugama_shallow)	  1.3738	 0.1017				
+(Zatsun_shallow,Mizugama_deep)	  0.7653	 0.0993				
+(Zatsun_shallow,Hizushi_shallow)	  6.0223	 0.0973				
+(Zatsun_shallow,Hizushi_deep)	  8.0361	 0.1015				
+(Zatsun_shallow,GinowanPort2_shallow)	  4.0411	 0.1041				
+(Zatsun_shallow,GinowanPort2_deep)	  3.9769	 0.0968				
+(Zatsun_shallow,GinowanPort1_shallow)	  2.4433	 0.0966				
+(Zatsun_shallow,GinowanPort1_deep)	  1.0255	 0.1037				
+(Zatsun_shallow,Awa_shallow)	 0.48285	 0.3002				
+(Zatsun_shallow,Awa_deep)	  1.4993	 0.1043				
+(Zatsun_deep,Yonama_shallow)	  4.9045	 0.0974				
+(Zatsun_deep,Yonama_deep)	 0.79959	  0.404				
+(Zatsun_deep,Sunabe_shallow)	  2.3484	 0.0972				
+(Zatsun_deep,Sunabe_deep)	  1.6346	 0.4009				
+(Zatsun_deep,Sukuta_shallow)	  7.4717	 0.0995				
+(Zatsun_deep,Sakubaru2_shallow)	 0.51553	 0.7976				
+(Zatsun_deep,Sakubaru2_deep)	  3.4064	  0.101				
+(Zatsun_deep,Sakubaru1_shallow)	  1.9991	 0.1011				
+(Zatsun_deep,Sakubaru1_deep)	  6.1611	 0.0981				
+(Zatsun_deep,Mizugama_shallow)	  1.0171	 0.4013				
+(Zatsun_deep,Mizugama_deep)	  1.0447	 0.0983				
+(Zatsun_deep,Hizushi_shallow)	  4.5979	 0.1013				
+(Zatsun_deep,Hizushi_deep)	  5.8525	 0.0978				
+(Zatsun_deep,GinowanPort2_shallow)	  2.5858	 0.0999				
+(Zatsun_deep,GinowanPort2_deep)	  3.3131	 0.0999				
+(Zatsun_deep,GinowanPort1_shallow)	  1.9956	 0.1005				
+(Zatsun_deep,GinowanPort1_deep)	 0.55894	 0.3096				
+(Zatsun_deep,Awa_shallow)	0.082407	      1				
+(Zatsun_deep,Awa_deep)	  1.6518	  0.102				
+(Yonama_shallow,Yonama_deep)	  3.1568	 0.0973				
+(Yonama_shallow,Sunabe_shallow)	  55.961	 0.1024				
+(Yonama_shallow,Sunabe_deep)	 0.60432	 0.7043				
+(Yonama_shallow,Sukuta_shallow)	   10.06	 0.2971				
+(Yonama_shallow,Sakubaru2_shallow)	 No test	       				
+(Yonama_shallow,Sakubaru2_deep)	   8.807	  0.095				
+(Yonama_shallow,Sakubaru1_shallow)	  6.0788	 0.0987				
+(Yonama_shallow,Sakubaru1_deep)	  10.525	  0.313				
+(Yonama_shallow,Mizugama_shallow)	  3.6805	 0.1025				
+(Yonama_shallow,Mizugama_deep)	   6.125	 0.0992				
+(Yonama_shallow,Hizushi_shallow)	  10.993	  0.102				
+(Yonama_shallow,Hizushi_deep)	  15.783	 0.0965				
+(Yonama_shallow,GinowanPort2_shallow)	  13.435	 0.1027				
+(Yonama_shallow,GinowanPort2_deep)	  6.4504	 0.1008				
+(Yonama_shallow,GinowanPort1_shallow)	  4.6695	  0.104				
+(Yonama_shallow,GinowanPort1_deep)	  4.6907	 0.0993				
+(Yonama_shallow,Awa_shallow)	  4.2051	 0.0994				
+(Yonama_shallow,Awa_deep)	  3.1018	  0.101				
+(Yonama_deep,Sunabe_shallow)	  2.9193	 0.0959				
+(Yonama_deep,Sunabe_deep)	  1.1187	 0.3973				
+(Yonama_deep,Sukuta_shallow)	  7.5826	 0.1022				
+(Yonama_deep,Sakubaru2_shallow)	  1.2109	 0.7022				
+(Yonama_deep,Sakubaru2_deep)	  3.8221	 0.0971				
+(Yonama_deep,Sakubaru1_shallow)	  2.5464	 0.1018				
+(Yonama_deep,Sakubaru1_deep)	  6.3052	  0.098				
+(Yonama_deep,Mizugama_shallow)	  1.5465	  0.101				
+(Yonama_deep,Mizugama_deep)	0.022887	      1				
+(Yonama_deep,Hizushi_shallow)	  4.8632	 0.0973				
+(Yonama_deep,Hizushi_deep)	  5.8936	 0.0996				
+(Yonama_deep,GinowanPort2_shallow)	  3.1131	 0.0963				
+(Yonama_deep,GinowanPort2_deep)	  3.7245	 0.0976				
+(Yonama_deep,GinowanPort1_shallow)	  2.4749	 0.1029				
+(Yonama_deep,GinowanPort1_deep)	  1.2468	 0.2001				
+(Yonama_deep,Awa_shallow)	 0.81571	 0.1908				
+(Yonama_deep,Awa_deep)	 0.66534	 0.3974				
+(Sunabe_shallow,Sunabe_deep)	  2.7076	 0.1023				
+(Sunabe_shallow,Sukuta_shallow)	  7.3453	 0.1037				
+(Sunabe_shallow,Sakubaru2_shallow)	  10.937	  0.098				
+(Sunabe_shallow,Sakubaru2_deep)	   2.435	 0.1008				
+(Sunabe_shallow,Sakubaru1_shallow)	 0.63246	 0.2987				
+(Sunabe_shallow,Sakubaru1_deep)	   6.062	 0.0975				
+(Sunabe_shallow,Mizugama_shallow)	 0.16945	      1				
+(Sunabe_shallow,Mizugama_deep)	  5.5097	 0.0941				
+(Sunabe_shallow,Hizushi_shallow)	  4.2364	 0.1027				
+(Sunabe_shallow,Hizushi_deep)	  6.9594	 0.1037				
+(Sunabe_shallow,GinowanPort2_shallow)	   1.034	 0.0953				
+(Sunabe_shallow,GinowanPort2_deep)	  2.3892	 0.0989				
+(Sunabe_shallow,GinowanPort1_shallow)	 0.92367	 0.1003				
+(Sunabe_shallow,GinowanPort1_deep)	  1.2526	 0.1018				
+(Sunabe_shallow,Awa_shallow)	  1.8707	 0.1031				
+(Sunabe_shallow,Awa_deep)	  4.6734	 0.1036				
+(Sunabe_deep,Sukuta_shallow)	  6.1902	 0.1043				
+(Sunabe_deep,Sakubaru2_shallow)	  1.5713	 0.6006				
+(Sunabe_deep,Sakubaru2_deep)	  3.4187	 0.1029				
+(Sunabe_deep,Sakubaru1_shallow)	  2.7169	 0.0979				
+(Sunabe_deep,Sakubaru1_deep)	   5.031	 0.0964				
+(Sunabe_deep,Mizugama_shallow)	  2.1127	  0.195				
+(Sunabe_deep,Mizugama_deep)	  1.2225	 0.3955				
+(Sunabe_deep,Hizushi_shallow)	   3.977	 0.1025				
+(Sunabe_deep,Hizushi_deep)	  4.4185	 0.0955				
+(Sunabe_deep,GinowanPort2_shallow)	  2.8727	 0.1046				
+(Sunabe_deep,GinowanPort2_deep)	  3.5521	 0.0971				
+(Sunabe_deep,GinowanPort1_shallow)	  2.7601	 0.1007				
+(Sunabe_deep,GinowanPort1_deep)	  1.9042	 0.4012				
+(Sunabe_deep,Awa_shallow)	  1.6357	 0.4002				
+(Sunabe_deep,Awa_deep)	 0.76532	 0.5052				
+(Sukuta_shallow,Sakubaru2_shallow)	  6.5576	  0.102				
+(Sukuta_shallow,Sakubaru2_deep)	  4.9245	 0.1045				
+(Sukuta_shallow,Sakubaru1_shallow)	  5.4207	 0.1014				
+(Sukuta_shallow,Sakubaru1_deep)	  2.2371	 0.0981				
+(Sukuta_shallow,Mizugama_shallow)	  4.9815	 0.0963				
+(Sukuta_shallow,Mizugama_deep)	  8.9551	 0.0967				
+(Sukuta_shallow,Hizushi_shallow)	  4.3011	 0.1003				
+(Sukuta_shallow,Hizushi_deep)	  4.0321	  0.101				
+(Sukuta_shallow,GinowanPort2_shallow)	  6.6186	 0.0997				
+(Sukuta_shallow,GinowanPort2_deep)	  3.6987	 0.0977				
+(Sukuta_shallow,GinowanPort1_shallow)	  4.2668	 0.1024				
+(Sukuta_shallow,GinowanPort1_deep)	  6.6093	 0.0998				
+(Sukuta_shallow,Awa_shallow)	  6.9866	 0.0968				
+(Sukuta_shallow,Awa_deep)	  8.7428	  0.102				
+(Sakubaru2_shallow,Sakubaru2_deep)	  3.2503	 0.0967				
+(Sakubaru2_shallow,Sakubaru1_shallow)	  1.5842	 0.5935				
+(Sakubaru2_shallow,Sakubaru1_deep)	  5.8552	 0.1025				
+(Sakubaru2_shallow,Mizugama_shallow)	 0.61349	  0.789				
+(Sakubaru2_shallow,Mizugama_deep)	  2.2961	 0.2968				
+(Sakubaru2_shallow,Hizushi_shallow)	  4.8134	 0.1037				
+(Sakubaru2_shallow,Hizushi_deep)	  7.4948	 0.0964				
+(Sakubaru2_shallow,GinowanPort2_shallow)	  3.2864	 0.1021				
+(Sakubaru2_shallow,GinowanPort2_deep)	  2.7546	 0.1024				
+(Sakubaru2_shallow,GinowanPort1_shallow)	  1.4897	 0.6012				
+(Sakubaru2_shallow,GinowanPort1_deep)	 0.13213	      1				
+(Sakubaru2_shallow,Awa_shallow)	 0.34987	 0.9017				
+(Sakubaru2_shallow,Awa_deep)	  2.3273	 0.7049				
+(Sakubaru2_deep,Sakubaru1_shallow)	  1.0488	 0.2006				
+(Sakubaru2_deep,Sakubaru1_deep)	  3.0873	 0.1029				
+(Sakubaru2_deep,Mizugama_shallow)	  1.3343	 0.3011				
+(Sakubaru2_deep,Mizugama_deep)	   5.135	 0.1029				
+(Sakubaru2_deep,Hizushi_shallow)	  1.0348	 0.0975				
+(Sakubaru2_deep,Hizushi_deep)	  1.9026	  0.098				
+(Sakubaru2_deep,GinowanPort2_shallow)	   1.643	 0.0992				
+(Sakubaru2_deep,GinowanPort2_deep)	 0.63731	 0.5021				
+(Sakubaru2_deep,GinowanPort1_shallow)	 0.41489	 0.6077				
+(Sakubaru2_deep,GinowanPort1_deep)	  2.5295	 0.1027				
+(Sakubaru2_deep,Awa_shallow)	  3.0095	 0.1034				
+(Sakubaru2_deep,Awa_deep)	  5.0816	 0.0965				
+(Sakubaru1_shallow,Sakubaru1_deep)	  3.7684	 0.1012				
+(Sakubaru1_shallow,Mizugama_shallow)	 0.49855	 0.5956				
+(Sakubaru1_shallow,Mizugama_deep)	     3.2	 0.0959				
+(Sakubaru1_shallow,Hizushi_shallow)	  2.0012	 0.0977				
+(Sakubaru1_shallow,Hizushi_deep)	  2.8145	 0.1024				
+(Sakubaru1_shallow,GinowanPort2_shallow)	 0.15196	  0.803				
+(Sakubaru1_shallow,GinowanPort2_deep)	  1.4479	 0.1045				
+(Sakubaru1_shallow,GinowanPort1_shallow)	 0.38883	 0.7962				
+(Sakubaru1_shallow,GinowanPort1_deep)	  1.3366	 0.1007				
+(Sakubaru1_shallow,Awa_shallow)	   1.773	 0.0955				
+(Sakubaru1_shallow,Awa_deep)	  3.4914	 0.0954				
+(Sakubaru1_deep,Mizugama_shallow)	  3.4877	 0.0978				
+(Sakubaru1_deep,Mizugama_deep)	  8.0482	 0.1037				
+(Sakubaru1_deep,Hizushi_shallow)	  2.2843	  0.104				
+(Sakubaru1_deep,Hizushi_deep)	  1.8364	 0.0974				
+(Sakubaru1_deep,GinowanPort2_shallow)	  5.0935	 0.1023				
+(Sakubaru1_deep,GinowanPort2_deep)	  1.9025	 0.1017				
+(Sakubaru1_deep,GinowanPort1_shallow)	  2.6649	 0.1009				
+(Sakubaru1_deep,GinowanPort1_deep)	  5.1582	 0.1079				
+(Sakubaru1_deep,Awa_shallow)	  5.6015	 0.1042				
+(Sakubaru1_deep,Awa_deep)	  7.6901	 0.1009				
+(Mizugama_shallow,Mizugama_deep)	  1.7586	 0.0991				
+(Mizugama_shallow,Hizushi_shallow)	  2.0532	 0.0989				
+(Mizugama_shallow,Hizushi_deep)	   2.615	 0.0995				
+(Mizugama_shallow,GinowanPort2_shallow)	  0.4692	 0.5018				
+(Mizugama_shallow,GinowanPort2_deep)	  1.6616	 0.1952				
+(Mizugama_shallow,GinowanPort1_shallow)	 0.76508	 0.3992				
+(Mizugama_shallow,GinowanPort1_deep)	 0.56191	 0.7971				
+(Mizugama_shallow,Awa_shallow)	 0.90925	 0.2914				
+(Mizugama_shallow,Awa_deep)	  2.1674	 0.0939				
+(Mizugama_deep,Hizushi_shallow)	  6.7637	 0.1023				
+(Mizugama_deep,Hizushi_deep)	  8.9752	 0.0965				
+(Mizugama_deep,GinowanPort2_shallow)	  4.9905	 0.0991				
+(Mizugama_deep,GinowanPort2_deep)	  4.4477	 0.1012				
+(Mizugama_deep,GinowanPort1_shallow)	  2.8464	 0.0997				
+(Mizugama_deep,GinowanPort1_deep)	  1.5612	 0.0991				
+(Mizugama_deep,Awa_shallow)	   1.013	 0.0967				
+(Mizugama_deep,Awa_deep)	 0.91905	 0.0999				
+(Hizushi_shallow,Hizushi_deep)	 0.80144	  0.105				
+(Hizushi_shallow,GinowanPort2_shallow)	  3.1011	 0.0999				
+(Hizushi_shallow,GinowanPort2_deep)	 0.13749	 0.7979				
+(Hizushi_shallow,GinowanPort1_shallow)	  1.1332	 0.1003				
+(Hizushi_shallow,GinowanPort1_deep)	  3.5517	  0.097				
+(Hizushi_shallow,Awa_shallow)	  4.0507	 0.1037				
+(Hizushi_shallow,Awa_deep)	  6.3586	 0.0975				
+(Hizushi_deep,GinowanPort2_shallow)	  4.8103	    0.1				
+(Hizushi_deep,GinowanPort2_deep)	 0.69236	 0.4068				
+(Hizushi_deep,GinowanPort1_shallow)	  1.6701	 0.1018				
+(Hizushi_deep,GinowanPort1_deep)	  4.5133	 0.1007				
+(Hizushi_deep,Awa_shallow)	  5.0559	 0.0991				
+(Hizushi_deep,Awa_deep)	  7.8151	 0.0995				
+(GinowanPort2_shallow,GinowanPort2_deep)	  1.8898	 0.0976				
+(GinowanPort2_shallow,GinowanPort1_shallow)	 0.56671	 0.4008				
+(GinowanPort2_shallow,GinowanPort1_deep)	  1.5828	 0.0983				
+(GinowanPort2_shallow,Awa_shallow)	  2.1494	 0.1008				
+(GinowanPort2_shallow,Awa_deep)	  4.6506	 0.1035				
+(GinowanPort2_deep,GinowanPort1_shallow)	 0.86156	    0.4				
+(GinowanPort2_deep,GinowanPort1_deep)	   2.655	 0.1033				
+(GinowanPort2_deep,Awa_shallow)	  3.0462	 0.0975				
+(GinowanPort2_deep,Awa_deep)	  4.6305	 0.0951				
+(GinowanPort1_shallow,GinowanPort1_deep)	  1.4798	 0.0991				
+(GinowanPort1_shallow,Awa_shallow)	  1.8355	 0.1039				
+(GinowanPort1_shallow,Awa_deep)	   3.178	 0.0985				
+(GinowanPort1_deep,Awa_shallow)	 0.44009	 0.4971				
+(GinowanPort1_deep,Awa_deep)	  2.0627	 0.1032				
+(Awa_shallow,Awa_deep)	  1.5851	 0.1046				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+CapeZanpa_shallow	   3	 29.393	0.60984
+CapeZanpa_deep	   3	 30.842	0.87009
+Zatsun_shallow	   3	 27.266	0.59759
+Zatsun_deep	   3	  27.74	0.89182
+Yonama_shallow	   2	 22.093	      0
+Yonama_deep	   3	 26.603	 1.1067
+Sunabe_shallow	   3	 29.849	0.10736
+Sunabe_deep	   3	 23.826	 2.2218
+Sukuta_shallow	   3	 40.017	 1.3801
+Sakubaru2_shallow	   2	 28.333	      0
+Sakubaru2_deep	   3	 31.983	0.86989
+Sakubaru1_shallow	   3	 30.533	 1.0754
+Sakubaru1_deep	   3	 36.158	 1.0351
+Mizugama_shallow	   3	 29.582	  1.576
+Mizugama_deep	   3	 26.632	  0.574
+Hizushi_shallow	   3	 33.194	0.78222
+Hizushi_deep	   3	 33.976	0.58318
+GinowanPort2_shallow	   3	 30.354	0.47629
+GinowanPort2_deep	   3	 32.985	 1.3079
+GinowanPort1_shallow	   3	 31.257	 1.5201
+GinowanPort1_deep	   3	 28.514	 1.0604
+Awa_shallow	   3	 27.854	 1.0612
+Awa_deep	   3	 25.658	0.89033
+

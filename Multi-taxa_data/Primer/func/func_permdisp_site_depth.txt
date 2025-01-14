@@ -1,0 +1,302 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem5
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site_depth
+Number of permutations: 9999
+
+Number of groups: 23
+Number of samples: 69
+
+DEVIATIONS FROM CENTROID
+F: 3.7381  df1: 22  df2: 46
+P(perm): 0.1713
+
+PAIRWISE COMPARISONS
+Groups	        t	P(perm)				
+(AW_Deep,AW_Shallow)	   1.4626	 0.5888				
+(AW_Deep,G1_Deep)	   2.1231	 0.3023				
+(AW_Deep,G1_Shallow)	  0.52014	 0.7995				
+(AW_Deep,G2_Deep)	   3.3702	 0.0976				
+(AW_Deep,G2_Shallow)	  0.61648	 0.8002				
+(AW_Deep,HI_Deep)	   3.4212	 0.1046				
+(AW_Deep,HI_Shallow)	   3.0692	 0.1018				
+(AW_Deep,MI_Deep)	   0.8596	 0.5925				
+(AW_Deep,MI_Shallow)	   1.5023	 0.7006				
+(AW_Deep,S1_Deep)	   2.5763	 0.2101				
+(AW_Deep,S1_Shallow)	   2.1885	 0.0991				
+(AW_Deep,S2_Deep)	   2.3031	 0.1991				
+(AW_Deep,S2_Shallow)	   2.3077	 0.1006				
+(AW_Deep,SK_Shallow)	   2.1257	  0.304				
+(AW_Deep,SN_Deep)	   1.3888	  0.697				
+(AW_Deep,SN_Shallow)	   2.4573	 0.1971				
+(AW_Deep,YO_Deep)	   1.4569	 0.7062				
+(AW_Deep,YO_Shallow)	   2.5489	 0.1014				
+(AW_Deep,ZA_Deep)	   1.5594	 0.4056				
+(AW_Deep,ZA_Shallow)	   3.1436	 0.1036				
+(AW_Deep,ZP_Deep)	   2.0501	 0.0953				
+(AW_Deep,ZP_Shallow)	   3.1244	 0.0984				
+(AW_Shallow,G1_Deep)	  0.96213	 0.4987				
+(AW_Shallow,G1_Shallow)	    1.257	 0.6071				
+(AW_Shallow,G2_Deep)	   3.2282	 0.0998				
+(AW_Shallow,G2_Shallow)	   1.6562	 0.1018				
+(AW_Shallow,HI_Deep)	   3.3485	 0.0974				
+(AW_Shallow,HI_Shallow)	   2.6203	 0.0955				
+(AW_Shallow,MI_Deep)	  0.78958	 0.7929				
+(AW_Shallow,MI_Shallow)	 0.029332	      1				
+(AW_Shallow,S1_Deep)	   1.7169	 0.1962				
+(AW_Shallow,S1_Shallow)	   1.0474	 0.3934				
+(AW_Shallow,S2_Deep)	   1.2403	 0.4923				
+(AW_Shallow,S2_Shallow)	   1.2473	 0.4066				
+(AW_Shallow,SK_Shallow)	   1.0575	 0.3979				
+(AW_Shallow,SN_Deep)	 0.061862	      1				
+(AW_Shallow,SN_Shallow)	   1.5027	 0.1963				
+(AW_Shallow,YO_Deep)	  0.20802	 0.8068				
+(AW_Shallow,YO_Shallow)	   1.6515	 0.2017				
+(AW_Shallow,ZA_Deep)	  0.13566	 0.9033				
+(AW_Shallow,ZA_Shallow)	   2.7362	 0.1021				
+(AW_Shallow,ZP_Deep)	  0.82252	 0.5996				
+(AW_Shallow,ZP_Shallow)	   2.6909	 0.1036				
+(G1_Deep,G1_Shallow)	   2.2191	 0.3963				
+(G1_Deep,G2_Deep)	   2.5558	 0.1009				
+(G1_Deep,G2_Shallow)	   3.2157	 0.1033				
+(G1_Deep,HI_Deep)	   2.7087	 0.1011				
+(G1_Deep,HI_Shallow)	   1.8132	 0.0998				
+(G1_Deep,MI_Deep)	   1.7273	 0.5021				
+(G1_Deep,MI_Shallow)	  0.96969	 0.6046				
+(G1_Deep,S1_Deep)	  0.74901	 0.8046				
+(G1_Deep,S1_Shallow)	0.0093638	 0.9014				
+(G1_Deep,S2_Deep)	  0.21969	 0.8973				
+(G1_Deep,S2_Shallow)	  0.21482	 0.9015				
+(G1_Deep,SK_Shallow)	  0.31772	 0.7988				
+(G1_Deep,SN_Deep)	  0.71265	 0.7024				
+(G1_Deep,SN_Shallow)	  0.56628	 0.5039				
+(G1_Deep,YO_Deep)	  0.50671	 0.9032				
+(G1_Deep,YO_Shallow)	  0.77622	 0.5959				
+(G1_Deep,ZA_Deep)	  0.82595	 0.8942				
+(G1_Deep,ZA_Shallow)	   1.9632	 0.4946				
+(G1_Deep,ZP_Deep)	  0.22292	  0.902				
+(G1_Deep,ZP_Shallow)	   1.9135	  0.304				
+(G1_Shallow,G2_Deep)	   4.3049	 0.1008				
+(G1_Shallow,G2_Shallow)	 0.040423	      1				
+(G1_Shallow,HI_Deep)	   4.4098	 0.0994				
+(G1_Shallow,HI_Shallow)	    3.775	 0.0975				
+(G1_Shallow,MI_Deep)	  0.44532	 0.7021				
+(G1_Shallow,MI_Shallow)	   1.3174	 0.3949				
+(G1_Shallow,S1_Deep)	   2.9794	 0.0984				
+(G1_Shallow,S1_Shallow)	   2.3616	 0.2015				
+(G1_Shallow,S2_Deep)	   2.5411	 0.0985				
+(G1_Shallow,S2_Shallow)	   2.5564	 0.2031				
+(G1_Shallow,SK_Shallow)	   2.1092	 0.2045				
+(G1_Shallow,SN_Deep)	   1.1411	 0.5966				
+(G1_Shallow,SN_Shallow)	   2.7404	 0.0975				
+(G1_Shallow,YO_Deep)	   1.2244	 0.5953				
+(G1_Shallow,YO_Shallow)	   2.8401	 0.1015				
+(G1_Shallow,ZA_Deep)	   1.3922	 0.5018				
+(G1_Shallow,ZA_Shallow)	   3.8644	 0.1034				
+(G1_Shallow,ZP_Deep)	   2.1434	 0.3066				
+(G1_Shallow,ZP_Shallow)	   3.8202	 0.1016				
+(G2_Deep,G2_Shallow)	   8.4472	 0.1029				
+(G2_Deep,HI_Deep)	  0.28489	 0.8041				
+(G2_Deep,HI_Shallow)	   1.1287	 0.0945				
+(G2_Deep,MI_Deep)	    3.782	 0.1057				
+(G2_Deep,MI_Shallow)	   3.4039	 0.0986				
+(G2_Deep,S1_Deep)	   2.5396	 0.0954				
+(G2_Deep,S1_Shallow)	   3.1568	 0.1042				
+(G2_Deep,S2_Deep)	    2.984	 0.1029				
+(G2_Deep,S2_Shallow)	   3.1193	 0.1016				
+(G2_Deep,SK_Shallow)	   1.2703	 0.3922				
+(G2_Deep,SN_Deep)	   2.3226	 0.0983				
+(G2_Deep,SN_Shallow)	   2.1367	 0.3044				
+(G2_Deep,YO_Deep)	   1.9527	 0.2021				
+(G2_Deep,YO_Shallow)	   1.5784	 0.2955				
+(G2_Deep,ZA_Deep)	   3.1184	 0.0983				
+(G2_Deep,ZA_Shallow)	  0.64688	 0.6988				
+(G2_Deep,ZP_Deep)	   3.2635	 0.0987				
+(G2_Deep,ZP_Shallow)	   0.6402	 0.5068				
+(G2_Shallow,HI_Deep)	   8.9633	 0.1026				
+(G2_Shallow,HI_Shallow)	   6.7917	 0.0954				
+(G2_Shallow,MI_Deep)	  0.53071	 0.6005				
+(G2_Shallow,MI_Shallow)	    1.778	 0.1008				
+(G2_Shallow,S1_Deep)	   5.0053	 0.1025				
+(G2_Shallow,S1_Shallow)	    3.707	 0.1048				
+(G2_Shallow,S2_Deep)	   4.0632	 0.1053				
+(G2_Shallow,S2_Shallow)	   4.1455	 0.0983				
+(G2_Shallow,SK_Shallow)	   2.6198	 0.0995				
+(G2_Shallow,SN_Deep)	   1.3661	 0.4094				
+(G2_Shallow,SN_Shallow)	   4.2113	 0.1031				
+(G2_Shallow,YO_Deep)	   1.4352	  0.298				
+(G2_Shallow,YO_Shallow)	   4.1918	 0.1039				
+(G2_Shallow,ZA_Deep)	    1.855	 0.2017				
+(G2_Shallow,ZA_Shallow)	   6.7496	 0.0953				
+(G2_Shallow,ZP_Deep)	   3.2671	 0.0988				
+(G2_Shallow,ZP_Shallow)	    6.556	 0.1054				
+(HI_Deep,HI_Shallow)	   1.4131	 0.5041				
+(HI_Deep,MI_Deep)	   3.8844	 0.1017				
+(HI_Deep,MI_Shallow)	   3.5399	 0.1045				
+(HI_Deep,S1_Deep)	   2.8303	 0.0994				
+(HI_Deep,S1_Shallow)	    3.396	 0.1041				
+(HI_Deep,S2_Deep)	   3.2355	  0.101				
+(HI_Deep,S2_Shallow)	   3.3952	 0.1009				
+(HI_Deep,SK_Shallow)	   1.3374	 0.3963				
+(HI_Deep,SN_Deep)	   2.3928	 0.1015				
+(HI_Deep,SN_Shallow)	   2.3142	 0.0976				
+(HI_Deep,YO_Deep)	   2.0126	 0.1018				
+(HI_Deep,YO_Shallow)	   1.7124	 0.3935				
+(HI_Deep,ZA_Deep)	   3.2412	 0.1059				
+(HI_Deep,ZA_Shallow)	  0.84844	  0.594				
+(HI_Deep,ZP_Deep)	   3.4782	  0.099				
+(HI_Deep,ZP_Shallow)	   0.8256	      1				
+(HI_Shallow,MI_Deep)	   3.2545	 0.0979				
+(HI_Shallow,MI_Shallow)	   2.7399	 0.1005				
+(HI_Shallow,S1_Deep)	   1.4058	  0.202				
+(HI_Shallow,S1_Shallow)	   2.1597	 0.3034				
+(HI_Shallow,S2_Deep)	   1.9516	 0.1023				
+(HI_Shallow,S2_Shallow)	   2.0258	  0.402				
+(HI_Shallow,SK_Shallow)	  0.85363	 0.4999				
+(HI_Shallow,SN_Deep)	   1.9129	 0.2009				
+(HI_Shallow,SN_Shallow)	   1.3012	 0.6995				
+(HI_Shallow,YO_Deep)	   1.5878	 0.3003				
+(HI_Shallow,YO_Shallow)	  0.87608	 0.7014				
+(HI_Shallow,ZA_Deep)	   2.4984	 0.1035				
+(HI_Shallow,ZA_Shallow)	  0.30961	 0.7051				
+(HI_Shallow,ZP_Deep)	   2.3377	  0.203				
+(HI_Shallow,ZP_Shallow)	  0.27286	 0.8109				
+(MI_Deep,MI_Shallow)	  0.83837	 0.7946				
+(MI_Deep,S1_Deep)	   2.4561	 0.0999				
+(MI_Deep,S1_Shallow)	    1.844	 0.4956				
+(MI_Deep,S2_Deep)	   2.0217	 0.3025				
+(MI_Deep,S2_Shallow)	   2.0332	  0.395				
+(MI_Deep,SK_Shallow)	    1.697	 0.4065				
+(MI_Deep,SN_Deep)	  0.73619	  0.706				
+(MI_Deep,SN_Shallow)	   2.2379	  0.101				
+(MI_Deep,YO_Deep)	  0.84028	 0.7058				
+(MI_Deep,YO_Shallow)	   2.3537	 0.4101				
+(MI_Deep,ZA_Deep)	  0.92202	 0.7954				
+(MI_Deep,ZA_Shallow)	    3.352	 0.1031				
+(MI_Deep,ZP_Deep)	   1.6309	 0.4975				
+(MI_Deep,ZP_Shallow)	   3.3106	 0.0999				
+(MI_Shallow,S1_Deep)	   1.7741	 0.1962				
+(MI_Shallow,S1_Shallow)	   1.0635	 0.2966				
+(MI_Shallow,S2_Deep)	   1.2674	 0.3908				
+(MI_Shallow,S2_Shallow)	   1.2759	 0.2925				
+(MI_Shallow,SK_Shallow)	   1.0592	 0.4999				
+(MI_Shallow,SN_Deep)	 0.038963	      1				
+(MI_Shallow,SN_Shallow)	    1.539	    0.2				
+(MI_Shallow,YO_Deep)	  0.18941	      1				
+(MI_Shallow,YO_Shallow)	   1.6899	 0.3006				
+(MI_Shallow,ZA_Deep)	   0.1106	 0.8011				
+(MI_Shallow,ZA_Shallow)	    2.857	 0.0995				
+(MI_Shallow,ZP_Deep)	  0.82636	 0.4927				
+(MI_Shallow,ZP_Shallow)	   2.8056	 0.1025				
+(S1_Deep,S1_Shallow)	  0.86317	 0.7016				
+(S1_Deep,S2_Deep)	   0.6246	  0.801				
+(S1_Deep,S2_Shallow)	  0.65168	 0.7005				
+(S1_Deep,SK_Shallow)	  0.16999	      1				
+(S1_Deep,SN_Deep)	   1.2534	 0.3976				
+(S1_Deep,SN_Shallow)	  0.13693	 0.7966				
+(S1_Deep,YO_Deep)	  0.98815	 0.4034				
+(S1_Deep,YO_Shallow)	  0.16223	 0.8968				
+(S1_Deep,ZA_Deep)	   1.5794	 0.1982				
+(S1_Deep,ZA_Shallow)	   1.6046	 0.3037				
+(S1_Deep,ZP_Deep)	   1.1043	 0.4975				
+(S1_Deep,ZP_Shallow)	   1.5339	 0.4099				
+(S1_Shallow,S2_Deep)	   0.2412	 0.4956				
+(S1_Shallow,S2_Shallow)	  0.23663	 0.5098				
+(S1_Shallow,SK_Shallow)	  0.32939	 0.9012				
+(S1_Shallow,SN_Deep)	  0.75494	 0.5935				
+(S1_Shallow,SN_Shallow)	  0.63021	 0.4925				
+(S1_Shallow,YO_Deep)	   0.5347	 0.9014				
+(S1_Shallow,YO_Shallow)	  0.85599	 0.5011				
+(S1_Shallow,ZA_Deep)	   0.9028	 0.6952				
+(S1_Shallow,ZA_Shallow)	   2.3126	 0.0996				
+(S1_Shallow,ZP_Deep)	  0.26199	      1				
+(S1_Shallow,ZP_Shallow)	   2.2387	 0.4992				
+(S2_Deep,S2_Shallow)	0.0099574	      1				
+(S2_Deep,SK_Shallow)	  0.18354	 0.8983				
+(S2_Deep,SN_Deep)	  0.90081	 0.6984				
+(S2_Deep,SN_Shallow)	  0.41403	 0.6048				
+(S2_Deep,YO_Deep)	  0.66787	 0.6946				
+(S2_Deep,YO_Shallow)	  0.65865	 0.5982				
+(S2_Deep,ZA_Deep)	   1.0975	  0.593				
+(S2_Deep,ZA_Shallow)	   2.1154	  0.208				
+(S2_Deep,ZP_Deep)	  0.49865	      1				
+(S2_Deep,ZP_Shallow)	    2.042	  0.209				
+(S2_Shallow,SK_Shallow)	  0.19091	      1				
+(S2_Shallow,SN_Deep)	  0.90152	 0.7047				
+(S2_Shallow,SN_Shallow)	   0.4314	 0.5985				
+(S2_Shallow,YO_Deep)	  0.66673	 0.8006				
+(S2_Shallow,YO_Shallow)	  0.67837	 0.6014				
+(S2_Shallow,ZA_Deep)	   1.1032	 0.3912				
+(S2_Shallow,ZA_Shallow)	   2.1885	 0.1999				
+(S2_Shallow,ZP_Deep)	  0.49904	 0.8996				
+(S2_Shallow,ZP_Shallow)	   2.1095	 0.3942				
+(SK_Shallow,SN_Deep)	  0.85989	 0.3978				
+(SK_Shallow,SN_Shallow)	 0.080915	      1				
+(SK_Shallow,YO_Deep)	  0.68019	 0.6977				
+(SK_Shallow,YO_Shallow)	  0.25745	      1				
+(SK_Shallow,ZA_Deep)	  0.94834	 0.5945				
+(SK_Shallow,ZA_Shallow)	   0.9788	  0.498				
+(SK_Shallow,ZP_Deep)	   0.4927	 0.7066				
+(SK_Shallow,ZP_Shallow)	  0.95986	 0.7041				
+(SN_Deep,SN_Shallow)	   1.1239	 0.3914				
+(SN_Deep,YO_Deep)	   0.1331	 0.7934				
+(SN_Deep,YO_Shallow)	    1.263	 0.5966				
+(SN_Deep,ZA_Deep)	 0.050842	      1				
+(SN_Deep,ZA_Shallow)	   2.0181	 0.1003				
+(SN_Deep,ZP_Deep)	  0.58504	 0.7974				
+(SN_Deep,ZP_Shallow)	   1.9939	 0.2013				
+(SN_Shallow,YO_Deep)	  0.88118	 0.6957				
+(SN_Shallow,YO_Shallow)	  0.25943	 0.6948				
+(SN_Shallow,ZA_Deep)	    1.369	 0.1977				
+(SN_Shallow,ZA_Shallow)	   1.4809	 0.5014				
+(SN_Shallow,ZP_Deep)	  0.85793	 0.8105				
+(SN_Shallow,ZP_Shallow)	   1.4308	 0.4979				
+(YO_Deep,YO_Shallow)	   1.0183	 0.6987				
+(YO_Deep,ZA_Deep)	  0.10297	  0.899				
+(YO_Deep,ZA_Shallow)	   1.6893	 0.1968				
+(YO_Deep,ZP_Deep)	  0.38028	 0.8976				
+(YO_Deep,ZP_Shallow)	   1.6699	 0.1931				
+(YO_Shallow,ZA_Deep)	   1.5247	 0.1957				
+(YO_Shallow,ZA_Shallow)	    1.057	  0.594				
+(YO_Shallow,ZP_Deep)	   1.0632	 0.5983				
+(YO_Shallow,ZP_Shallow)	    1.021	 0.5023				
+(ZA_Deep,ZA_Shallow)	   2.6181	 0.0978				
+(ZA_Deep,ZP_Deep)	  0.67721	 0.4992				
+(ZA_Deep,ZP_Shallow)	   2.5725	 0.0991				
+(ZA_Shallow,ZP_Deep)	   2.4804	 0.0962				
+(ZA_Shallow,ZP_Shallow)	 0.023204	      1				
+(ZP_Deep,ZP_Shallow)	   2.4099	 0.2037				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+AW_Deep	   3	 23.323	 5.5073
+AW_Shallow	   3	 14.219	 2.9009
+G1_Deep	   3	 10.671	 2.2759
+G1_Shallow	   3	  19.93	 3.4967
+G2_Deep	   3	 4.6476	0.61252
+G2_Shallow	   3	 19.773	 1.6825
+HI_Deep	   3	 4.4533	0.30036
+HI_Shallow	   3	 6.0795	 1.1109
+MI_Deep	   3	 17.754	  3.411
+MI_Shallow	   3	 14.102	 2.7092
+S1_Deep	   3	 8.6494	 1.4518
+S1_Shallow	   3	 10.644	 1.7981
+S2_Deep	   3	 10.047	 1.7026
+S2_Shallow	   3	  10.07	  1.627
+SK_Shallow	   3	 9.3126	 3.6209
+SN_Deep	   3	 13.916	 3.9432
+SN_Shallow	   3	 8.9805	 1.9331
+YO_Deep	   3	 13.139	 4.3052
+YO_Shallow	   3	 8.2243	 2.1816
+ZA_Deep	   3	 13.669	 2.8275
+ZA_Shallow	   3	 5.5578	 1.2667
+ZP_Deep	   3	 11.341	 1.9572
+ZP_Shallow	   3	 5.6009	 1.3572
+

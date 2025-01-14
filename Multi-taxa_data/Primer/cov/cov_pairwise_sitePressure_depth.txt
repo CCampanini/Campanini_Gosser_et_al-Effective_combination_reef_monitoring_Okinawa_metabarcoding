@@ -1,0 +1,182 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem4
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)xDe' for pairs of levels of factor 'Site'
+
+Within level 'High' of factor 'Pressure'
+Within level 'Deep' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+AW, G1	2.1208	 0.1032	    10	0.0375
+AW, G2	2.8589	 0.1047	    10	0.0116
+AW, SN	1.8775	 0.1007	    10	0.0438
+G1, G2	 1.739	 0.1031	    10	0.1109
+G1, SN	1.9264	 0.0949	    10	0.0559
+G2, SN	1.7882	 0.2041	    10	0.0964
+
+Denominators
+Groups	Denominator	Den.df
+AW, G1	1*Res	     4
+AW, G2	1*Res	     4
+AW, SN	1*Res	     4
+G1, G2	1*Res	     4
+G1, SN	1*Res	     4
+G2, SN	1*Res	     4
+
+Average Similarity between/within groups
+	    AW	    G1	    G2	    SN
+AW	83.236	      	      	      
+G1	80.893	92.189	      	      
+G2	69.435	83.619	83.749	      
+SN	76.333	81.173	77.728	82.348
+
+Within level 'High' of factor 'Pressure'
+Within level 'Shallow' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+AW, G1	2.4797	 0.1078	    10	0.0271
+AW, G2	5.3289	 0.1021	    10	0.0019
+AW, SK	1.8701	  0.099	    10	0.0625
+AW, SN	3.2274	 0.0983	    10	0.0224
+G1, G2	 4.155	 0.0981	    10	0.0086
+G1, SK	1.7465	 0.1954	    10	0.1011
+G1, SN	2.3925	 0.0998	    10	0.0251
+G2, SK	5.3718	  0.099	    10	0.0032
+G2, SN	4.7827	 0.1024	    10	0.0045
+SK, SN	3.3203	 0.0984	    10	0.0135
+
+Denominators
+Groups	Denominator	Den.df
+AW, G1	1*Res	     4
+AW, G2	1*Res	     4
+AW, SK	1*Res	     4
+AW, SN	1*Res	     4
+G1, G2	1*Res	     4
+G1, SK	1*Res	     4
+G1, SN	1*Res	     4
+G2, SK	1*Res	     4
+G2, SN	1*Res	     4
+SK, SN	1*Res	     4
+
+Average Similarity between/within groups
+	    AW	    G1	    G2	    SK	    SN
+AW	86.893	      	      	      	      
+G1	 76.76	85.552	      	      	      
+G2	61.106	66.623	89.234	      	      
+SK	82.078	82.076	60.156	 86.31	      
+SN	75.857	78.421	67.259	73.416	88.707
+
+Within level 'Low' of factor 'Pressure'
+Within level 'Deep' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+HI, S1	4.0076	 0.0991	    10	0.0072
+HI, S2	4.8775	 0.0948	    10	0.0043
+S1, S2	1.9018	  0.096	    10	0.0514
+
+Denominators
+Groups	Denominator	Den.df
+HI, S1	1*Res	     4
+HI, S2	1*Res	     4
+S1, S2	1*Res	     4
+
+Average Similarity between/within groups
+	    HI	    S1	    S2
+HI	89.657	      	      
+S1	77.135	92.108	      
+S2	71.625	88.476	91.077
+
+Within level 'Low' of factor 'Pressure'
+Within level 'Shallow' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+HI, S1	2.9017	  0.098	    10	  0.01
+HI, S2	3.3715	 0.1045	    10	0.0074
+S1, S2	1.8787	 0.0995	    10	0.0694
+
+Denominators
+Groups	Denominator	Den.df
+HI, S1	1*Res	     4
+HI, S2	1*Res	     4
+S1, S2	1*Res	     4
+
+Average Similarity between/within groups
+	    HI	    S1	    S2
+HI	90.544	      	      
+S1	80.585	88.576	      
+S2	76.656	83.848	87.533
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'Deep' of factor 'Depth'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+MI, YO	 1.4303	 0.2065	    10	0.2083
+MI, ZA	 2.7272	 0.0984	    10	 0.034
+MI, ZP	 3.2109	 0.0993	    10	0.0079
+YO, ZA	0.21798	 0.8935	    10	0.9294
+YO, ZP	 1.1325	 0.3931	    10	0.3251
+ZA, ZP	 1.9221	 0.1027	    10	0.0729
+
+Denominators
+Groups	Denominator	Den.df
+MI, YO	1*Res	     4
+MI, ZA	1*Res	     4
+MI, ZP	1*Res	     4
+YO, ZA	1*Res	     4
+YO, ZP	1*Res	     4
+ZA, ZP	1*Res	     4
+
+Average Similarity between/within groups
+	    MI	    YO	    ZA	    ZP
+MI	89.967	      	      	      
+YO	78.544	75.075	      	      
+ZA	79.938	83.347	87.172	      
+ZP	80.238	79.167	84.863	91.052
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'Shallow' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+MI, YO	3.0039	 0.0996	    10	0.0115
+MI, ZA	 2.479	    0.1	    10	0.0371
+MI, ZP	2.7372	 0.1002	    10	0.0204
+YO, ZA	2.7849	 0.1044	    10	0.0148
+YO, ZP	1.2288	 0.2054	    10	0.2611
+ZA, ZP	2.3187	 0.0996	    10	0.0467
+
+Denominators
+Groups	Denominator	Den.df
+MI, YO	1*Res	     4
+MI, ZA	1*Res	     4
+MI, ZP	1*Res	     4
+YO, ZA	1*Res	     4
+YO, ZP	1*Res	     4
+ZA, ZP	1*Res	     4
+
+Average Similarity between/within groups
+	    MI	    YO	    ZA	    ZP
+MI	89.796	      	      	      
+YO	 85.18	96.379	      	      
+ZA	84.519	87.875	91.139	      
+ZP	83.992	93.443	87.001	92.002
+

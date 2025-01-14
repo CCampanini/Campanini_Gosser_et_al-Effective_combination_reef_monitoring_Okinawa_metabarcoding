@@ -1,0 +1,36 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem16
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Site
+Number of permutations: 9999
+
+Number of groups: 4
+Number of samples: 24
+
+DEVIATIONS FROM CENTROID
+F: 6.596  df1: 3  df2: 20
+P(perm): 0.0057
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(Sunabe,GinowanPort2)	  3.3697	 0.0026				
+(Sunabe,GinowanPort1)	  1.9631	 0.0967				
+(Sunabe,Awa)	0.070076	 0.9446				
+(GinowanPort2,GinowanPort1)	  2.5269	 0.0197				
+(GinowanPort2,Awa)	  4.1397	 0.0065				
+(GinowanPort1,Awa)	   2.463	 0.0659				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+Sunabe	   6	 31.618	 1.7803
+GinowanPort2	   6	 38.193	0.79829
+GinowanPort1	   6	 35.415	0.75577
+Awa	   6	 31.459	 1.4173
+

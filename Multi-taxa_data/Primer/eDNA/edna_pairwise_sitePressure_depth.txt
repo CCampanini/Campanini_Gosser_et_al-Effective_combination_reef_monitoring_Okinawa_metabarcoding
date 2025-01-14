@@ -1,0 +1,184 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem3
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)xDe' for pairs of levels of factor 'Site'
+
+Within level 'medium' of factor 'Pressure'
+Within level 'shallow' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+CapeZanpa, Zatsun	1.5383	 0.1016	    10	0.0881
+CapeZanpa, Yonama	1.5112	    0.1	    10	0.1319
+CapeZanpa, Sukuta	1.6455	 0.1018	    10	0.0675
+Zatsun, Yonama	1.1108	 0.0956	    10	0.3452
+Zatsun, Sukuta	1.8023	 0.1002	    10	0.0458
+Yonama, Sukuta	1.5951	 0.0982	    10	0.1209
+
+Denominators
+Groups	Denominator	Den.df
+CapeZanpa, Zatsun	1*Res	     4
+CapeZanpa, Yonama	1*Res	     3
+CapeZanpa, Sukuta	1*Res	     4
+Zatsun, Yonama	1*Res	     3
+Zatsun, Sukuta	1*Res	     4
+Yonama, Sukuta	1*Res	     3
+
+Average Similarity between/within groups
+	CapeZanpa	Zatsun	Yonama	Sukuta
+CapeZanpa	    49.09	      	      	      
+Zatsun	   40.759	52.775	      	      
+Yonama	    39.86	51.809	55.814	      
+Sukuta	   23.824	21.544	21.395	30.693
+
+Within level 'medium' of factor 'Pressure'
+Within level 'deep' of factor 'Depth'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+CapeZanpa, Zatsun	 1.5867	 0.0997	    10	0.0775
+CapeZanpa, Yonama	 1.6111	 0.1021	    10	 0.073
+Zatsun, Yonama	0.98557	 0.6981	    10	0.4515
+
+Denominators
+Groups	Denominator	Den.df
+CapeZanpa, Zatsun	1*Res	     4
+CapeZanpa, Yonama	1*Res	     4
+Zatsun, Yonama	1*Res	     4
+
+Average Similarity between/within groups
+	CapeZanpa	Zatsun	Yonama
+CapeZanpa	   46.583	      	      
+Zatsun	   37.695	51.953	      
+Yonama	   38.274	  53.3	53.923
+
+Within level 'high' of factor 'Pressure'
+Within level 'shallow' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Sunabe, Mizugama	1.2174	 0.0968	    10	0.2431
+Sunabe, GinowanPort2	2.0483	 0.0992	    10	 0.025
+Sunabe, GinowanPort1	1.7773	 0.0985	    10	0.0466
+Sunabe, Awa	  1.81	 0.1056	    10	0.0421
+Mizugama, GinowanPort2	1.9003	 0.1023	    10	 0.036
+Mizugama, GinowanPort1	1.7175	 0.0964	    10	 0.054
+Mizugama, Awa	 1.838	 0.0956	    10	0.0373
+GinowanPort2, GinowanPort1	1.1144	 0.1046	    10	0.3219
+GinowanPort2, Awa	1.9303	 0.0994	    10	0.0329
+GinowanPort1, Awa	1.8168	 0.0971	    10	0.0389
+
+Denominators
+Groups	Denominator	Den.df
+Sunabe, Mizugama	1*Res	     4
+Sunabe, GinowanPort2	1*Res	     4
+Sunabe, GinowanPort1	1*Res	     4
+Sunabe, Awa	1*Res	     4
+Mizugama, GinowanPort2	1*Res	     4
+Mizugama, GinowanPort1	1*Res	     4
+Mizugama, Awa	1*Res	     4
+GinowanPort2, GinowanPort1	1*Res	     4
+GinowanPort2, Awa	1*Res	     4
+GinowanPort1, Awa	1*Res	     4
+
+Average Similarity between/within groups
+	Sunabe	Mizugama	GinowanPort2	GinowanPort1	  Awa
+Sunabe	  48.3	        	            	            	     
+Mizugama	44.612	   48.78	            	            	     
+GinowanPort2	 25.13	  28.959	      47.425	            	     
+GinowanPort1	30.577	  32.188	      44.598	      45.851	     
+Awa	33.722	  33.318	      30.258	      31.729	51.75
+
+Within level 'high' of factor 'Pressure'
+Within level 'deep' of factor 'Depth'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+Sunabe, Mizugama	 1.3639	 0.0977	    10	0.1524
+Sunabe, GinowanPort2	 2.0945	 0.1035	    10	0.0239
+Sunabe, GinowanPort1	 2.3034	 0.1023	    10	0.0177
+Sunabe, Awa	 1.9874	 0.1023	    10	0.0289
+Mizugama, GinowanPort2	 1.9433	 0.1003	    10	0.0345
+Mizugama, GinowanPort1	 2.1105	 0.1018	    10	0.0238
+Mizugama, Awa	 1.8314	 0.0963	    10	0.0455
+GinowanPort2, GinowanPort1	0.93796	 0.7018	    10	0.5173
+GinowanPort2, Awa	   2.12	 0.0983	    10	0.0229
+GinowanPort1, Awa	 2.3038	 0.1015	    10	0.0136
+
+Denominators
+Groups	Denominator	Den.df
+Sunabe, Mizugama	1*Res	     4
+Sunabe, GinowanPort2	1*Res	     4
+Sunabe, GinowanPort1	1*Res	     4
+Sunabe, Awa	1*Res	     4
+Mizugama, GinowanPort2	1*Res	     4
+Mizugama, GinowanPort1	1*Res	     4
+Mizugama, Awa	1*Res	     4
+GinowanPort2, GinowanPort1	1*Res	     4
+GinowanPort2, Awa	1*Res	     4
+GinowanPort1, Awa	1*Res	     4
+
+Average Similarity between/within groups
+	Sunabe	Mizugama	GinowanPort2	GinowanPort1	   Awa
+Sunabe	58.805	        	            	            	      
+Mizugama	50.204	  53.873	            	            	      
+GinowanPort2	27.029	  27.922	      42.876	            	      
+GinowanPort1	28.743	  29.956	      47.777	      50.608	      
+Awa	39.389	  39.594	      24.614	      26.684	55.557
+
+Within level 'low' of factor 'Pressure'
+Within level 'shallow' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Sakubaru2, Sakubaru1	1.0076	 0.3998	    10	0.4355
+Sakubaru2, Hizushi	1.1654	 0.0967	    10	0.3006
+Sakubaru1, Hizushi	1.1425	 0.0964	    10	0.3008
+
+Denominators
+Groups	Denominator	Den.df
+Sakubaru2, Sakubaru1	1*Res	     3
+Sakubaru2, Hizushi	1*Res	     3
+Sakubaru1, Hizushi	1*Res	     4
+
+Average Similarity between/within groups
+	Sakubaru2	Sakubaru1	Hizushi
+Sakubaru2	   43.333	         	       
+Sakubaru1	   45.435	    47.12	       
+Hizushi	   38.708	   42.029	 42.505
+
+Within level 'low' of factor 'Pressure'
+Within level 'deep' of factor 'Depth'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Sakubaru2, Sakubaru1	1.4262	 0.1035	    10	 0.125
+Sakubaru2, Hizushi	1.2424	 0.0998	    10	0.2232
+Sakubaru1, Hizushi	  1.43	 0.0994	    10	0.1215
+
+Denominators
+Groups	Denominator	Den.df
+Sakubaru2, Sakubaru1	1*Res	     4
+Sakubaru2, Hizushi	1*Res	     4
+Sakubaru1, Hizushi	1*Res	     4
+
+Average Similarity between/within groups
+	Sakubaru2	Sakubaru1	Hizushi
+Sakubaru2	   44.604	         	       
+Sakubaru1	   31.401	   37.376	       
+Hizushi	   37.904	   29.458	 41.151
+

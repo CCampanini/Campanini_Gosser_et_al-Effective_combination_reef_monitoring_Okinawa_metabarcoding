@@ -1,0 +1,36 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem17
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Site
+Number of permutations: 9999
+
+Number of groups: 4
+Number of samples: 23
+
+DEVIATIONS FROM CENTROID
+F: 4.4836  df1: 3  df2: 19
+P(perm): 0.0404
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(CapeZanpa,Zatsun)	   3.45	 0.0026				
+(CapeZanpa,Yonama)	 3.4094	 0.0035				
+(CapeZanpa,Mizugama)	0.85633	 0.4612				
+(Zatsun,Yonama)	0.69566	  0.546				
+(Zatsun,Mizugama)	 1.6714	 0.1617				
+(Yonama,Mizugama)	  1.917	 0.1427				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+CapeZanpa	   6	 34.082	0.85702
+Zatsun	   6	 30.192	0.73298
+Yonama	   5	 29.271	 1.1584
+Mizugama	   6	 32.728	 1.3289
+

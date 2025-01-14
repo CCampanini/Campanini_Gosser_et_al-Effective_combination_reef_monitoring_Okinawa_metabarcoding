@@ -1,0 +1,62 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem16
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Site_Depth
+Number of permutations: 9999
+
+Number of groups: 8
+Number of samples: 24
+
+DEVIATIONS FROM CENTROID
+F: 5.8495  df1: 7  df2: 16
+P(perm): 0.0369
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(Sunabe_shallow,Sunabe_deep)	 2.7076	 0.1016				
+(Sunabe_shallow,GinowanPort2_shallow)	  1.034	 0.0916				
+(Sunabe_shallow,GinowanPort2_deep)	 2.3892	 0.1044				
+(Sunabe_shallow,GinowanPort1_shallow)	0.92367	  0.099				
+(Sunabe_shallow,GinowanPort1_deep)	 1.2526	 0.0995				
+(Sunabe_shallow,Awa_shallow)	 1.8707	 0.1007				
+(Sunabe_shallow,Awa_deep)	 4.6734	 0.0982				
+(Sunabe_deep,GinowanPort2_shallow)	 2.8727	 0.0989				
+(Sunabe_deep,GinowanPort2_deep)	 3.5521	 0.1063				
+(Sunabe_deep,GinowanPort1_shallow)	 2.7601	 0.1001				
+(Sunabe_deep,GinowanPort1_deep)	 1.9042	 0.4054				
+(Sunabe_deep,Awa_shallow)	 1.6357	 0.3869				
+(Sunabe_deep,Awa_deep)	0.76532	 0.4912				
+(GinowanPort2_shallow,GinowanPort2_deep)	 1.8898	 0.1022				
+(GinowanPort2_shallow,GinowanPort1_shallow)	0.56671	 0.4059				
+(GinowanPort2_shallow,GinowanPort1_deep)	 1.5828	 0.1007				
+(GinowanPort2_shallow,Awa_shallow)	 2.1494	 0.1023				
+(GinowanPort2_shallow,Awa_deep)	 4.6506	  0.105				
+(GinowanPort2_deep,GinowanPort1_shallow)	0.86156	 0.3966				
+(GinowanPort2_deep,GinowanPort1_deep)	  2.655	  0.099				
+(GinowanPort2_deep,Awa_shallow)	 3.0462	 0.0983				
+(GinowanPort2_deep,Awa_deep)	 4.6305	 0.0968				
+(GinowanPort1_shallow,GinowanPort1_deep)	 1.4798	 0.1006				
+(GinowanPort1_shallow,Awa_shallow)	 1.8355	 0.1008				
+(GinowanPort1_shallow,Awa_deep)	  3.178	 0.1025				
+(GinowanPort1_deep,Awa_shallow)	0.44009	 0.5053				
+(GinowanPort1_deep,Awa_deep)	 2.0627	 0.0981				
+(Awa_shallow,Awa_deep)	 1.5851	  0.101				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+Sunabe_shallow	   3	 29.849	0.10736
+Sunabe_deep	   3	 23.826	 2.2218
+GinowanPort2_shallow	   3	 30.354	0.47629
+GinowanPort2_deep	   3	 32.985	 1.3079
+GinowanPort1_shallow	   3	 31.257	 1.5201
+GinowanPort1_deep	   3	 28.514	 1.0604
+Awa_shallow	   3	 27.854	 1.0612
+Awa_deep	   3	 25.658	0.89033
+

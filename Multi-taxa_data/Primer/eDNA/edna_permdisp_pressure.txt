@@ -1,0 +1,32 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem3
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Pressure
+Number of permutations: 9999
+
+Number of groups: 3
+Number of samples: 67
+
+DEVIATIONS FROM CENTROID
+F: 1.9935  df1: 2  df2: 64
+P(perm): 0.2121
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(medium,high)	 1.6646	 0.1438				
+(medium,low)	0.19936	 0.8537				
+(high,low)	 2.3653	 0.0478				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+medium	  20	 41.785	 2.0917
+high	  30	 44.906	0.64611
+low	  17	  42.27	0.94602
+

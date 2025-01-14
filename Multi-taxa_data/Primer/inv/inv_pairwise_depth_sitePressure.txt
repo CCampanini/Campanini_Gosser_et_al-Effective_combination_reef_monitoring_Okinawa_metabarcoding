@@ -1,0 +1,189 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem6
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)xDe' for pairs of levels of factor 'Depth'
+
+Within level 'High' of factor 'Pressure'
+Within level 'AW' of factor 'Site'
+	      	       	Unique	     
+Groups	     t	P(perm)	 perms	P(MC)
+D, S	1.4974	 0.2953	    10	0.157
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	73.971	      
+S	68.467	71.819
+
+Within level 'High' of factor 'Pressure'
+Within level 'G1' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+D, S	1.8593	 0.0958	    10	0.0859
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	46.807	      
+S	44.089	90.431
+
+Within level 'High' of factor 'Pressure'
+Within level 'G2' of factor 'Site'
+	      	       	Unique	     
+Groups	     t	P(perm)	 perms	P(MC)
+D, S	3.3275	 0.1022	    10	 0.01
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	72.198	      
+S	51.456	85.165
+
+Within level 'High' of factor 'Pressure'
+Within level 'SN' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+D, S	1.9294	 0.1019	    10	0.0783
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	72.625	      
+S	71.475	86.649
+
+Within level 'Low' of factor 'Pressure'
+Within level 'HI' of factor 'Site'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+D, S	0.82359	 0.4995	    10	0.5527
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	70.877	      
+S	76.975	79.698
+
+Within level 'Low' of factor 'Pressure'
+Within level 'S1' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+D, S	2.1051	 0.0943	    10	0.0477
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	90.082	      
+S	82.432	86.228
+
+Within level 'Low' of factor 'Pressure'
+Within level 'S2' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+D, S	1.5952	 0.2974	    10	0.1754
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	68.569	      
+S	72.193	86.787
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'MI' of factor 'Site'
+	     	       	Unique	      
+Groups	    t	P(perm)	 perms	 P(MC)
+D, S	2.859	 0.0974	    10	0.0117
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	73.393	      
+S	62.755	88.918
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'YO' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+D, S	2.1331	 0.1042	    10	0.0354
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	    S
+D	77.872	     
+S	75.502	91.44
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'ZA' of factor 'Site'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+D, S	0.56341	 0.8954	    10	0.8117
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	71.999	      
+S	 74.88	72.419
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'ZP' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+D, S	2.0733	 0.1013	    10	0.0519
+
+Denominators
+Groups	Denominator	Den.df
+D, S	1*Res	     4
+
+Average Similarity between/within groups
+	     D	     S
+D	90.126	      
+S	72.775	74.978
+

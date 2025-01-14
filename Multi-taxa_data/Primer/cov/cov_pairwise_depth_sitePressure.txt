@@ -1,0 +1,190 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem4
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)xDe' for pairs of levels of factor 'Depth'
+
+Within level 'High' of factor 'Pressure'
+Within level 'AW' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Deep, Shallow	0.9428	 0.4985	    10	0.4596
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	83.236	       
+Shallow	 85.78	 86.893
+
+Within level 'High' of factor 'Pressure'
+Within level 'G1' of factor 'Site'
+	     	       	Unique	      
+Groups	    t	P(perm)	 perms	 P(MC)
+Deep, Shallow	2.459	 0.0985	    10	0.0291
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	92.189	       
+Shallow	80.296	 85.552
+
+Within level 'High' of factor 'Pressure'
+Within level 'G2' of factor 'Site'
+	     	       	Unique	      
+Groups	    t	P(perm)	 perms	 P(MC)
+Deep, Shallow	2.791	 0.1008	    10	0.0212
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	83.749	       
+Shallow	74.973	 89.234
+
+Within level 'High' of factor 'Pressure'
+Within level 'SN' of factor 'Site'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+Deep, Shallow	0.49564	 0.9015	    10	0.8295
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	82.348	       
+Shallow	87.082	 88.707
+
+Within level 'Low' of factor 'Pressure'
+Within level 'HI' of factor 'Site'
+	      	       	Unique	     
+Groups	     t	P(perm)	 perms	P(MC)
+Deep, Shallow	1.2415	 0.1994	    10	0.258
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	89.657	       
+Shallow	89.665	 90.544
+
+Within level 'Low' of factor 'Pressure'
+Within level 'S1' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Deep, Shallow	1.2376	 0.2949	    10	0.2836
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	92.108	       
+Shallow	89.925	 88.576
+
+Within level 'Low' of factor 'Pressure'
+Within level 'S2' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Deep, Shallow	1.5708	 0.1971	    10	0.1275
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	91.077	       
+Shallow	86.898	 87.533
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'MI' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Deep, Shallow	1.8362	 0.0974	    10	0.0718
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	89.967	       
+Shallow	86.607	 89.796
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'YO' of factor 'Site'
+	      	       	Unique	     
+Groups	     t	P(perm)	 perms	P(MC)
+Deep, Shallow	1.0635	  0.703	    10	0.353
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	75.075	       
+Shallow	 82.15	 96.379
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'ZA' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Deep, Shallow	1.4977	  0.202	    10	0.1494
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	87.172	       
+Shallow	87.527	 91.139
+
+Within level 'Medium' of factor 'Pressure'
+Within level 'ZP' of factor 'Site'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+Deep, Shallow	1.9916	 0.0982	    10	0.0969
+
+Denominators
+Groups	Denominator	Den.df
+Deep, Shallow	1*Res	     4
+
+Average Similarity between/within groups
+	  Deep	Shallow
+Deep	91.052	       
+Shallow	88.357	 92.002
+

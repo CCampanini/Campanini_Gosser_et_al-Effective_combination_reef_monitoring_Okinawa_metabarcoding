@@ -1,0 +1,104 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem6
+Data type: Similarity
+Selection: All
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Si(Pr)'
+
+Within level 'High' of factor 'Pressure'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+AW, G1	 2.3228	 0.0067	  8929	0.0192
+AW, G2	 3.2597	 0.0044	  8924	0.0054
+AW, SK	 1.3475	 0.1885	   830	0.1967
+AW, SN	  1.924	 0.0365	  8855	0.0504
+G1, G2	0.45551	  0.841	  8967	0.7922
+G1, SK	 2.3403	 0.0298	   830	0.0267
+G1, SN	 1.8161	 0.0273	  8914	0.0672
+G2, SK	 2.9144	 0.0105	   830	0.0117
+G2, SN	 2.5678	 0.0046	  8898	0.0079
+SK, SN	 1.2771	 0.2075	   829	0.2164
+
+Denominators
+Groups	Denominator	Den.df
+AW, G1	1*Res	     8
+AW, G2	1*Res	     8
+AW, SK	1*Res	     6
+AW, SN	1*Res	     8
+G1, G2	1*Res	     8
+G1, SK	1*Res	     6
+G1, SN	1*Res	     8
+G2, SK	1*Res	     6
+G2, SN	1*Res	     8
+SK, SN	1*Res	     6
+
+Average Similarity between/within groups
+	    AW	    G1	    G2	    SK	    SN
+AW	70.238	      	      	      	      
+G1	50.985	53.901	      	      	      
+G2	55.962	 59.83	62.346	      	      
+SK	72.061	48.032	58.405	88.365	      
+SN	69.268	57.422	63.089	72.885	74.739
+
+Within level 'Low' of factor 'Pressure'
+	      	       	Unique	      
+Groups	     t	P(perm)	 perms	 P(MC)
+HI, S1	2.0808	 0.0031	  8943	0.0136
+HI, S2	1.8718	 0.0285	  8958	0.0469
+S1, S2	1.2523	  0.287	  8896	0.2373
+
+Denominators
+Groups	Denominator	Den.df
+HI, S1	1*Res	     8
+HI, S2	1*Res	     8
+S1, S2	1*Res	     8
+
+Average Similarity between/within groups
+	    HI	    S1	    S2
+HI	  76.3	      	      
+S1	  74.9	84.721	      
+S2	69.798	78.731	74.387
+
+Within level 'Medium' of factor 'Pressure'
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+MI, YO	 1.1868	 0.3103	  8880	  0.28
+MI, ZA	 1.1999	 0.2674	  8902	0.2571
+MI, ZP	 2.5573	 0.0028	  8910	 0.005
+YO, ZA	0.65896	 0.7531	  8928	  0.71
+YO, ZP	  2.017	 0.0064	  8874	 0.018
+ZA, ZP	 1.6979	 0.0319	  8885	0.0549
+
+Denominators
+Groups	Denominator	Den.df
+MI, YO	1*Res	     8
+MI, ZA	1*Res	     8
+MI, ZP	1*Res	     8
+YO, ZA	1*Res	     8
+YO, ZP	1*Res	     8
+ZA, ZP	1*Res	     8
+
+Average Similarity between/within groups
+	    MI	    YO	    ZA	    ZP
+MI	70.115	      	      	      
+YO	74.995	79.164	      	      
+ZA	72.657	 77.88	73.812	      
+ZP	68.967	75.016	72.049	76.686
+

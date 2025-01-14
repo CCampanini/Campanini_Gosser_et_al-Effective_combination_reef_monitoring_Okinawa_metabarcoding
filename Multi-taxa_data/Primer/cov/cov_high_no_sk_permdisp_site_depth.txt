@@ -1,0 +1,62 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem18
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site_depth
+Number of permutations: 9999
+
+Number of groups: 8
+Number of samples: 24
+
+DEVIATIONS FROM CENTROID
+F: 1.5904  df1: 7  df2: 16
+P(perm): 0.4156
+
+PAIRWISE COMPARISONS
+Groups	      t	P(perm)				
+(AW_Deep,AW_Shallow)	 1.4833	 0.3048				
+(AW_Deep,G1_Deep)	 4.1192	 0.0948				
+(AW_Deep,G1_Shallow)	0.57817	  0.699				
+(AW_Deep,G2_Deep)	0.13208	 0.9088				
+(AW_Deep,G2_Shallow)	 1.5545	 0.1011				
+(AW_Deep,SN_Deep)	0.32472	 0.7945				
+(AW_Deep,SN_Shallow)	  1.594	  0.494				
+(AW_Shallow,G1_Deep)	 2.3356	 0.1041				
+(AW_Shallow,G1_Shallow)	0.22733	 0.9048				
+(AW_Shallow,G2_Deep)	  1.111	 0.4964				
+(AW_Shallow,G2_Shallow)	0.70567	  0.702				
+(AW_Shallow,SN_Deep)	 1.5676	 0.1976				
+(AW_Shallow,SN_Shallow)	0.56384	 0.6958				
+(G1_Deep,G1_Shallow)	 1.4201	 0.4023				
+(G1_Deep,G2_Deep)	 3.1536	 0.1018				
+(G1_Deep,G2_Shallow)	0.50516	 0.7976				
+(G1_Deep,SN_Deep)	 3.6733	 0.0997				
+(G1_Deep,SN_Shallow)	0.92855	 0.3983				
+(G1_Shallow,G2_Deep)	0.46519	 0.7999				
+(G1_Shallow,G2_Shallow)	0.71223	 0.7005				
+(G1_Shallow,SN_Deep)	0.74007	 0.7052				
+(G1_Shallow,SN_Shallow)	0.58699	  0.707				
+(G2_Deep,G2_Shallow)	 1.3744	 0.5987				
+(G2_Deep,SN_Deep)	0.39873	 0.4159				
+(G2_Deep,SN_Shallow)	 1.3553	 0.4982				
+(G2_Shallow,SN_Deep)	 1.6626	 0.3002				
+(G2_Shallow,SN_Shallow)	 0.2059	 0.6946				
+(SN_Deep,SN_Shallow)	 1.6967	 0.3994				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+AW_Deep	   3	 9.6779	0.99161
+AW_Shallow	   3	 7.5347	 1.0509
+G1_Deep	   3	 4.4744	0.78259
+G1_Shallow	   3	 8.1432	 2.4621
+G2_Deep	   3	 9.4543	 1.3716
+G2_Shallow	   3	 5.7224	 2.3433
+SN_Deep	   3	 10.223	 1.3553
+SN_Shallow	   3	 6.3367	 1.8466
+

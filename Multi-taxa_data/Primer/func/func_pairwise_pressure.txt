@@ -1,0 +1,43 @@
+PERMANOVA
+Permutational MANOVA
+
+Resemblance worksheet
+Name: Resem5
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Sums of squares type: Type III (partial)
+Fixed effects sum to zero for mixed terms
+Permutation method: Permutation of residuals under a reduced model
+Number of permutations: 9999
+
+Factors
+Name	Abbrev.	Type	Levels
+Pressure	Pr	Fixed	     3
+Site	Si	Random	    12
+Depth	De	Fixed	     2
+
+PAIR-WISE TESTS
+
+Term 'Pr'
+
+	       	       	Unique	      
+Groups	      t	P(perm)	 perms	 P(MC)
+High, Low	 2.1282	  0.033	   280	0.0127
+High, Medium	 1.7787	  0.047	   630	0.0299
+Low, Medium	0.92594	 0.6593	    35	0.5289
+
+Denominators
+Groups	Denominator	Den.df
+High, Low	0.9974*Si(Pr) + 0.0025974*Res	  6.01
+High, Medium	0.96923*Si(Pr) + 0.030769*Res	  7.11
+Low, Medium	1*Si(Pr)	     5
+
+Average Similarity between/within groups
+	  High	   Low	Medium
+High	66.489	      	      
+Low	66.475	82.005	      
+Medium	65.564	76.624	73.965
+

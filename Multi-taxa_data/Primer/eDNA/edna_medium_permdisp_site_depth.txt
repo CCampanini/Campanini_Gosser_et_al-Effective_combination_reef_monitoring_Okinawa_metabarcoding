@@ -1,0 +1,62 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem17
+Data type: Similarity
+Selection: All
+Transform: Presence/absence
+Resemblance: S7 Jaccard (+d)
+
+Group factor: Site_Depth
+Number of permutations: 9999
+
+Number of groups: 8
+Number of samples: 23
+
+DEVIATIONS FROM CENTROID
+F: 6.7388  df1: 7  df2: 15
+P(perm): 0.0541
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(CapeZanpa_shallow,CapeZanpa_deep)	  1.3629	  0.102				
+(CapeZanpa_shallow,Zatsun_shallow)	  2.4918	 0.1018				
+(CapeZanpa_shallow,Zatsun_deep)	  1.5307	 0.0973				
+(CapeZanpa_shallow,Yonama_shallow)	  9.2727	 0.0969				
+(CapeZanpa_shallow,Yonama_deep)	  2.2081	 0.0978				
+(CapeZanpa_shallow,Mizugama_shallow)	  0.1113	      1				
+(CapeZanpa_shallow,Mizugama_deep)	  3.2976	 0.1004				
+(CapeZanpa_deep,Zatsun_shallow)	  3.3875	 0.1043				
+(CapeZanpa_deep,Zatsun_deep)	  2.4895	 0.1031				
+(CapeZanpa_deep,Yonama_shallow)	  7.7884	 0.0978				
+(CapeZanpa_deep,Yonama_deep)	  3.0106	  0.101				
+(CapeZanpa_deep,Mizugama_shallow)	 0.69992	 0.4954				
+(CapeZanpa_deep,Mizugama_deep)	  4.0387	 0.1009				
+(Zatsun_shallow,Zatsun_deep)	 0.44137	 0.4961				
+(Zatsun_shallow,Yonama_shallow)	  6.7052	 0.1017				
+(Zatsun_shallow,Yonama_deep)	 0.52686	 0.4105				
+(Zatsun_shallow,Mizugama_shallow)	  1.3738	 0.0979				
+(Zatsun_shallow,Mizugama_deep)	  0.7653	 0.1025				
+(Zatsun_deep,Yonama_shallow)	  4.9045	 0.0994				
+(Zatsun_deep,Yonama_deep)	 0.79959	 0.4034				
+(Zatsun_deep,Mizugama_shallow)	  1.0171	 0.4067				
+(Zatsun_deep,Mizugama_deep)	  1.0447	 0.0982				
+(Yonama_shallow,Yonama_deep)	  3.1568	 0.1016				
+(Yonama_shallow,Mizugama_shallow)	  3.6805	 0.0982				
+(Yonama_shallow,Mizugama_deep)	   6.125	 0.1004				
+(Yonama_deep,Mizugama_shallow)	  1.5465	 0.0984				
+(Yonama_deep,Mizugama_deep)	0.022887	      1				
+(Mizugama_shallow,Mizugama_deep)	  1.7586	 0.0989				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+CapeZanpa_shallow	   3	 29.393	0.60984
+CapeZanpa_deep	   3	 30.842	0.87009
+Zatsun_shallow	   3	 27.266	0.59759
+Zatsun_deep	   3	  27.74	0.89182
+Yonama_shallow	   2	 22.093	      0
+Yonama_deep	   3	 26.603	 1.1067
+Mizugama_shallow	   3	 29.582	  1.576
+Mizugama_deep	   3	 26.632	  0.574
+

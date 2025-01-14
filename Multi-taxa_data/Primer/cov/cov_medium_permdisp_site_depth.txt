@@ -1,0 +1,62 @@
+PERMDISP
+Distance-based test for homogeneity of multivariate dispersions
+
+Resemblance worksheet
+Name: Resem14
+Data type: Similarity
+Selection: All
+Transform: Fourth root
+Resemblance: S17 Bray-Curtis similarity (+d)
+
+Group factor: Site_depth
+Number of permutations: 9999
+
+Number of groups: 8
+Number of samples: 24
+
+DEVIATIONS FROM CENTROID
+F: 5.685  df1: 7  df2: 16
+P(perm): 0.0401
+
+PAIRWISE COMPARISONS
+Groups	       t	P(perm)				
+(MI_Deep,MI_Shallow)	0.079818	 0.8045				
+(MI_Deep,YO_Deep)	  2.3029	 0.1013				
+(MI_Deep,YO_Shallow)	  3.2972	 0.1017				
+(MI_Deep,ZA_Deep)	  1.3292	 0.1022				
+(MI_Deep,ZA_Shallow)	 0.59928	 0.8967				
+(MI_Deep,ZP_Deep)	 0.28869	 0.9038				
+(MI_Deep,ZP_Shallow)	 0.93303	  0.503				
+(MI_Shallow,YO_Deep)	  2.2785	 0.0951				
+(MI_Shallow,YO_Shallow)	  3.4987	 0.0945				
+(MI_Shallow,ZA_Deep)	  1.2645	  0.499				
+(MI_Shallow,ZA_Shallow)	 0.73174	 0.6016				
+(MI_Shallow,ZP_Deep)	 0.35919	 0.7987				
+(MI_Shallow,ZP_Shallow)	  1.0509	 0.4962				
+(YO_Deep,YO_Shallow)	  3.3312	 0.0933				
+(YO_Deep,ZA_Deep)	  1.9135	 0.2035				
+(YO_Deep,ZA_Shallow)	  2.5513	 0.0986				
+(YO_Deep,ZP_Deep)	  2.3658	 0.1022				
+(YO_Deep,ZP_Shallow)	  2.6502	 0.1047				
+(YO_Shallow,ZA_Deep)	  6.6083	 0.0931				
+(YO_Shallow,ZA_Shallow)	  7.4223	 0.0966				
+(YO_Shallow,ZP_Deep)	  2.1806	 0.1953				
+(YO_Shallow,ZP_Shallow)	  3.3293	 0.0984				
+(ZA_Deep,ZA_Shallow)	  3.1673	 0.0975				
+(ZA_Deep,ZP_Deep)	   1.392	 0.1943				
+(ZA_Deep,ZP_Shallow)	  2.9245	 0.1014				
+(ZA_Shallow,ZP_Deep)	0.091463	 0.9012				
+(ZA_Shallow,ZP_Shallow)	 0.77052	 0.1953				
+(ZP_Deep,ZP_Shallow)	 0.41822	 0.6986				
+
+MEANS AND STANDARD ERRORS
+Group	Size	Average	     SE
+MI_Deep	   3	 5.7396	 1.0301
+MI_Shallow	   3	 5.8541	0.99769
+YO_Deep	   3	 14.725	 3.7634
+YO_Shallow	   3	 2.1268	0.37355
+ZA_Deep	   3	 7.3987	0.70492
+ZA_Shallow	   3	 5.1158	0.15042
+ZP_Deep	   3	 5.2427	 1.3792
+ZP_Shallow	   3	 4.6061	 0.6442
+
