@@ -983,22 +983,26 @@ similarities (Clarke 1993).*
 ## SIMPER per site
 
 ```{r}
-relcov_sim=simper(cov_mat, group=ind_df$Site) #Distinguish categories which caused the differences in relative cover among sites
+
+cov_mat_simper <- cov_mat[, colnames(cov_mat) != "unknown"] #remove "unknown" category from the matrix
+
+relcov_sim=simper(cov_mat_simper, group=ind_df$Site) #Distinguish categories which caused the differences in relative cover among sites
 relcov_sim
 str(relcov_sim)
 summary(relcov_sim) #check which categories were the main driver of difference among sites
 ```
 
 ## SIMPER per depth
+
 ```{r}
-relcov_sim_depth=simper(cov_mat,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim_depth=simper(cov_mat_simper,group=ind_df$Depth) #Distinguish categories which caused the differences in relative cover among sites
 relcov_sim_depth
 summary(relcov_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
 
 ## SIMPER per pressure exposure
 ```{r}
-relcov_sim_pres=simper(cov_mat,group=ind_df$Pressure) #Distinguish categories which caused the differences in relative cover among sites
+relcov_sim_pres=simper(cov_mat_simper,group=ind_df$Pressure) #Distinguish categories which caused the differences in relative cover among sites
 relcov_sim_pres
 summary(relcov_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
