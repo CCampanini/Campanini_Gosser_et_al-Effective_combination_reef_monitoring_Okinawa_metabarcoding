@@ -10,16 +10,18 @@ library(cowplot)
 library(viridisLite)
 library(circlize)
 library(ggrepel)
+library(here)
 #load read abundance data and environmental variable data
 
 setwd("D:/PostDoc Okinawa/eDNA Okinawa")
 
 #Otu table
-Okinawa_Otu <- read_csv("Analysis_clean/Okinawa_ESV.csv")
+Okinawa_Otu <- read_csv(file=here("Multi-taxa_data","eDNA_clean","Okinawa_ESV.csv"))
 #Tax table
-Okinawa_Tax <- read_csv("Analysis_clean/Okinawa_Taxa.csv")
+Okinawa_Tax <- read_csv(file=here("Multi-taxa_data","eDNA_clean","Okinawa_Taxa.csv"))
+
 #environmental data
-Okinawa_env <- read_excel("Analysis_clean/Okinawa_ESV_taxon_table_NCsub_4excluded_2_85percent_threshold_metadata_rda.xlsx")
+Okinawa_env <- read_excel(path=here("Multi-taxa_data","eDNA_clean","Okinawa_ESV_taxon_table_NCsub_4excluded_2_85percent_threshold_metadata_rda.xlsx"))
 
 Okinawa_env$Location <- as.factor(Okinawa_env$Location)
 Okinawa_env$depth <- as.factor(Okinawa_env$depth)
@@ -248,7 +250,9 @@ ggplot(esv_counts_per_site, aes(x = Location, y = ESV_Count, fill = Phylum)) +
 
 # Example: Hierarchical clustering tree based on taxonomic distances
 # Read the phylogenetic tree
-Ok_tree <- ape::read.tree("Analysis/eDNAOkinawaTreenew.tre")
+Ok_tree <- ape::read.tree(file=here("Multi-taxa_data",
+                          "eDNA_clean",
+                          "eDNAOkinawaTreenew.tre"))
 
 #want to extract the phylum names for labelling
 Ok_tree_df <- as_tibble(Ok_tree)
@@ -511,6 +515,7 @@ plot.nmds = ggplot(Ok_data.scores, aes(x = MDS1, y = MDS2)) +
 plot.nmds 
 
 # PERMANOVA
+set.seed(69) #random number to start
 perm.Ok <- adonis2(Ok.jac ~ impact + Location + depth, 
                    data = Okinawa_env, 
                    permutations = 9999, 
@@ -609,6 +614,11 @@ otu_table(Ok_merge_fam) <- ifelse(otu_table(Ok_merge_fam) > 0 ,1,0)
 Ok_merge_fam_melt <- psmelt(Ok_merge_fam)
 colours <- viridis(20)
 
+
+family_counts_total <- Ok_merge_fam_melt %>%
+  group_by(Sample, Phylum) %>%
+  summarize(TotalFamilies = sum(Abundance > 0)) %>%
+  ungroup()
 
 #Calculate the number of taxonomic families assigned at each site
 family_counts_phylum <- family_counts_total %>%
@@ -730,7 +740,7 @@ esv_impact_venn
 
 
 library(ggVennDiagram)
-ggVennDiagram(esv_venn_list, label_alpha = 0)
+ggVennDiagram::ggVennDiagram(esv_venn_list, label_alpha = 0)
 
 esv_counts_total <- Ok_merge_impact_melt %>%
   group_by(Sample) %>%
@@ -783,7 +793,7 @@ PG_mediumvslow <- data.frame(res_pair$W_impactmedium,
                              res_pair$q_impactmedium,
                              row.names = res_pair$taxon) %>%
   rename("W_statistics" = res_pair.W_impactmedium,
-         "q_value" = res_pair.q_impactmedium)%>%
+         "q_value" = res_pair.q_impactmedium) %>%
   mutate(comparison = "Impact\nlow_vs_medium",
          star=ifelse(q_value<.001, "***", 
                      ifelse(q_value<.01, "**",
@@ -849,7 +859,7 @@ bar_ancom_impact
 ### Export ANCOM-BC2 plot 
 ggsave("ANCOM-BC2_period_Family.tiff",
        units="in", width=16, height=12, dpi=300, compression = 'lzw',
-       path = here ("Multi-taxa_data","eDNA","4-Output"))
+       path = here ("Multi-taxa_data","eDNA_clean","4-Output"))
 
 
 ## ANCOMB on the Family level
@@ -937,7 +947,7 @@ df_ancom_impact_taxon_esv <- merge(df_ancom_impact_esv, taxonomy_esv, by.x = "ta
 bar_ancom_impact_esv <- "NULL"
 bar_ancom_impact_esv <- df_ancom_impact_taxon_esv %>%
   ggplot(aes(x = taxon, y = W_statistics)) +
-  geom_col(aes(fill = factor(ifelse(W_statistics > 0, "Positive", "Negative"))),size = 5) +
+  geom_col(aes(fill = factor(ifelse(W_statistics > 0, "Positive", "Negative"))),linewidth = 5) +
   labs(x = "ESVs", y = "W_statistics") +
   facet_grid(. ~ comparison) +
   geom_text(aes(y = W_statistics + 4 * sign(W_statistics), label = star), 
