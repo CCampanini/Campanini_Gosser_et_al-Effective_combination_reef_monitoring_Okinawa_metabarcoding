@@ -548,6 +548,86 @@ betad.Ok.i <- betadisper(Ok.jac, Okinawa_env$impact)
 permutest(betad.Ok.i)
 boxplot(betad.Ok.i)
 
+### Boxplot of within-site distance from centroid visualization with `ggplot()`
+
+#Create an input dataframe for the boxplot with mean relative cover by
+#category and depth within site
+
+betad.Ok$distances #Extract betadisper scores
+
+distcent_df <- data.frame(Distance_to_centroid=betad.Ok$distances,
+                          Location=Okinawa_env$Location, 
+                          Pressure=Okinawa_env$impact) 
+Location <- betad.Ok$group
+distcent_df[,2]<-factor(distcent_df[,2],
+                        levels=c("Hizushi", "Sakubaru1", "Sakubaru2", "CapeZanpa", "Zatsun", "Yonama", "Mizugama","Sukuta", "Sunabe", "Awa", "GinowanPort1", "GinowanPort2"))
+distcent_df[,3]<-factor(distcent_df[,3],levels=c("low","medium","high"))
+
+distcent_mean_df <- distcent_df %>%
+  group_by(Location) %>% 
+  summarise(`Mean distance to centroid`=round(mean(Distance_to_centroid),2),
+            SD=round(mean(Distance_to_centroid),2)) %>%
+  mutate(Pressure = case_when(Location == 'Hizushi' | 
+                                Location == "Sakubaru1" | 
+                                Location == "Sakubaru2" ~ "Low",
+                              Location == "CapeZanpa" |
+                                Location == 'Zatsun' | 
+                                Location == "Yonama" | 
+                                Location == "Mizugama" ~ "Medium",
+                              Location == 'Sukuta' |
+                                Location == 'Sunabe' | 
+                                Location == "Awa" | 
+                                Location == "GinowanPort1" |
+                                Location == "GinowanPort2"~ "High"))
+
+distcent_mean_df <- distcent_mean_df[,c(1,4,2,3)]
+distcent_mean_df$Location <- c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2")
+
+distcent_df <- distcent_df %>%
+  mutate(Location = case_when(Location == "Hizushi" ~ "HI",
+                              Location == "Sakubaru1" ~ "S1",
+                              Location == "Sakubaru2" ~ "S2",
+                              Location == "CapeZanpa" ~ "ZP",
+                              Location == "Zatsun" ~ "ZA",
+                              Location == "Yonama" ~ "YO",
+                              Location == "Mizugama" ~ "MI",
+                              Location == "Sukuta" ~ "SK",
+                              Location == "Sunabe" ~ "SN",
+                              Location == "Awa" ~ "AW",
+                              Location == "GinowanPort1" ~ "G1",
+                              Location == "GinowanPort2" ~ "G2"
+  )
+  )
+
+distcent_df$Location<-ordered(distcent_df$Location,
+                                   levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
+  
+  
+edna_location_box <- ggplot(data=distcent_df,aes(x=Location,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  theme_classic()+
+  labs(title="Boxplot of mean distance to centroid by location")+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
+
+edna_location_box
+
+ggpubr:: ggarrange(edna_location_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
+
+ggsave("relcov_site_box.tiff", 
+       units="in", width=12, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+
+ggsave("relcov_site_box.png", 
+       units="in", width=12, height=4, dpi=300,
+       path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 
 ## PAIRWISE PERMANOVA
 library(pairwiseAdonis)
