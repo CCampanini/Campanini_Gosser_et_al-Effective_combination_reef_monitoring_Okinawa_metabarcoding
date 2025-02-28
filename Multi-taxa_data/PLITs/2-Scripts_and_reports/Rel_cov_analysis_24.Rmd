@@ -518,8 +518,8 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
   guides(color= guide_legend(order=1, title = "Site", ncol =2))+
   new_scale_color() +
   geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
-  scale_color_manual(values= c("green","yellow","red"))+
-  scale_fill_manual(values= c("green","yellow","red"))+
+  scale_color_manual(values= c("#009F81","#FFB331","#9F1111"))+
+  scale_fill_manual(values= c("#009F81","#FFB331","#9F1111"))+
   theme_classic()+
   ggtitle("nMDS of relative benthic cover")+
   theme(plot.title = element_text(size=14, face="bold",hjust=.5),
@@ -543,8 +543,8 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
   guides(color= guide_legend(order=1, title = "Site", ncol =2))+
   new_scale_color() +
   geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
-  scale_color_manual(values= c("green","yellow","red"))+
-  scale_fill_manual(values= c("green","yellow","red"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   theme_classic()+
   ggtitle("nMDS of relative benthic cover")+
   theme(plot.title = element_text(size=14, face="bold",hjust=.5),
@@ -796,8 +796,8 @@ distcent_mean_df <- distcent_mean_df[,c(1,4,2,3)]
 relcov_site_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
   geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
   geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
-  scale_fill_manual(values= c("green","yellow","red"))+
-  scale_color_manual(values= c("green","yellow3","red"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   theme_classic()+
   labs(title="Boxplot of mean distance to centroid by site")+
   ylab(label="Distance to centroid")+
@@ -923,8 +923,8 @@ distcent_mean_df_pres <- distcent_df %>%
 relcov_pres_box <- ggplot(data=distcent_df_pres,aes(x=Pressure,y=Distance_to_centroid))+ 
   geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
   geom_point(aes(fill=Pressure,color=Pressure),alpha=0.7)+
-  scale_fill_manual(values= c("green","yellow","red"))+
-  scale_color_manual(values= c("green","yellow3","red"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   theme_classic()+
   labs(title="Boxplot of mean distance to centroid by pressure")+
   ylab(label="Distance to centroid")+
