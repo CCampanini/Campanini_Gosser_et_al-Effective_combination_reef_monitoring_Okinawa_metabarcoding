@@ -621,13 +621,31 @@ ggpubr:: ggarrange(edna_location_box,
                    gridExtra::tableGrob(distcent_mean_df), 
                    ncol = 2, widths = c(1,1))
 
-ggsave("relcov_site_box.tiff", 
-       units="in", width=12, height=4, dpi=300, compression = 'lzw',
-       path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+edna_location_box <- ggplot(data=distcent_df,aes(x=Location,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  theme_classic()+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
 
-ggsave("relcov_site_box.png", 
+edna_location_box
+
+ggpubr:: ggarrange(edna_location_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
+
+
+ggsave("eDNA_site_box.tiff", 
+       units="in", width=12, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
+
+ggsave("eDNA_site_box.png", 
        units="in", width=12, height=4, dpi=300,
-       path = here ("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
 
 ## PAIRWISE PERMANOVA
 library(pairwiseAdonis)
@@ -1070,6 +1088,8 @@ library(reshape2)
 library(ade4)
 library(adespatial)
 library(spdep)
+
+Ok_dist <- read.csv(file=here("Multi-taxa_data","Ok_dist.csv"), row.names=1)
 Ok_dist <- read.csv("Analysis/Ok_dist.csv",  row.names=1)
 head(Ok_dist)
 
