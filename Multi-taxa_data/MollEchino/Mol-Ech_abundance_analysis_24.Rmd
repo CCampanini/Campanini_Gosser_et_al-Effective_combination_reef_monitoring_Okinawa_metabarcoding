@@ -31,7 +31,6 @@ library(dplyr)
 library(ggplot2)
 library(readxl)   # to import excel datasets
 library(magrittr)
-
 ```
 
 # Mollusks | Abundance estimates
@@ -870,250 +869,74 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
            size=3, hjust=0) #add goodness of fit to plot
 ```
 
+```{r}
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom= "polygon",aes(fill=pressure), alpha=0.3)+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"),
+                      aesthetics = c("fill"),
+                     guide = guide_legend(title = "Pressure"))+
+  ggnewscale::new_scale_color() +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),
+             size=2.5)+##separates overlapping points
+  guides(color = guide_legend(order=1, title = "Site", ncol =2),
+         shape = guide_legend(order=2, title = "Depth"))+
+  scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.2,1))+
+  scale_y_continuous(limits = c(-1.2,1.15))+
+  annotate("text", x=-1.20, y=0.97, 
+           label=bquote(atop('Non-metric fit,'~ R^2~"= 0.968",
+                             Stress == .(round(inv_nmds_br$stress,3)),
+                             )),
+           size=3, hjust=0) #add goodness of fit to plot
+```
+
+```{r}
+
+nmds_df <- nmds_df %>% rename(Pressure = pressure)
+
+pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=Pressure),size=2.5, alpha = 0.8)+##separates overlapping points+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= pal_fabian)+
+  labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+    annotate("text", x=Inf, y=-Inf, hjust = 2.8, vjust = -11,
+           label=bquote(atop(Stress == .(round(inv_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+```
+
+
 ```{r, eval= F}
 ggsave("inv_ndms_ggplot.tiff", 
-       units="in", width=7, height=5, dpi=300, compression = 'lzw',
+       units="in", width=6, height=5, dpi=300, compression = 'lzw',
        path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
-# PERMANOVA AND POST-HOC PAIRWISE PERMANOVA
-
-Load libraries
-
-```{r}
-#VEGAN----
-library(vegan)#load package
-library(MASS)
-library(dplyr)
-
-#install.packages("pairwiseAdonis")
-library(devtools) #to install pairwiseAdonis from GitHub
-library(pairwiseAdonis)
-#install.packages("Rtools")
-# library(remotes) #to use install_github
-# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
-library(pairwiseAdonis)
-```
-
-Display input matrix and data frame with independent variables
-
-```{r}
-str(inv_mat)
-head(inv_mat)
-str(ind_df)
-```
-
-## PERMANOVA among the 12 sites
-
-```{r}
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(nperm = 9999)
-inv_permanova <- adonis2(inv_mat ~ pressure/site*depth,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray")
-
-inv_permanova
-```
-```{r}
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(nperm = 9999)
-inv_permanova <- adonis2(inv_mat ~ pressure/site*depth,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray",
-                         by = "margin")
-
-inv_permanova
-```
-```{r}
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(nperm = 9999, blocks = ind_df$pressure)
-inv_permanova <- adonis2(inv_mat ~ pressure/site*depth,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray")
-
-inv_permanova
-```
-
-
-```{r}
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(nperm = 9999)
-inv_permanova <- adonis2(inv_mat ~ depth*(pressure/site),
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray")
-
-inv_permanova
-```
-
-
-
-```{r}
-#SCRIPT WITH adonis()
-set.seed(69)
-perm=how(nperm=9999)
-inv_site_pressure_pmv <- adonis(inv_mat ~ 
-                                  pressure + 
-                                  pressure/site + 
-                                  depth + 
-                                  pressure/site:depth + 
-                                  pressure:depth, 
-                           data=ind_df,
-                           permutations =perm,
-                           methods="bray")
-inv_site_pressure_pmv$aov.tab
-```
-```{r}
-#SCRIPT WITH adonis()
-set.seed(69)
-perm=how(nperm=999)
-inv_site_pressure_pmv <- adonis2(inv_mat ~ pressure/site*depth, 
-                           data=ind_df,
-                           permutations =perm,
-                           methods="bray")
-inv_site_pressure_pmv$aov.tab
-```
-
-```{r}
-#SCRIPT WITH adonis()
-set.seed(69)
-perm=how(nperm=999)
-inv_site_pressure_pmv <- adonis(inv_mat ~ pressure/site*depth, 
-                           data=ind_df,
-                           permutations =perm,
-                           methods="bray")
-inv_site_pressure_pmv$aov.tab
-```
-
-```{r}
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(nperm = 9999)
-inv_site_pressure_blocks_pmv <- adonis2(inv_mat ~ pressure/site*depth,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray",
-                             by = "margin")
-
-inv_site_pressure_blocks_pmv
-```
-
-## Permutation test of multivariate homogeneity of groups dispersions (variances)
-
-Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
-K. Clarke. Permanova+ for primer: Guide to software and statisticl
-methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
-PERMANOVA test using permutations assumes only that the samples are
-exchangeable under a true null hypothesis12. The assumption of
-exchangeability is tantamount to assuming that the multivariate
-observations (samples) are independent and identically distributed
-(i.i.d.) under a true null hypothesis. Thus, although there are no
-explicit assumptions regarding the distributions of the original
-variables (they are certainly not assumed to be normally distributed),
-independence and homogeneity of dispersions (in the space of the
-resemblance measure) are directly implied by the permutation procedure.
-Clearly, if samples have very different dispersions in different groups,
-then they are not really exchangeable. Also, if the samples are
-unequally correlated with one another (e.g., temporally or spatially),
-then randomly shuffling them will destroy this kind of inherent
-structure.*
-
-```{r}
-set.seed(69)
-densityplot(permustats(inv_permanova)) #density plot of permutation results to to check if assumptions are met?
-
-inv_dist = vegdist(inv_mat, 
-                   method="bray")
-```
-
-PERMDISP PER PRESSURE
-
-```{r}
-inv_bd_pressure = betadisper(inv_dist, ind_df$pressure)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
-str(inv_bd_pressure)
-
-plot(inv_bd_pressure)
-boxplot(inv_bd_pressure) #check data dispersion based on pressures
-anova(inv_bd_pressure) #F-test on distribution of pressures
-```
-
-
-PERMDISP PER PRESSURE
-
-```{r}
-inv_bd_pressure = betadisper(inv_dist, 
-                    ind_df$pressure)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
-str(inv_bd_pressure)
-
-plot(inv_bd_pressure)
-boxplot(inv_bd_pressure) #check data dispersion based on pressures
-anova(inv_bd_pressure) #F-test on distribution of pressures
-```
-
-
-PERMDISP PER SITE
-
-```{r}
-inv_bd_site = betadisper(inv_dist, 
-                    ind_df$site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
-str(inv_bd_site)
-
-plot(inv_bd_site)
-boxplot(inv_bd_site) #check data dispersion based on sites
-anova(inv_bd_site) #F-test on distribution of sites
-```
-
-PERMDISP PER DEPTH
-
-```{r}
-inv_bd_depth = betadisper(inv_dist, 
-                    ind_df$depth)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
-str(inv_bd_depth)
-
-plot(inv_bd_depth)
-boxplot(inv_bd_depth) #check data dispersion based on depths
-anova(inv_bd_depth) #F-test on distribution of depths
-```
-
-### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
-
-```{r}
-set.seed(69)
-permutest(inv_bd_pressure, pairwise=TRUE) # permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue + pairwise of dispersion test
-```
-
-### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
-
-```{r}
-set.seed(69)
-permutest(inv_bd_site, pairwise=TRUE, by= "margin") # permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue + pairwise of dispersion test
-```
-### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
-
-```{r}
-set.seed(69)
-permutest(inv_bd_depth, pairwise=TRUE) # permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue + pairwise of dispersion test
-```
-From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
-for primer: Guide to software and statistical methods. Primer-E Limited,
-2008: \* If significant heterogeneity were detected by PERMDISP and
-differences among groups were also detected using PERMANOVA, then the
-latter could have been caused by differences in location, differences in
-dispersion, or some combination of the two. \*
-
-### Boxplot of within-site distance from centroid visualization with `ggplot()`
+# Boxplot of within-site distance from centroid visualization with `ggplot()`
 
 Create an input dataframe for the boxplot with mean relative cover by
 category and depth within site
 
 ```{r}
+inv_dist = vegdist(inv_mat, 
+                   method="bray")
+set.seed(69)
+inv_bd_site = betadisper(inv_dist, 
+                    ind_df$site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(inv_bd_site)
+
 inv_bd_site$distances #Extract betadisper scores
 
 distcent_df <- data.frame(Distance_to_centroid=inv_bd_site$distances,Sites=ind_df$site, Pressure=ind_df$pressure) 
@@ -1148,9 +971,28 @@ inv_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+
   geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
   geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
   scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
-  scale_color_manual(values= c("green","yellow3","red"))+
+  scale_color_manual(values= c("#009F81","#FFB331","#9F1111"))+
   theme_classic()+
   labs(title="Boxplot of mean distance to centroid by site")+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
+
+inv_box
+
+ggpubr:: ggarrange(inv_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
+```
+
+```{r}
+inv_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81","#FFB331","#9F1111"))+
+  theme_classic()+
   ylab(label="Distance to centroid")+
   theme(legend.position = "none", #remove legend
         plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
@@ -1171,55 +1013,6 @@ ggsave("inv_distcent_boxplot.tiff",
 ggsave("inv_distcent_boxplot.png", 
        units="in", width=12, height=4, dpi=300,
        path = here ("Multi-taxa_data","MollEchino","Output"))
-```
-
-
-## Post hoc test for PERMANOVA (`pairwise.adonis`)
-
-### Post-hoc test FOR PERMANOVA PER SITES
-N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
-
-```{r}
-set.seed(69)
-inv_pmv_phoc_holm= pairwise.adonis(inv_mat,ind_df$site,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "holm", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_holm
-
-set.seed(69)
-inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$site,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "bonferroni", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_bonf
-```
-
-### Post-hoc test FOR PERMANOVA PER PRESSURE
-N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
-
-```{r}
-set.seed(69)
-inv_pmv_phoc_holm= pairwise.adonis(inv_mat,ind_df$pressure,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "holm", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_holm
-
-set.seed(69)
-inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$pressure,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "bonferroni", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_bonf
 ```
 
 # SIMPER: Similarity of percentage
