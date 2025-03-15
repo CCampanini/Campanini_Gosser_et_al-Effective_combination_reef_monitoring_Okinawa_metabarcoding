@@ -316,6 +316,7 @@ Load packages
 
 ```{r}
 #VEGAN----
+library(here)
 library(vegan)#load package
 #install.packages("htmltools")
 library(htmltools)
@@ -401,7 +402,7 @@ rm(ind_df_rownames)
 ```
 
 ```{r, eval =F}
-#export each data frame to separate sheets in same Excel file
+#export each data frame to separate shefets in same Excel file
 openxlsx::write.xlsx(list("cov_mat_primer" = cov_mat_primer,
                           "ind_df_primer" = ind_df_primer),
                      file = here("Multi-taxa_data","PLITs","3-Clean_data",
@@ -542,7 +543,7 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
   guides(color= guide_legend(order=1, title = "Site", ncol =2))+
   new_scale_color() +
-  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
+  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
   scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   theme_classic()+
@@ -552,7 +553,76 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
         legend.text = element_text(size=10))+
   scale_x_continuous(limits = c(-.8,1.8))+
   scale_y_continuous(limits = c(-.7,.9))+
-    annotate("text", x=1.5, y=-0.6, 
+    annotate("text", x=1.5, y=0.6, 
+           label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+```
+
+```{r}
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.3) +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  new_scale_color() +
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  theme_classic()+
+  ggtitle("nMDS of relative benthic cover")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.2,1.8))+
+  scale_y_continuous(limits = c(-.8,.9))+
+    annotate("text", x=1, y=-0.6, 
+           label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+```
+```{r}
+pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
+
+library(colorblindcheck)
+
+palette_check(pal_fabian, plot = TRUE)
+palette_check(pal12, plot = TRUE)
+
+levels(nmds_df$Site)
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  new_scale_color() +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points+
+  scale_color_manual(values= pal_fabian)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  theme_classic()+
+  ggtitle("nMDS of relative benthic cover")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.2,1.8))+
+  scale_y_continuous(limits = c(-.8,.9))+
+    annotate("text", x=1, y=-0.6, 
+           label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+```
+
+```{r}
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5, alpha = 0.8)+##separates overlapping points+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= pal_fabian)+
+  labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+    annotate("text", x=Inf, y=-Inf, hjust = 1, vjust = -0.5,
            label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
                              'Non-metric fit,'~ R^2~"= 0.993")),
            size=3) #add goodness of fit to plot
@@ -563,6 +633,56 @@ ggsave("ndms_relcov_pressure.tiff",
        units ="in", width = 5, height = 4, dpi = 300, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
+
+# MANTEL TEST
+
+```{r load libraries for Mantel test}
+library(fields)
+library(reshape2)
+library(ade4)
+library(adespatial)
+library(spdep)
+```
+
+Load distance file and create distance matrix 
+```{r load distance file}
+Ok_dist <- read.csv(file=here("Multi-taxa_data","Ok_dist.csv"), row.names=1)
+head(Ok_dist)
+Dist.km <- as.dist(rdist.earth(Ok_dist, miles=F))
+
+
+cov_bray <- vegdist(cov_mat, method = "bray")
+```
+
+Correlation between straight-line geographic distance and dissimilarity in species composition
+
+```{r}
+mantel(Dist.km, cov_bray)
+```
+
+Plot
+```{r}
+matrix.dist <- data.frame(x = melt(as.matrix(Dist.km))$value, 
+                          y = melt(as.matrix(Ok.jac))$value) ## Prepare data for graphic
+
+ggplot(matrix.dist) +
+  geom_jitter( aes(x,y), shape = 21, size = 4, fill = "#8fc7a0") +
+  labs(x = "Distance (km)", 
+       y = "Dissimilarity (Jaccard)") +
+  geom_smooth( aes(x,y), method = "glm") +
+  theme_classic()
+```
+
+## Mantel
+mantel.Ok <- mantel.randtest(sqrt(Ok.jac), Dist.km)
+mantel.Ok
+## Minimum Spanning Tree
+nb.Ok <- mst.nb(Dist.km) # calculate Minimum Spanning Tree network
+plot(nb.Ok, Ok_dist)
+## Converting
+lw <- nb2listw(nb.Ok)
+## Mantel test new
+msr(mantel.Ok, lw, method = "pair")
 
 # BOXPLOTS FOR INGROUP VARIANCE
 
@@ -649,6 +769,10 @@ Create an input dataframe for the boxplot with mean relative cover by
 category and depth within site
 
 ```{r}
+relcov_dist = vegdist(cov_mat,method="bray")
+
+relcov_bd=betadisper(relcov_dist,ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(relcov_bd)
 
 relcov_bd$distances #Extract betadisper scores
 
@@ -693,6 +817,26 @@ relcov_site_box
 ggpubr:: ggarrange(relcov_site_box, 
                    gridExtra::tableGrob(distcent_mean_df), 
                    ncol = 2, widths = c(1,1))
+```
+
+```{r}
+relcov_site_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  theme_classic()+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
+
+relcov_site_box
+
+ggpubr:: ggarrange(relcov_site_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
+```
 ```
 
 ```{r, eval=F}
