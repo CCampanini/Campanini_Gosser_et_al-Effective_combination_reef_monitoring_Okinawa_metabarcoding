@@ -502,17 +502,53 @@ Ok_data.scores$depth = Okinawa_env$depth
 Ok_data.scores$Location = Okinawa_env$Location
 Ok_data.scores$impact = Okinawa_env$impact
 
+stressplot(Ok_nmds)
+
+Ok_data.scores <- Ok_data.scores %>%
+  mutate(Site = case_when(Location == 'Hizushi' ~ "HI",
+                          Location == 'Sakubaru1' ~ "S1",
+                          Location == 'Sakubaru2' ~ "S2",
+                          Location == 'CapeZanpa' ~ "ZP",
+                          Location == 'Zatsun' ~ "ZA",
+                          Location == 'Yonama' ~ "YO",
+                          Location == 'Sunabe' ~ "SN",
+                          Location == 'Mizugama' ~ "MI",
+                          Location == 'GinowanPort1' ~ "G1",
+                          Location == 'GinowanPort2' ~ "G2",
+                          Location == 'Sukuta' ~ "SK",
+                          Location == 'Awa' ~ "AW")
+  )
+
+Ok_data.scores <- Ok_data.scores %>%
+  mutate(Pressure = as.factor(case_when(impact == 'low' ~ "Low",
+                              impact == 'medium' ~ "Medium",
+                              impact == 'high' ~ "High"))
+  )
+
+Ok_data.scores$Pressure <- factor(Ok_data.scores$Pressure,
+                                 levels = c("Low","Medium","High"))
+
+Ok_data.scores$Site<-ordered(Ok_data.scores$Site,
+                     levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
 plot.nmds = ggplot(Ok_data.scores, aes(x = MDS1, y = MDS2)) +
-  geom_point(size = 4, aes(shape = depth, colour = Location), alpha = 0.5) + 
-  stat_ellipse(geom = "polygon", aes(fill = impact), alpha = 0.1) +
+  geom_point(size = 2.5, aes(shape = Pressure, colour = Site), alpha = 0.8) + 
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
   scale_color_manual(values = c("#9F0162","#009F81","#FF5AAF","#00FCCF","#8400CD","#008DF9","#00C2F9","#FFB2FD","#A40122","#E20134","#FF6E3A","#FFC33B")) +
-  scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
-  annotate(geom = 'text', label = 'Jaccard', x = Inf, y = -Inf, hjust = 1.15, vjust = -1) + 
-  labs(x = "NMDS1", colour = "Location", y = "NMDS2", shape = "Impact") +
+  scale_fill_manual(values = c(Low = "#009F81",Medium = "#FFB331",High = "#9F1111")) +
+  annotate("text", x=Inf, y=-Inf, hjust = 1, vjust = -0.5,
+           label=bquote(atop(Stress == .(round(Ok_nmds$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.987")),
+           size=3)+
+  labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
+  guides(color= guide_legend(order=1, title = "Site", ncol =1))+
   theme_classic()
 
 plot.nmds 
+
+ggsave("edna_nmds.tiff", 
+       units ="in", width = 7, height = 5, dpi = 300, compression = 'lzw',
+       path = here::here("Multi-taxa_data","eDNA_clean","Plots"))
 
 # PERMANOVA
 set.seed(69) #random number to start
