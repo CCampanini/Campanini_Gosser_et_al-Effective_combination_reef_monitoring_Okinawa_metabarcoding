@@ -230,6 +230,7 @@ ggsave("algae_func_bar.png",
 Load packages
 
 ```{r}
+library(here)
 library(vegan)#load package
 library(MASS)
 library(dplyr)
@@ -380,7 +381,7 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
 ```{r}
 func_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
-  scale_color_manual(values= pal12)+
+  scale_color_manual(values= pal_fabian)+
   guides(color= guide_legend(order=1, title = "Site", ncol =2))+
   new_scale_color() +
   geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
@@ -404,6 +405,49 @@ func_ndms_ggplot
 rm(pal12)
 ```
 
+```{r}
+pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
+
+func_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.3) +
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  new_scale_color() +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure), size=2.5, alpha = .8)+##separates overlapping points
+  scale_color_manual(values= pal_fabian)+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  theme_classic()+
+  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  annotate("text", x=-Inf, y=Inf, 
+           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.921")),
+           size=3, hjust=0) #add goodness of fit to plot
+
+func_ndms_ggplot
+```
+
+```{r}
+func_ndms_ggplot<- ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5, alpha = 0.8)+##separates overlapping points+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= pal_fabian)+
+  labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+    annotate("text", x=Inf, y=-Inf, hjust = 1, vjust = -0.5,
+           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+
+func_ndms_ggplot
+```
 
 Test a colorblind-friendly palette using `colorblindr` package
 
@@ -427,29 +471,24 @@ Save the plot as tiff
 ```{r, eval = F}
 ggsave("func_nmds.tiff", 
        plot = func_ndms_ggplot,
-       units="in", width=7, height=4.5, dpi=300, compression = 'lzw',
+       units="in", width=6, height=4, dpi=300, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs")
        )
 ```
 
-# PERMANOVA
+# Boxplot with within-site distance from centroids made with `ggplot()`
 
 Load packages
 
 ```{r}
-#VEGAN----
+library(here)
 library(vegan)#load package
-#install.packages("vegan3d")
 library(MASS)
 library(dplyr)
-
-#install.packages("pairwiseAdonis")
-library(devtools) #to install pairwiseAdonis from GitHub
-library(pairwiseAdonis)
 library(readxl)   # to import excel datasets
 ```
 
-Load input data frame
+Load input dataframe
 
 ```{r}
 func_input<- read_excel(here("Multi-taxa_data","PLITs","3-Clean_data","func_clean.xlsx"), sheet = "func_input")
@@ -482,8 +521,8 @@ str(func_input)
 #create a df with the independent variables
 ind_df <- as.data.frame(func_input[,c(1:6)])
 str(ind_df)
-```
 
+```
 Convert the database `func_input`to a matrix
 
 ```{r}
@@ -493,177 +532,23 @@ func_mat <- as.matrix(func_mat)
 str(func_mat)
 class(func_mat)
 ```
-## Format and export data for Primer
-
-```{r}
-func_mat_primer <- data.frame(t(func_mat))
-func_mat_primer$Category <- colnames(func_mat)
-func_mat_primer <- func_mat_primer[,c(70,1:69)]
-```
-
-```{r}
-ind_df_primer <- ind_df %>%
-  mutate(Pressure_depth = paste(Pressure, Depth, sep='_')) 
-
-ind_df_primer <- ind_df_primer[,c(6,2,3,5,7)] # remove transect, replicate and reorder
-ind_df_primer <- data.frame(t(ind_df_primer))
-ind_df_rownames <- rownames(ind_df_primer)
-ind_df_primer$Factor <- ind_df_rownames
-ind_df_primer <- ind_df_primer[,c(70,1:69)]
-rm(ind_df_rownames)
-```
-
-```{r, eval =F}
-#export each data frame to separate sheets in same Excel file
-openxlsx::write.xlsx(list("func_mat_primer" = func_mat_primer,
-                          "ind_df_primer" = ind_df_primer),
-                     file = here("Multi-taxa_data","PLITs","3-Clean_data",
-                   "func_primer.xlsx")) 
-```
-
-## PERMANOVA among the 4 sites
-
-### Question 1: is there a significant difference in relative algae and coral cover by functional groups among sites?
-
-```{r}
-set.seed(69) 
-perm=how(nperm=999)
-func_site_pmv=adonis2(func_mat~Site, 
-                        data=ind_df,
-                        permutations =perm,
-                        method="bray",
-                      by = "margin")
-                        
-func_site_pmv
-```
-
-P-value `r func_site_pmv$Pr[1]` \< 0.05, so there is a significant
-difference among sites.
-
-### Question 2: is there a significant difference in relative algae and coral cover by functional group between depth withing sites?
-
-```{r}
-#SCRIPT WITH adonis()
-set.seed(69) 
-perm=how(nperm=999)
-func_depth_pmv <- adonis(func_mat~Depth, 
-                           data=ind_df,
-                           permutations =perm,
-                           strata=ind_df$Site,
-                           method="bray",
-                           by = "margin")
-func_depth_pmv$aov.tab
-
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69) 
-h <- how(blocks = ind_df$Site, nperm = 999)
-func_blocks_pmv <- adonis2(func_mat~Depth,
-                             data=ind_df,
-                             permutations =h,
-                             method="bray",
-                             by = "margin")
-
-func_blocks_pmv
-```
-
-### Question 3: is there a significant difference in relative cover by functional group among anthropogenic pressure level?
-
-```{r}
-set.seed(69)
-perm=how(nperm=999)
-func_pressure_pmv=adonis2(func_mat~Pressure, 
-                        data=ind_df,
-                        permutations =perm,
-                        methods="bray", 
-                        by = "margin")
-                        
-func_pressure_pmv
-```
-### Question 4: is there a significant difference in relative cover by functional group among sites within pressure levels?
-
-```{r}
-#SCRIPT WITH adonis()
-set.seed(69)
-perm=how(nperm=999)
-func_site_pressure_pmv <- adonis(func_mat~Site, 
-                           data=ind_df,
-                           permutations =perm,
-                           strata=ind_df$Pressure,
-                           methods="bray",
-                           by= "margin")
-
-func_site_pressure_pmv$aov.tab
-
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(blocks = ind_df$Pressure, nperm = 999)
-func_site_pressure_pmv <- adonis2(func_mat~Site,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray",
-                             by = "margin")
-
-func_site_pressure_pmv
-```
-
-## Permutation test of multivariate homogeneity of groups dispersions (variances)
-
-Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
-K. Clarke. Permanova+ for primer: Guide to software and statisticl
-methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
-PERMANOVA test using permutations assumes only that the samples are
-exchangeable under a true null hypothesis12. The assumption of
-exchangeability is tantamount to assuming that the multivariate
-observations (samples) are independent and identically distributed
-(i.i.d.) under a true null hypothesis. Thus, although there are no
-explicit assumptions regarding the distributions of the original
-variables (they are certainly not assumed to be normally distributed),
-independence and homogeneity of dispersions (in the space of the
-resemblance measure) are directly implied by the permutation procedure.
-Clearly, if samples have very different dispersions in different groups,
-then they are not really exchangeable. Also, if the samples are
-unequally correlated with one another (e.g., temporally or spatially),
-then randomly shuffling them will destroy this kind of inherent
-structure.*
-
-```{r}
-set.seed(69) 
-densityplot(permustats(func_site_pmv)) #density plot of permutation results to to check if assumptions are met?
-
-func_dist = vegdist(func_mat,method="bray")
-
-func_bd=betadisper(func_dist,ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
-str(func_bd)
-
-anova(func_bd) #F-test on distribution of sites
-```
-
-### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
-
-```{r}
-set.seed(69) 
-permutest(func_bd) #permutative test on dispersion based on sites, if significance, PERMANOVA results may be driven by  dispersion issue
-set.seed(69) 
-permutest(func_bd, pairwise=TRUE) #pairwise of dispersion test
-```
-
-From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
-for primer: Guide to software and statisticl methods. Primer-E Limited,
-2008: \* If significant heterogeneity were detected by PERMDISP and
-differences among groups were also detected using PERMANOVA, then the
-latter could have been caused by differences in location, differences in
-dispersion, or some combination of the two. \*
-
-### Boxplot with within-site distance from centroids made with `ggplot()`
 
 Create an input dataframe for the boxplot with mean relative cover by
 category and depth within site
 
 ```{r}
-func_bd$distances #Extract betadisper scores
+func_dist = vegdist(func_mat, 
+                   method="bray")
+set.seed(69)
+func_bd_site = betadisper(func_dist, 
+                    ind_df$Site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
 
-distcent_df <- data.frame(Distance_to_centroid=func_bd$distances,
-                          Site=func_bd$group) #create a df for the plot
+str(func_bd_site)
+
+func_bd_site$distances #Extract betadisper scores
+
+distcent_df <- data.frame(Distance_to_centroid=func_bd_site$distances,
+                          Site=func_bd_site$group) #create a df for the plot
 
 
 distcent_df <- distcent_df %>%
@@ -722,33 +607,6 @@ ggsave("func_boxplot.png",
        units="in", width=12, height=4, dpi=300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
-
-### Post hoc test for PERMANOVA (`pairwise.adonis`)
-
-```{r}
-set.seed(69) 
-func_pmv_phoc_holm= pairwise.adonis(func_mat,ind_df$Site,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "holm", 
-                                  reduce = NULL)
-
-func_pmv_phoc_holm
-
-set.seed(69) 
-func_pmv_phoc_bonf= pairwise.adonis(func_mat,ind_df$Site,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "bonferroni", 
-                                  reduce = NULL)
-
-func_pmv_phoc_bonf 
-```
-
-I can use Bonferroni because it is more conservative and it is the
-adjustment adopted for the other analyses.
-
-N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
 
 # SIMPER: Similarity of percentage
 
