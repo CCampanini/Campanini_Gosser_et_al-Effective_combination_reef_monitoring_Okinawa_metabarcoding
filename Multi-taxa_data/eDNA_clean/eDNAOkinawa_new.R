@@ -557,28 +557,6 @@ ggsave("edna_nmds.png",
        units ="in", width = 8, height = 6, dpi = 300,
        path = here::here("Multi-taxa_data","eDNA_clean","Plots"))
 
-# PERMANOVA
-set.seed(69) #random number to start
-perm.Ok <- adonis2(Ok.jac ~ impact + Location + depth, 
-                   data = Okinawa_env, 
-                   permutations = 9999, 
-                   by = "terms")
-perm.Ok
-
-set.seed(69) #random number to start
-perm.Ok <- adonis2(Ok.jac ~ impact/Location*depth, 
-                   data = Okinawa_env, 
-                   permutations = 9999, 
-                   by = "terms")
-perm.Ok
-
-set.seed(69) #random number to start
-perm.Ok <- adonis2(Ok.jac ~ depth*(impact/Location), 
-                   data = Okinawa_env, 
-                   permutations = 9999, 
-                   by = "terms")
-perm.Ok
-
 
 ## PERMDISP
 betad.Ok <- betadisper(Ok.jac, Okinawa_env$Location)
