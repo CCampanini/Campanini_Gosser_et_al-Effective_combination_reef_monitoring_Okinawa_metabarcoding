@@ -314,9 +314,6 @@ rm(ech_mean_long, ech_sd_long)
 
 ```{r}
 inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
-#library("writexl")
-#write_xlsx(inv_bar,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/mol_ech_ab_class_output.xlsx")
-
 str(inv_bar)
 
 inv_bar$class <- ordered(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
@@ -649,6 +646,10 @@ Export plot for poster
 ggsave("mol-ech_abundance_pressure_barplot_poster.tiff", 
        units = "in", width = 4, height = 6, dpi = 300, compression = 'lzw',
        path = here ("Multi-taxa_data","MollEchino","Output"))
+
+ggsave("mol-ech_abundance_pressure_barplot_poster.png", 
+       units = "in", width = 4, height = 6, dpi = 300,
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
 ## Export clean data
@@ -896,13 +897,14 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
 
 ```{r}
 
-nmds_df <- nmds_df %>% rename(Pressure = pressure)
+nmds_df <- nmds_df %>% rename(Pressure = pressure,
+                              Depth= depth)
 
 pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
 
 ggplot(nmds_df, aes(NMDS1, NMDS2))+
   stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
-  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=Pressure),size=2.5, alpha = 0.8)+##separates overlapping points+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=Depth),size=2.5, alpha = 0.8)+##separates overlapping points+
   scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   scale_color_manual(values= pal_fabian)+
   labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
@@ -921,6 +923,10 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
 ```{r, eval= F}
 ggsave("inv_ndms_ggplot.tiff", 
        units="in", width=6, height=5, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+
+ggsave("inv_ndms_ggplot.png", 
+       units="in", width=6, height=5, dpi=300,
        path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
