@@ -355,28 +355,8 @@ pal12 <- c("#000000","#004949","#009292","#ffb6db",
  "#920000","#924900","#24ff24","#ffff6d")
 
 library(ggnewscale) #necessary for new_scale_color 
-
-ggplot(nmds_df, aes(NMDS1, NMDS2))+
-  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=2.5)+##separates overlapping points
-  scale_color_manual(values= pal12)+
-  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
-  new_scale_color() +
-  geom_mark_ellipse(aes(fill=Pressure, color=Pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
-  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
-  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
-  theme_classic()+
-  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
-  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
-        legend.title = element_text(color = "black", size = 12),
-        legend.text = element_text(size=10))+
-  scale_x_continuous(limits = c(-1.5,0.8))+
-  scale_y_continuous(limits = c(-0.5,.6))+
-  annotate("text", x=-1.4, y=-0.45, 
-           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
-                             'Non-metric fit,'~ R^2~"= 0.921")),
-           size=3, hjust=0) #add goodness of fit to plot
-
 ```
+
 
 ```{r}
 func_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
@@ -406,37 +386,14 @@ rm(pal12)
 ```
 
 ```{r}
-pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
-
-func_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
-  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.3) +
-  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"))+
-  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
-  new_scale_color() +
-  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure), size=2.5, alpha = .8)+##separates overlapping points
-  scale_color_manual(values= pal_fabian)+
-  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
-  theme_classic()+
-  ggtitle("nMDS of relative cover of hard coral and algae \n by functional group")+
-  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
-        legend.title = element_text(color = "black", size = 12),
-        legend.text = element_text(size=10))+
-  annotate("text", x=-Inf, y=Inf, 
-           label=bquote(atop(Stress == .(round(func_nmds_br$stress,3)),
-                             'Non-metric fit,'~ R^2~"= 0.921")),
-           size=3, hjust=0) #add goodness of fit to plot
-
-func_ndms_ggplot
-```
-
-```{r}
 func_ndms_ggplot<- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
-  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5, alpha = 0.8)+##separates overlapping points+
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=2.5, alpha = 0.8)+##separates overlapping points+
   scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
   scale_color_manual(values= pal_fabian)+
   labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
-  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  guides(color= guide_legend(order=1, title = "Site", ncol =2),
+         fill=guide_legend(order = 2))+
   theme_classic()+
   theme(plot.title = element_text(size=14, face="bold",hjust=.5),
         legend.title = element_text(color = "black", size = 12),
@@ -449,29 +406,18 @@ func_ndms_ggplot<- ggplot(nmds_df, aes(NMDS1, NMDS2))+
 func_ndms_ggplot
 ```
 
-Test a colorblind-friendly palette using `colorblindr` package
-
-```{r}
-
-
-#remotes::install_github("wilkelab/cowplot")
-#install.packages("colorspace")
-library(colorspace)
-
-#install.packages("colorspace")
-#remotes::install_github("clauswilke/colorblindr")
-library(colorblindr)
-
-cvd_grid(func_ndms_ggplot)
-
-```
-
 Save the plot as tiff
 
 ```{r, eval = F}
 ggsave("func_nmds.tiff", 
        plot = func_ndms_ggplot,
-       units="in", width=6, height=4, dpi=300, compression = 'lzw',
+       units="in", width=6, height=5, dpi=300, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs")
+       )
+
+ggsave("func_nmds.png", 
+       plot = func_ndms_ggplot,
+       units="in", width=6, height=5, dpi=300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs")
        )
 ```
