@@ -481,6 +481,7 @@ cor(cofresult, Ok.jac)
 
 
 # NMDS
+set.seed(69)
 Ok_nmds = metaMDS(t(otu_table(Ok)), 
                   distance = "jac", 
                   k = 3, 
@@ -531,10 +532,12 @@ Ok_data.scores$Pressure <- factor(Ok_data.scores$Pressure,
 Ok_data.scores$Site<-ordered(Ok_data.scores$Site,
                      levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
+Ok_data.scores <- Ok_data.scores %>% rename(Depth = depth)
+
 plot.nmds = ggplot(Ok_data.scores, aes(x = MDS1, y = MDS2)) +
   geom_point(size = 2.5, aes(shape = Pressure, colour = Site), alpha = 0.8) + 
   stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
-  scale_color_manual(values = c("#9F0162","#009F81","#FF5AAF","#00FCCF","#8400CD","#008DF9","#00C2F9","#FFB2FD","#A40122","#E20134","#FF6E3A","#FFC33B")) +
+  scale_color_manual(values = c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF"))) +
   scale_fill_manual(values = c(Low = "#009F81",Medium = "#FFB331",High = "#9F1111")) +
   annotate("text", x=Inf, y=-Inf, hjust = 1, vjust = -0.5,
            label=bquote(atop(Stress == .(round(Ok_nmds$stress,3)),
@@ -547,7 +550,11 @@ plot.nmds = ggplot(Ok_data.scores, aes(x = MDS1, y = MDS2)) +
 plot.nmds 
 
 ggsave("edna_nmds.tiff", 
-       units ="in", width = 7, height = 5, dpi = 300, compression = 'lzw',
+       units ="in", width = 8, height = 6, dpi = 300, compression = 'lzw',
+       path = here::here("Multi-taxa_data","eDNA_clean","Plots"))
+
+ggsave("edna_nmds.png", 
+       units ="in", width = 8, height = 6, dpi = 300,
        path = here::here("Multi-taxa_data","eDNA_clean","Plots"))
 
 # PERMANOVA
@@ -720,24 +727,36 @@ Ok_rda_scores <- as.data.frame(scores(plot_Ok_rda, display = "site"))
 # Combine scores with original data
 Ok_plot_data <- cbind(Okinawa_env, Ok_rda_scores)
 
+Ok_plot_data <- Ok_plot_data %>% rename(Pressure = impact,
+                                        Site = Location)
+Ok_plot_data$Pressure <- factor(Ok_plot_data$Pressure,
+                                  levels = c("low","medium","high"))
+
 #Now add the environmental variables as arrows
 arrowmat <- as.data.frame(plot_Ok_rda$centroids)
+arrowmat$label <- c("High pressure","Low pressure", "Medium pressure")
 #Plot results
 plot_rda <- ggplot(Ok_plot_data) +
-  geom_point(size = 3, aes(x = dbRDA1, y = dbRDA2, color = Location, shape = impact), alpha = 0.5) +
+  geom_point(size = 3, aes(x = dbRDA1, y = dbRDA2, color = Site, shape = Pressure), alpha = 0.5) +
   #geom_text_repel(aes(label = Samples, color = Location),size = 3, box.padding = 0.5) +  # Add text labels without overlap
-  labs(x = "dbRDA1",y = "dbRDA2") +
+  labs(x = "dbRDA1",y = "dbRDA2", shape = "Pressure",color = "Site") +
   theme_classic() +
-  scale_color_manual(values = c("#9F0162","#009F81","#FF5AAF","#00FCCF","#8400CD","#008DF9","#00C2F9","#FFB2FD","#A40122","#E20134","#FF6E3A","#FFC33B")) +
-  guides(shape = guide_legend(title = "Location"))
+  scale_color_manual(values = c("#9F0162","#009F81","#FF5AAF","#00FCCF","#8400CD","#008DF9","#00C2F9","#FFB2FD","#A40122","#E20134","#FF6E3A","#FFC33B"))
+
 # Plot arrows and labels
-plot_rda +  geom_segment(data = arrowmat, aes(x = 0, y = 0, xend = dbRDA1, yend = dbRDA2),
+edna_rda <- plot_rda +  geom_segment(data = arrowmat, aes(x = 0, y = 0, xend = dbRDA1, yend = dbRDA2),
                          arrow = arrow(length = unit(0.1, "inches")), color = "gray50", size = 1.5, alpha = 0.2) +
     geom_text(data = arrowmat, aes(label = label, x = dbRDA1, y = dbRDA2), 
-            size = 3, vjust = 1.5, hjust = 1.5, color = "black") +
+            size = 3, vjust = 1.2, hjust = 0.5, color = "black") +
   labs(x = "dbRDA1",
        y = "dbRDA2") +
   theme_classic()
+
+edna_rda
+
+ggsave("eDNA_rda.png", 
+       units="in", width=8, height=6, dpi=300,
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
 
 # TAXONOMIC RICHNESS PIE CHARTS
 
