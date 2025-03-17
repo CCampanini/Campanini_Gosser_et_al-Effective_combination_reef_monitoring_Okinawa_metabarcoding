@@ -1122,8 +1122,7 @@ library(ade4)
 library(adespatial)
 library(spdep)
 
-Ok_dist <- read.csv(file=here("Multi-taxa_data","Ok_dist.csv"), row.names=1)
-Ok_dist <- read.csv("Analysis/Ok_dist.csv",  row.names=1)
+Ok_dist <- read.csv(file=here("Multi-taxa_data","eDNA_clean","Ok_dist.csv"), row.names=1)
 head(Ok_dist)
 
 #create distance matrix
