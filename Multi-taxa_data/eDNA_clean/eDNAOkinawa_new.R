@@ -1128,6 +1128,7 @@ head(Ok_dist)
 #create distance matrix
 Dist.km <- as.dist(rdist.earth(Ok_dist, miles=F))
 #correlation between straight-line geographic distance and dissimilarity in species composition
+set.seed(69)
 mantel(Dist.km, Ok.jac) 
 ## Prepare data for graphic
 matrix.dist <- data.frame(x = melt(as.matrix(Dist.km))$value, 
