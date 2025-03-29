@@ -964,11 +964,20 @@ inv_matrix_dist <- data.frame(x = melt(as.matrix(Dist_km))$value,
                           y = melt(as.matrix(inv_bray))$value) ## Prepare data for graphic
 
 ggplot(inv_matrix_dist) +
-  geom_jitter( aes(x,y), shape = 21, size = 4, fill = "#8fc7a0") +
+  geom_jitter( aes(x,y), shape = 21, size = 3, fill = "#8fc7a0") +
   labs(x = "Distance (km)", 
        y = "Dissimilarity (Bray-Curtis)") +
   geom_smooth( aes(x,y), method = "glm") +
   theme_classic()
+```
+```{r, eval=F}
+ggsave("inv_dissimil_distance.tiff", 
+       units="in", width=6, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+
+ggsave("inv_dissimil_distance.png", 
+       units="in", width=6, height=4, dpi=300,
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
 Mantel 
