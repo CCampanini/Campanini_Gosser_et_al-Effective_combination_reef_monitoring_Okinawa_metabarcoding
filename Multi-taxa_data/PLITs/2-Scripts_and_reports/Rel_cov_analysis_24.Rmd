@@ -319,14 +319,13 @@ ggsave("relcov_stacked_pressure.tiff",
 Load packages
 
 ```{r}
-#VEGAN----
 library(here)
-library(vegan)#load package
-#install.packages("htmltools")
+library(vegan)
 library(htmltools)
 library(MASS)
 library(dplyr)
 library(readxl)   # to import excel datasets
+library(ggplot2)
 ```
 
 ## Format the data
@@ -553,13 +552,14 @@ library(reshape2)
 library(ade4)
 library(adespatial)
 library(spdep)
+library(ggplot2)
 ```
 
 Load distance file and create distance matrix 
 ```{r load distance file}
-Ok_dist <- read.csv(file=here("Multi-taxa_data","Ok_dist_69.csv"), row.names=1 )
-head(Ok_dist)
-Dist.km <- as.dist(rdist.earth(Ok_dist, miles=F))
+Ok_dist_69 <- read.csv(file=here("Multi-taxa_data","Ok_dist_69.csv"), row.names=1 )
+head(Ok_dist_69)
+Dist_km <- as.dist(rdist.earth(Ok_dist_69, miles=F))
 
 cov_bray <- vegdist(cov_mat, method = "bray")
 ```
@@ -567,14 +567,15 @@ cov_bray <- vegdist(cov_mat, method = "bray")
 Correlation between straight-line geographic distance and dissimilarity in species composition
 
 ```{r}
-mantel(Dist.km, cov_bray)
+set.seed(69)
+mantel(Dist_km, cov_bray)
 ```
 Plot
 ```{r}
-matrix.dist <- data.frame(x = melt(as.matrix(Dist.km))$value, 
+cov_matrix_dist <- data.frame(x = melt(as.matrix(Dist_km))$value, 
                           y = melt(as.matrix(cov_bray))$value) ## Prepare data for graphic
 
-ggplot(matrix.dist) +
+ggplot(cov_matrix_dist) +
   geom_jitter( aes(x,y), shape = 21, size = 4, fill = "#8fc7a0") +
   labs(x = "Distance (km)", 
        y = "Dissimilarity (Bray-Curtis)") +
@@ -584,28 +585,10 @@ ggplot(matrix.dist) +
 
 ## Mantel
 ```{r}
-mantel.Ok <- mantel.randtest(sqrt(cov_bray), Dist.km)
-mantel.Ok
+set.seed(69)
+mantel_cov <- mantel.randtest(cov_bray, Dist_km)
+mantel_cov
 ```
-
-## Minimum Spanning Tree
-```{r}
-nb.Ok <- mst.nb(Dist.km) # calculate Minimum Spanning Tree network
-plot(nb.Ok, Ok_dist)
-```
-
-
-## Converting
-```{r}
-lw <- nb2listw(nb.Ok)
-```
-
-## Mantel test new
-```{r}
-msr(mantel.Ok, lw, method = "pair")
-```
-
-msr(mantel.Ok, lw, method = "pair")
 
 # BOXPLOTS FOR INGROUP VARIANCE
 
