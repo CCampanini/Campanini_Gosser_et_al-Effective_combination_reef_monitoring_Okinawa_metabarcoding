@@ -974,7 +974,10 @@ bar_ancom_impact <- df_ancom_impact_taxon %>%
   ggplot(aes(x = taxon, y = W_statistics)) +
   geom_col(aes(fill = factor(ifelse(W_statistics > 0, "Positive", "Negative"))),linewidth = 5) +
   labs(x = "ESVs", y = "W_statistics") +
-  facet_grid(. ~ comparison) +
+  facet_grid(. ~ comparison, labeller = labeller(. = c("pressure /n low vs medium pressure", 
+                                                          "low vs high pressure",
+                                                          "medium vs high")
+  )) +
   geom_text(aes(y = W_statistics + 1 * sign(W_statistics), label = star), 
             vjust = 0.7, color = "black", size = 8, position = position_dodge(width = 0.5)) +
   theme_classic() +  
@@ -987,10 +990,39 @@ bar_ancom_impact <- df_ancom_impact_taxon %>%
   scale_fill_manual(values = c("Positive" = "#009F81", "Negative" = "#9F1111"))
 bar_ancom_impact
 
+
+df_ancom_impact_taxon_mod <- df_ancom_impact_taxon %>%
+  mutate(comparison = case_when(comparison == "Impact\nlow_vs_medium" ~ "Pressure \n Low vs medium",
+                              comparison == "Impact\nlow_vs_high" ~ "Pressure \n Low vs high",
+                              comparison == "Impact\nmedium_vs_high"~ "Pressure \n Medium vs High"))
+                         
+bar_ancom_impact <- "NULL"
+bar_ancom_impact <- df_ancom_impact_taxon_mod %>%
+  ggplot(aes(x = taxon, y = W_statistics)) +
+  geom_col(aes(fill = factor(ifelse(W_statistics > 0, "Positive", "Negative"))),linewidth = 5) +
+  labs(x = "ESVs", y = "W_statistics") +
+  facet_grid(. ~ comparison)+
+  geom_text(aes(y = W_statistics + 1 * sign(W_statistics), label = star), 
+            vjust = 0.7, color = "black", size = 8, position = position_dodge(width = 0.5)) +
+  theme_classic() +  
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = 12),  # Adjusts the size of x-axis labels
+        axis.text.y = element_text(size = 12),  # Adjusts the size of y-axis labels
+        axis.title.x = element_text(size = 14), # Adjusts the size of x-axis title
+        axis.title.y = element_text(size = 14),
+        strip.text.x = element_text(size = 12)) + # Adjusts the size of y-axis title) 
+  coord_flip() +
+  scale_fill_manual(values = c("Positive" = "#009F81", "Negative" = "#9F1111"))
+bar_ancom_impact
+
 ### Export ANCOM-BC2 plot 
 ggsave("ANCOM-BC2_period_Family.tiff",
-       units="in", width=16, height=12, dpi=300, compression = 'lzw',
-       path = here ("Multi-taxa_data","eDNA_clean","4-Output"))
+       units="in", width=10, height=8, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
+
+ggsave("ANCOM-BC2_period_Family.png",
+       units="in", width=10, height=6, dpi=300,
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
 
 
 ## ANCOMB on the Family level
@@ -1135,11 +1167,19 @@ matrix.dist <- data.frame(x = melt(as.matrix(Dist.km))$value,
                           y = melt(as.matrix(Ok.jac))$value)
 ## Plot
 ggplot(matrix.dist) +
-  geom_jitter( aes(x,y), shape = 21, size = 4, fill = "#8fc7a0") +
+  geom_jitter( aes(x,y), shape = 21, size = 3, fill = "#8fc7a0") +
   labs(x = "Distance (km)", 
        y = "Dissimilarity (Jaccard)") +
   geom_smooth( aes(x,y), method = "glm") +
   theme_classic()
+
+ggsave("eDNA_dissimil_distance.tiff", 
+       units="in", width=6, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
+
+ggsave("eDNA_dissimil_distance.png", 
+       units="in", width=6, height=4, dpi=300,
+       path = here ("Multi-taxa_data","eDNA_clean","Plots"))
 ## Mantel
 mantel.Ok <- mantel.randtest(sqrt(Ok.jac), Dist.km)
 mantel.Ok
