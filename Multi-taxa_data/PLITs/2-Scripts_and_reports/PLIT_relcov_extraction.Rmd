@@ -29,6 +29,7 @@ plits_raw <-  list.files(path = here("Multi-taxa_data","PLITs","1-Raw_data"),
 
 names(plits_raw) = c("AW", "G1", "G2", "HI", "MI", "S1", "S2", "SK", "SN", "YO", "ZA", "ZP")
 ```
+
 ## CHECK INPUT FILES FOR NEGATIVE VALUES
 
 ```{r}

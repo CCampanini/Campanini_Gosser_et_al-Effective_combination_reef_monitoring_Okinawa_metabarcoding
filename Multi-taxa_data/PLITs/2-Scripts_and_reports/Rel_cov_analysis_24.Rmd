@@ -610,6 +610,7 @@ library(vegan)#load package
 library(MASS)
 library(dplyr)
 library(readxl)   # to import excel datasets
+library(here)
 ```
 
 Load and format data
@@ -744,7 +745,6 @@ ggpubr:: ggarrange(relcov_site_box,
                    gridExtra::tableGrob(distcent_mean_df), 
                    ncol = 2, widths = c(1,1))
 ```
-```
 
 ```{r, eval=F}
 ggsave("relcov_site_box.tiff", 
@@ -763,11 +763,10 @@ Create an input dataframe for the boxplot with mean relative cover by
 category and depth within site
 
 ```{r}
-
-relcov_bd_pres$distances #Extract betadisper scores
+relcov_bd$distances #Extract betadisper scores
 
 distcent_df_pres <- data.frame(
-  Distance_to_centroid = relcov_bd_pres$distances, 
+  Distance_to_centroid = relcov_bd$distances, 
   Pressure = ind_df$Pressure) 
 
 distcent_df_pres$Pressure  <- factor(distcent_df_pres$Pressure,
@@ -792,6 +791,7 @@ relcov_pres_box <- ggplot(data=distcent_df_pres,aes(x=Pressure,y=Distance_to_cen
 
 relcov_pres_box
 ```
+
 
 # SIMPER
 
@@ -839,7 +839,6 @@ sessionInfo()
 # References
 
 ```{r}
-#install.packages("report")
 library(report)
 report(sessionInfo())
 ```
