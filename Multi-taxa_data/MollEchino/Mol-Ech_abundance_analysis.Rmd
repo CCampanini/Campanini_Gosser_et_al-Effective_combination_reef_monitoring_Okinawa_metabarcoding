@@ -1,5 +1,5 @@
 ---
-title: "Data analysis on preliminary data on mollusks and echinoderms abundance"
+title: "Data analysis of mollusks and echinoderms abundance"
 author: "Claudia Campanini"
 date: '2022-06-21'
 output: 
@@ -31,7 +31,6 @@ library(dplyr)
 library(ggplot2)
 library(readxl)   # to import excel datasets
 library(magrittr)
-
 ```
 
 # Mollusks | Abundance estimates
@@ -109,8 +108,8 @@ Add pressure score column and define the appropriate class for each column
 mol_class <- mol_class %>% 
        mutate(pressure = case_when(site == 'HI' | 
                                    site == "S1" | 
-                                   site == "S2" |
-                                   site == "ZP"~ "Low", 
+                                   site == "S2" ~ "Low",
+                                   site == "ZP" | 
                                    site == 'ZA' | 
                                    site == "YO" | 
                                    site == "MI" ~ "Medium",
@@ -230,8 +229,8 @@ Add pressure score column
 ech_class <- ech_class %>% 
        mutate(pressure = case_when(site == 'HI' | 
                                    site == "S1" | 
-                                   site == "S2" |
-                                   site == "ZP"~ "Low", 
+                                   site == "S2" ~ "Low",
+                                   site == "ZP" |
                                    site == 'ZA' | 
                                    site == "YO" | 
                                    site == "MI" ~ "Medium",
@@ -315,9 +314,6 @@ rm(ech_mean_long, ech_sd_long)
 
 ```{r}
 inv_bar <- rbind(mol_mean_bar,ech_mean_bar)
-#library("writexl")
-#write_xlsx(inv_bar,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/mol_ech_ab_class_output.xlsx")
-
 str(inv_bar)
 
 inv_bar$class <- ordered(inv_bar$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
@@ -493,16 +489,13 @@ Merge
 
 ```{r}
 inv_bar_pressure <- rbind(mol_mean_bar_pressure,ech_mean_bar_pressure)
-#library("writexl")
-#write_xlsx(inv_bar,"C:/Users/claud/Documents/COMUNE/STUDIO.LAVORO/IMBRSea/Thesis/StatAnalysis/Multi-taxa_data/MollEchino/mol_ech_ab_class_output.xlsx")
 
 str(inv_bar_pressure)
 
-inv_bar_pressure$class <- ordered(inv_bar_pressure$class,levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
-
-invPalette <- c("#56B4E9","#0072B2","#F0E442","#E69F00","#D55E00","#CC79A7","orchid3")
+inv_bar_pressure$class <- 
+  ordered(inv_bar_pressure$class,
+          levels=c("Bivalvia", "Gastropoda","Asteroidea","Crinoidea","Echinoidea","Holothuroidea","Ophiuroidea"))
 ```
-
 BAR PLOT PER PRESSURE
 
 ```{r}
@@ -552,6 +545,113 @@ ggsave("mol-ech_abundance_pressure_barplot.tiff",
        path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
+Plot filled w/ colors by pressure
+
+```{r}
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, fill=pressure, label=mean, color=pressure)) +
+  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
+                 position="dodge")+
+  facet_grid(class ~ pressure, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within pressure levels",
+       y="Mean abundance by class")+
+  scale_fill_manual(values= c(Low= rgb(0.57, 0.82, 0.31), Medium = "chocolate", High = "#9F1111"))+
+  scale_color_manual(values= c(Low= rgb(0.57, 0.82, 0.31), Medium = "chocolate", High = "#9F1111"),  guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+```{r}
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, 
+           fill=pressure, 
+           label=mean, 
+           color=pressure)) +
+  geom_bar(aes(alpha=depth), 
+           position="dodge",
+           stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), 
+                width=.2,
+                position="dodge")+
+  facet_grid(class ~ pressure, 
+             scales = "free", 
+             switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within pressure levels",
+       y="Mean abundance by class")+
+  scale_x_discrete(labels = c("Deep", "Shallow"))+
+  scale_fill_manual(values= c(Low= rgb(0.6, 0.8, 0.6), 
+                              Medium = rgb(1, 0.85, 0.4),
+                              High = rgb(1,0.6,0.6)
+                              )
+                    )+
+  scale_color_manual(values= c(Low= rgb(0.2, 0.3, 0.4), 
+                               Medium = rgb(0.99, 0.65, 0.04),  
+                               High = "#9F1111"),  
+                     guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+```{r}
+ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+       aes(x=depth, y=mean, 
+           fill=pressure, 
+           label=mean, 
+           color=pressure)) +
+  geom_bar(aes(alpha=depth), 
+           position="dodge",
+           stat="identity") +
+  geom_errorbar(aes(ymin=mean, ymax=mean+sd), 
+                width=.2,
+                position="dodge")+
+  facet_grid(class ~ pressure, 
+             scales = "free", 
+             switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+  theme_classic()+
+  labs(x="Depth within pressure levels",
+       y="Mean abundance by class (# individuals)")+
+  scale_x_discrete(labels = c("Deep", "Shallow"))+
+  scale_fill_manual(values= c(Low= rgb(0.6, 0.8, 0.6), 
+                              Medium = rgb(1, 0.85, 0.4),
+                              High = rgb(1,0.6,0.6)
+                              )
+                    )+
+  scale_color_manual(values= c(Low= rgb(0.2, 0.3, 0.4), 
+                               Medium = rgb(0.99, 0.65, 0.04),  
+                               High = "#9F1111"),  
+                     guide ="none")+
+  scale_alpha_manual(values=c(1,.6))+
+  guides(fill="none", alpha= "none")+
+  theme(axis.text = element_text(size = 10),
+        panel.grid.major.y = element_line(color = "grey",
+                                          size = 0.5,
+                                          linetype = 2),
+        strip.placement = "outside")
+```
+
+Export plot for poster
+
+```{r, eval= F}
+ggsave("mol-ech_abundance_pressure_barplot_poster.tiff", 
+       units = "in", width = 4, height = 6, dpi = 300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+
+ggsave("mol-ech_abundance_pressure_barplot_poster.png", 
+       units = "in", width = 4, height = 6, dpi = 300,
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+```
+
 ## Export clean data
 
 ```{r, eval =F}
@@ -560,6 +660,12 @@ openxlsx::write.xlsx(list("inv_bar" = inv_bar,
                           "inv_bar_pressure" = inv_bar_pressure),
                      file = here("Multi-taxa_data","MollEchino","Output",
                    "inv_clean.xlsx")) 
+```
+Remove objects
+
+```{r}
+rm(ech_raw, ech_mean, ech_mean_bar, ech_mean_bar_pressure, ech_mean_pressure,
+   mol_raw_df, mol_mean, mol_mean_bar, mol_mean_bar_pressure)
 ```
 
 
@@ -603,6 +709,36 @@ rownames(inv_mat) <- inv_df$transect
 #Create a df with independent variables
 ind_df <- inv_df[,c(1:5)]
 
+```
+## Format and export data for Primer
+
+```{r}
+inv_mat_primer <- data.frame(t(inv_mat))
+inv_mat_primer$Class <- colnames(inv_mat)
+inv_mat_primer <- inv_mat_primer[,c(70,1:69)]
+```
+
+```{r}
+ind_df_primer <- ind_df %>%
+  mutate(pressure_depth = paste(pressure, depth, sep='_'))
+
+ind_df_primer <- ind_df_primer[,c(5,2:4,6)] # remove transect column
+ind_df_primer <- data.frame(t(ind_df_primer))
+ind_df_rownames <- rownames(ind_df_primer)
+ind_df_primer$Factor <- ind_df_rownames
+ind_df_primer <- ind_df_primer[,c(70,1:69)]
+rm(ind_df_rownames)
+```
+
+
+## Export data for primer
+
+```{r, eval =F}
+#export each data frame to separate sheets in same Excel file
+openxlsx::write.xlsx(list("inv_mat_primer" = inv_mat_primer,
+                          "ind_df_primer" = ind_df_primer),
+                     file = here("Multi-taxa_data","MollEchino","Output",
+                   "inv_primer.xlsx")) 
 ```
 
 ## Run the Nonmetric Multidimensional scaling
@@ -711,17 +847,16 @@ pal12 <- c("#000000","#004949","#009292","#ffb6db",
  "#920000","#924900","#24ff24","#ffff6d")
 
 ggplot(nmds_df, aes(NMDS1, NMDS2))+
-  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site,shape=depth),
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),
              size=2.5)+##separates overlapping points
   guides(color = guide_legend(order=1, title = "Site", ncol =2),
          shape = guide_legend(order=2, title = "Depth"))+
   scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
   ggnewscale::new_scale_color() +
   geom_mark_ellipse(aes(fill=pressure, color=pressure), expand = 0, alpha=0.2)+ # https://luisdva.github.io/rstats/Grouping-points/
-  scale_color_manual(values= c("green","yellow","red"),
-                     guide_legend(title = "Pressure"))+
-  scale_fill_manual(values= c("green","yellow","red"), 
-                    guide_legend(title = "Pressure"))+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"),
+                      aesthetics = c("colour", "fill"),
+                     guide = guide_legend(title = "Pressure"))+
   theme_classic()+
   theme(plot.title = element_text(size=14, face="bold",hjust=.5),
         legend.title = element_text(color = "black", size = 12),
@@ -735,177 +870,140 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
            size=3, hjust=0) #add goodness of fit to plot
 ```
 
+```{r}
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom= "polygon",aes(fill=pressure), alpha=0.3)+
+  scale_color_manual(values= c("#009F81", "#FFB331","#9F1111"),
+                      aesthetics = c("fill"),
+                     guide = guide_legend(title = "Pressure"))+
+  ggnewscale::new_scale_color() +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=depth),
+             size=2.5)+##separates overlapping points
+  guides(color = guide_legend(order=1, title = "Site", ncol =2),
+         shape = guide_legend(order=2, title = "Depth"))+
+  scale_shape_manual(labels = c("Deep", "Shallow"),values = c(16,17))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+  scale_x_continuous(limits = c(-1.2,1))+
+  scale_y_continuous(limits = c(-1.2,1.15))+
+  annotate("text", x=-1.20, y=0.97, 
+           label=bquote(atop('Non-metric fit,'~ R^2~"= 0.968",
+                             Stress == .(round(inv_nmds_br$stress,3)),
+                             )),
+           size=3, hjust=0) #add goodness of fit to plot
+```
+
+```{r}
+
+nmds_df <- nmds_df %>% rename(Pressure = pressure,
+                              Depth= depth)
+
+pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
+
+ggplot(nmds_df, aes(NMDS1, NMDS2))+
+  stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
+  geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=Depth),size=2.5, alpha = 0.8)+##separates overlapping points+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= pal_fabian)+
+  labs(x = "NMDS1", colour = "Site", y = "NMDS2") +
+  guides(color= guide_legend(order=1, title = "Site", ncol =2))+
+  theme_classic()+
+  theme(plot.title = element_text(size=14, face="bold",hjust=.5),
+        legend.title = element_text(color = "black", size = 12),
+        legend.text = element_text(size=10))+
+    annotate("text", x=Inf, y=-Inf, hjust = 2.8, vjust = -11,
+           label=bquote(atop(Stress == .(round(inv_nmds_br$stress,3)),
+                             'Non-metric fit,'~ R^2~"= 0.993")),
+           size=3) #add goodness of fit to plot
+```
+
+
 ```{r, eval= F}
 ggsave("inv_ndms_ggplot.tiff", 
-       units="in", width=7, height=5, dpi=300, compression = 'lzw',
+       units="in", width=6, height=5, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+
+ggsave("inv_ndms_ggplot.png", 
+       units="in", width=6, height=5, dpi=300,
        path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
-# PERMANOVA AND POST-HOC PAIRWISE PERMANOVA
+# MANTEL TEST
 
-Load libraries
-
-```{r}
-#VEGAN----
-library(vegan)#load package
-library(MASS)
-library(dplyr)
-
-#install.packages("pairwiseAdonis")
-library(devtools) #to install pairwiseAdonis from GitHub
-library(pairwiseAdonis)
-#install.packages("Rtools")
-# library(remotes) #to use install_github
-# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
-library(pairwiseAdonis)
+```{r load libraries for Mantel test}
+library(fields)
+library(reshape2)
+library(ade4)
+library(adespatial)
+library(spdep)
+library(ggplot2)
 ```
 
-Display input matrix and dataframe with independent variables
+Load distance file and create distance matrix 
+```{r load distance file}
+Ok_dist_69 <- read.csv(file=here("Multi-taxa_data","Ok_dist_69.csv"), row.names=1 )
+head(Ok_dist_69)
+Dist_km <- as.dist(rdist.earth(Ok_dist_69, miles=F))
 
-```{r}
-str(inv_mat)
-head(inv_mat)
-str(ind_df)
+inv_bray <- vegdist(inv_mat, method = "bray")
 ```
 
-## PERMANOVA among the 12 sites
 
-### Question 1: is there a significant difference in mollusks and echinoderm abundance among sites?
+Correlation between straight-line geographic distance and dissimilarity in species composition
 
 ```{r}
 set.seed(69)
-perm=how(nperm=999)
-inv_site_pmv=adonis2(inv_mat~site, 
-                        data=ind_df,
-                        permutations =perm,
-                        methods="bray")
-                        
-inv_site_pmv
+mantel(Dist_km, inv_bray)
 ```
 
-P-value `r inv_site_pmv$Pr[1]` \< 0.05, so there is a significant
-difference among sites.
-
-### Question 2: is there a significant difference in mollusks and echinoderm abundance between depth within sites?
-
+Plot
 ```{r}
-#SCRIPT WITH adonis()
-set.seed(69)
-perm=how(nperm=999)
-inv_depth_pmv <- adonis(inv_mat~depth, 
-                           data=ind_df,
-                           permutations =perm,
-                           strata=ind_df$site,
-                           methods="bray")
-inv_depth_pmv$aov.tab
+inv_matrix_dist <- data.frame(x = melt(as.matrix(Dist_km))$value, 
+                          y = melt(as.matrix(inv_bray))$value) ## Prepare data for graphic
 
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(blocks = ind_df$site, nperm = 999)
-inv_blocks_pmv <- adonis2(inv_mat~depth,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray")
-
-inv_blocks_pmv
+ggplot(inv_matrix_dist) +
+  geom_jitter( aes(x,y), shape = 21, size = 3, fill = "#8fc7a0") +
+  labs(x = "Distance (km)", 
+       y = "Dissimilarity (Bray-Curtis)") +
+  geom_smooth( aes(x,y), method = "glm") +
+  theme_classic()
 ```
-### Question 3: is there a significant difference in mollusks and echinoderm abundance among anthropogenic pressure level?
+```{r, eval=F}
+ggsave("inv_dissimil_distance.tiff", 
+       units="in", width=6, height=4, dpi=300, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 
+ggsave("inv_dissimil_distance.png", 
+       units="in", width=6, height=4, dpi=300,
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+```
+
+Mantel 
 ```{r}
 set.seed(69)
-perm=how(nperm=999)
-inv_pressure_pmv=adonis2(inv_mat~pressure, 
-                        data=ind_df,
-                        permutations =perm,
-                        methods="bray")
-                        
-inv_pressure_pmv
+mantel_inv <- mantel.randtest(inv_bray, Dist_km)
+mantel_inv
 ```
 
-### Question 4: is there a significant difference in mollusks and echinoderm abundance among sites within pressure levels?
-
-```{r}
-#SCRIPT WITH adonis()
-set.seed(69)
-perm=how(nperm=999)
-inv_site_pressure_pmv <- adonis(inv_mat~site, 
-                           data=ind_df,
-                           permutations =perm,
-                           strata=ind_df$pressure,
-                           methods="bray")
-inv_site_pressure_pmv$aov.tab
-
-#ALTERNATIVE SCRIPT WITH adonis2()
-set.seed(69)
-h <- how(blocks = ind_df$pressure, nperm = 999)
-inv_site_pressure_blocks_pmv <- adonis2(inv_mat~site,
-                             data=ind_df,
-                             permutations =h,
-                             methods="bray")
-
-inv_site_pressure_blocks_pmv
-```
-## Permutation test of multivariate homogeneity of groups dispersions (variances)
-
-Theoretical explanation from Anderson, Marti, Ray N. Gorley, and Robert
-K. Clarke. Permanova+ for primer: Guide to software and statisticl
-methods. Primer-E Limited, 2008: *In the case of a one-way analysis, the
-PERMANOVA test using permutations assumes only that the samples are
-exchangeable under a true null hypothesis12. The assumption of
-exchangeability is tantamount to assuming that the multivariate
-observations (samples) are independent and identically distributed
-(i.i.d.) under a true null hypothesis. Thus, although there are no
-explicit assumptions regarding the distributions of the original
-variables (they are certainly not assumed to be normally distributed),
-independence and homogeneity of dispersions (in the space of the
-resemblance measure) are directly implied by the permutation procedure.
-Clearly, if samples have very different dispersions in different groups,
-then they are not really exchangeable. Also, if the samples are
-unequally correlated with one another (e.g., temporally or spatially),
-then randomly shuffling them will destroy this kind of inherent
-structure.*
-
-```{r}
-set.seed(69)
-densityplot(permustats(inv_site_pmv)) #density plot of permutation results to to check if assumptions are met?
-
-inv_dist = vegdist(inv_mat,method="bray")
-
-inv_bd=betadisper(inv_dist,ind_df$site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
-str(inv_bd)
-
-plot(inv_bd)
-boxplot(inv_bd) #check data dispersion based on sites
-anova(inv_bd) #F-test on distribution of sites
-
-```
-
-### Permutest Implements a permutation-based test of multivariate homogeneity of group dispersions (variances)
-
-```{r}
-set.seed(69)
-permutest(inv_bd) #permutative test on dispersion based on sites, if significant, PERMANOVA results may be driven by  dispersion issue
-set.seed(69)
-permutest(inv_bd, pairwise=TRUE) #pairwise of dispersion test
-```
-
-From Anderson, Marti, Ray N. Gorley, and Robert K. Clarke. Permanova+
-for primer: Guide to software and statisticl methods. Primer-E Limited,
-2008: \* If significant heterogeneity were detected by PERMDISP and
-differences among groups were also detected using PERMANOVA, then the
-latter could have been caused by differences in location, differences in
-dispersion, or some combination of the two. \*
-
-### Boxplot of within-site distance from centroid visualization with `ggplot()`
+# Boxplot of within-site distance from centroid visualization with `ggplot()`
 
 Create an input dataframe for the boxplot with mean relative cover by
 category and depth within site
 
 ```{r}
-inv_bd$distances #Extract betadisper scores
+inv_dist = vegdist(inv_mat, 
+                   method="bray")
+set.seed(69)
+inv_bd_site = betadisper(inv_dist, 
+                    ind_df$site)  #Implements Marti Anderson's PERMDISP2 procedure for the analysis of multivariate homogeneity of group dispersions (variances). betadisper is a multivariate analogue of Levene's test for homogeneity of variances 
+str(inv_bd_site)
 
-distcent_df <- data.frame(Distance_to_centroid=inv_bd$distances,Sites=ind_df$site, Pressure=ind_df$pressure) 
-Sites <- inv_bd$group
+inv_bd_site$distances #Extract betadisper scores
+
+distcent_df <- data.frame(Distance_to_centroid=inv_bd_site$distances,Sites=ind_df$site, Pressure=ind_df$pressure) 
+Sites <- inv_bd_site$group
 distcent_df[,2]<-factor(distcent_df[,2],levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 distcent_df[,3]<-factor(distcent_df[,3],levels=c("Low","Medium","High"))
 
@@ -915,8 +1013,8 @@ distcent_mean_df <- distcent_df %>%
          SD=round(mean(Distance_to_centroid),2)) %>%
   mutate(Pressure = case_when(Sites == 'HI' | 
                               Sites == "S1" | 
-                              Sites == "S2" |
-                              Sites == "ZP"~ "Low", 
+                              Sites == "S2" ~ "Low", 
+                              Sites == "ZP" |
                               Sites == 'ZA' | 
                               Sites == "YO" | 
                               Sites == "MI" ~ "Medium",
@@ -935,10 +1033,29 @@ Boxplot with `geom_boxplot` from `ggplot2`
 inv_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
   geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
   geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
-  scale_fill_manual(values= c("green","yellow","red"))+
-  scale_color_manual(values= c("green","yellow3","red"))+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81","#FFB331","#9F1111"))+
   theme_classic()+
   labs(title="Boxplot of mean distance to centroid by site")+
+  ylab(label="Distance to centroid")+
+  theme(legend.position = "none", #remove legend
+        plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
+        axis.text=element_text(size=14))
+
+inv_box
+
+ggpubr:: ggarrange(inv_box, 
+                   gridExtra::tableGrob(distcent_mean_df), 
+                   ncol = 2, widths = c(1,1))
+```
+
+```{r}
+inv_box <- ggplot(data=distcent_df,aes(x=Sites,y=Distance_to_centroid))+ 
+  geom_boxplot(aes(fill=Pressure,colour=Pressure),alpha=0.3)+
+  geom_jitter(aes(fill=Pressure,color=Pressure),alpha=0.7)+
+  scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
+  scale_color_manual(values= c("#009F81","#FFB331","#9F1111"))+
+  theme_classic()+
   ylab(label="Distance to centroid")+
   theme(legend.position = "none", #remove legend
         plot.title  = element_text(hjust = 0.5, face= "bold", size =14),
@@ -955,55 +1072,10 @@ ggpubr:: ggarrange(inv_box,
 ggsave("inv_distcent_boxplot.tiff", 
        units="in", width=12, height=4, dpi=300, compression = 'lzw',
        path = here ("Multi-taxa_data","MollEchino","Output"))
-```
 
-
-## Post hoc test for PERMANOVA (`pairwise.adonis`)
-
-### Post-hoc test FOR PERMANOVA PER SITES
-N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
-
-```{r}
-set.seed(69)
-inv_pmv_phoc_holm= pairwise.adonis(inv_mat,ind_df$site,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "holm", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_holm
-
-set.seed(69)
-inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$site,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "bonferroni", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_bonf
-```
-
-### Post-hoc test FOR PERMANOVA PER PRESSURE
-N.B. `pairwise.adonis` and `pairwise.adonis2` have different syntaxes!
-
-```{r}
-set.seed(69)
-inv_pmv_phoc_holm= pairwise.adonis(inv_mat,ind_df$pressure,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "holm", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_holm
-
-set.seed(69)
-inv_pmv_phoc_bonf= pairwise.adonis(inv_mat,ind_df$pressure,
-                                  sim.function = "vegdist", 
-                                  sim.method = "bray", 
-                                  p.adjust.m = "bonferroni", 
-                                  reduce = NULL)
-
-inv_pmv_phoc_bonf
+ggsave("inv_distcent_boxplot.png", 
+       units="in", width=12, height=4, dpi=300,
+       path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
 # SIMPER: Similarity of percentage
@@ -1017,7 +1089,9 @@ similarities (Clarke 1993).*
 ## SIMPER PER SITE:
 
 ```{r}
-inv_sim=simper(inv_mat,group=ind_df$site) #Distinguish categories which caused the differences in relative cover among sites
+inv_sim=simper(inv_mat,
+               group=ind_df$site,
+               permutations = 9999) #Distinguish categories which caused the differences in relative cover among sites
 inv_sim
 summary(inv_sim, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
@@ -1025,7 +1099,8 @@ summary(inv_sim, ordered=T, digits=3) #check which categories were the main driv
 ## SIMPER PER DEPTH:
 
 ```{r}
-inv_sim_depth=simper(inv_mat,group=ind_df$depth) #Distinguish categories which caused the differences in relative cover among sites
+inv_sim_depth = simper(inv_mat,
+                     group = ind_df$depth) #Distinguish categories which caused the differences in relative cover among sites
 inv_sim_depth
 summary(inv_sim_depth, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
@@ -1033,7 +1108,9 @@ summary(inv_sim_depth, ordered=T, digits=3) #check which categories were the mai
 ## SIMPER per anthropogenic pressure exposure
 
 ```{r}
-inv_sim_pres=simper(inv_mat,group=ind_df$pressure) #Distinguish categories which caused the differences in relative cover among sites
+inv_sim_pres = simper(inv_mat, 
+                    group=ind_df$pressure,
+                    permutations= 9999) #Distinguish categories which caused the differences in relative cover among sites
 inv_sim_pres
 summary(inv_sim_pres, ordered=T, digits=3) #check which categories were the main driver of difference among sites
 ```
