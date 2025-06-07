@@ -359,6 +359,8 @@ library(ggnewscale) #necessary for new_scale_color
 
 
 ```{r}
+pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
+
 func_ndms_ggplot <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Pressure),size=2.5)+##separates overlapping points
   scale_color_manual(values= pal_fabian)+
