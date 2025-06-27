@@ -554,10 +554,10 @@ ggsave("ndms_relcov_pressure.png",
 
 ```{r}
 fig2 <- cowplot::  ggdraw() +
-  draw_plot(relcov_stacked, x = 0, y = 0, width = .6, height = 1) +
-  draw_plot(ndms_relcov_pressure, x = .6, y = 0, width = 0.4, height = 1) +
+  draw_plot(relcov_stacked, x = 0, y = 0, width = .5, height = 1) +
+  draw_plot(ndms_relcov_pressure, x = .5, y = 0, width = 0.5, height = 1) +
   draw_plot_label(label = c("a)", "b)"), size = 14,
-                  x = c(0, 0.6), y = c(1, 1))
+                  x = c(0, 0.5), y = c(1, 1))
 
 fig2
 ```
