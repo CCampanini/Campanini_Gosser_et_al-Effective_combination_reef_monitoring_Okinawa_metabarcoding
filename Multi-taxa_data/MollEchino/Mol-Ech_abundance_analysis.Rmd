@@ -545,27 +545,7 @@ ggsave("mol-ech_abundance_pressure_barplot.tiff",
        path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 
-Plot filled w/ colors by pressure
-
-```{r}
-ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
-       aes(x=depth, y=mean, fill=pressure, label=mean, color=pressure)) +
-  geom_bar(aes(alpha=depth),position="dodge",stat="identity") +
-  geom_errorbar(aes(ymin=mean, ymax=mean+sd), width=.2,
-                 position="dodge")+
-  facet_grid(class ~ pressure, scales = "free", switch = "y")+ # https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
-  theme_classic()+
-  labs(x="Depth within pressure levels",
-       y="Mean abundance by class")+
-  scale_fill_manual(values= c(Low= rgb(0.57, 0.82, 0.31), Medium = "chocolate", High = "#9F1111"))+
-  scale_color_manual(values= c(Low= rgb(0.57, 0.82, 0.31), Medium = "chocolate", High = "#9F1111"),  guide ="none")+
-  scale_alpha_manual(values=c(1,.6))+
-  guides(fill="none", alpha= "none")+
-  theme(panel.grid.major.y = element_line(color = "grey",
-                                          size = 0.5,
-                                          linetype = 2),
-        strip.placement = "outside")
-```
+Plot filled with colors by pressure
 
 ```{r}
 ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
@@ -604,7 +584,7 @@ ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
 ```
 
 ```{r}
-ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
+mol_ech_abundance_pressure_barplot <- ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
        aes(x=depth, y=mean, 
            fill=pressure, 
            label=mean, 
@@ -638,12 +618,14 @@ ggplot(subset(inv_bar_pressure, inv_bar_pressure$class != "Ophiuroidea"),
                                           size = 0.5,
                                           linetype = 2),
         strip.placement = "outside")
+
+mol_ech_abundance_pressure_barplot
 ```
 
 Export plot for poster
 
 ```{r, eval= F}
-ggsave("mol-ech_abundance_pressure_barplot_poster.tiff", 
+ggsave("mol-ech_abundance_pressure_barplot_poster.tiff",
        units = "in", width = 4, height = 6, dpi = 300, compression = 'lzw',
        path = here ("Multi-taxa_data","MollEchino","Output"))
 
@@ -902,7 +884,7 @@ nmds_df <- nmds_df %>% rename(Pressure = pressure,
 
 pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
 
-ggplot(nmds_df, aes(NMDS1, NMDS2))+
+mol_ech_ndms <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=site, shape=Depth),size=2.5, alpha = 0.8)+##separates overlapping points+
   scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
@@ -913,20 +895,49 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
   theme(plot.title = element_text(size=14, face="bold",hjust=.5),
         legend.title = element_text(color = "black", size = 12),
         legend.text = element_text(size=10))+
-    annotate("text", x=Inf, y=-Inf, hjust = 2.8, vjust = -11,
+    annotate("text", x=-Inf, y=Inf, hjust = -0.1, vjust = 1.1,
            label=bquote(atop(Stress == .(round(inv_nmds_br$stress,3)),
                              'Non-metric fit,'~ R^2~"= 0.993")),
            size=3) #add goodness of fit to plot
+
+mol_ech_ndms
 ```
 
 
 ```{r, eval= F}
 ggsave("inv_ndms_ggplot.tiff", 
-       units="in", width=6, height=5, dpi=300, compression = 'lzw',
+       plot = mol_ech_ndms,
+       units="in", width=6, height=5, dpi=600, compression = 'lzw',
        path = here ("Multi-taxa_data","MollEchino","Output"))
 
 ggsave("inv_ndms_ggplot.png", 
-       units="in", width=6, height=5, dpi=300,
+       plot = mol_ech_ndms,
+       units="in", width=6, height=5, dpi=600,
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+```
+
+## Figure 4
+
+```{r}
+fig4 <- cowplot::  ggdraw() +
+  draw_plot(mol_ech_abundance_pressure_barplot, x = 0, y = 0, width = .4, height = 1) +
+  draw_plot(mol_ech_ndms, x = .4, y = 0, width = 0.6, height = 1) +
+  draw_plot_label(label = c("a)", "b)"), size = 14,
+                  x = c(0, 0.4), y = c(1, 1))
+
+fig4
+```
+
+
+```{r, eval = F}
+ggsave("fig4.tiff", 
+       plot = fig4,
+       units ="in", width = 11, height = 5, dpi = 600, compression = 'lzw',
+       path = here ("Multi-taxa_data","MollEchino","Output"))
+
+ggsave("fig4.png", 
+       plot = fig4,
+       units ="in", width = 11, height = 5, dpi = 600,
        path = here ("Multi-taxa_data","MollEchino","Output"))
 ```
 

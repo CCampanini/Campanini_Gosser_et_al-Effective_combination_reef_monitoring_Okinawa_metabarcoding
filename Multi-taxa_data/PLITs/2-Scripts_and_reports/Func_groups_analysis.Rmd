@@ -44,6 +44,25 @@ str(func_mean_depth)
 
 func_mean_depth$Functional_group[func_mean_depth$Functional_group == "plate"] <- "solitary"
 ```
+Add the pressure column
+
+```{r}
+library(magrittr)
+func_mean_depth %<>%
+  mutate(Pressure = case_when(Site == 'HI' | 
+                                Site == "S1" | 
+                                Site == "S2" ~ "Low",
+                              Site == "ZP" |
+                                Site == 'ZA' | 
+                                Site == "YO" | 
+                                Site == "MI" ~ "Medium",
+                              Site == 'SK' |
+                                Site == 'SN' | 
+                                Site == "AW" | 
+                                Site == "G1" |
+                                Site == "G2"~ "High"))
+```
+
 
 ## Hard coral stacked bar chart
 
@@ -133,10 +152,13 @@ See palette from
 <https://cran.r-project.org/web/packages/colorspace/vignettes/colorspace.html#Usage_with_ggplot2>
 
 ```{r}
+# install.packages("ggh4x")
+library(ggh4x) # needed for nested faceting
+
 hc_func_stacked <- ggplot(subset(func_mean_depth,func_mean_depth$Category == "hard_coral"), 
        aes(x=Depth, y=mean_cat_tot, fill=Functional_group)) +
   geom_bar(position="fill",stat="identity",color="black")+
-  facet_grid(~ Site)+
+  facet_nested(~ Pressure + Site, scales = "free_x", space = "free_x") +
   theme_classic()+
   labs(x="Depth",
        y="Mean hard coral cover by growth form [%]")+
@@ -144,16 +166,18 @@ hc_func_stacked <- ggplot(subset(func_mean_depth,func_mean_depth$Category == "ha
   scale_fill_manual(values=plasma_ag_GrnYl_11)+
   scale_y_continuous(label = c("0","25","50","75","100"))
 
-cvd_grid(hc_func_stacked)
-
 hc_func_stacked
 ```
+
+
 ```{r, eval = F}
 ggsave("hard_coral_growth_forms_stacked.tiff", 
+       plot = hc_func_stacked,
        units = "in", width = 7, height = 4.5, dpi = 300, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 
 ggsave("hard_coral_growth_forms_stacked.png", 
+       plot = hc_func_stacked,
        units = "in", width = 7, height = 4.5, dpi = 300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
@@ -408,20 +432,46 @@ func_ndms_ggplot<- ggplot(nmds_df, aes(NMDS1, NMDS2))+
 func_ndms_ggplot
 ```
 
-Save the plot as tiff
+Save the plot 
 
 ```{r, eval = F}
 ggsave("func_nmds.tiff", 
        plot = func_ndms_ggplot,
-       units="in", width=6, height=5, dpi=300, compression = 'lzw',
+       units="in", width=6, height=5, dpi=600, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs")
        )
 
 ggsave("func_nmds.png", 
        plot = func_ndms_ggplot,
-       units="in", width=6, height=5, dpi=300,
+       units="in", width=6, height=5, dpi=600,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs")
        )
+```
+
+## Figure 3
+
+```{r}
+fig3 <- cowplot::  ggdraw() +
+  draw_plot(hc_func_stacked, x = 0, y = 0, width = .6, height = 1) +
+  draw_plot(func_ndms_ggplot, x = .6, y = 0, width = 0.4, height = 1) +
+  draw_plot_label(label = c("a)", "b)"), size = 14,
+                  x = c(0, 0.6), y = c(1, 1))
+
+fig3
+```
+
+Save the plot 
+
+```{r, eval = F}
+ggsave("fig3.tiff", 
+       plot = fig3,
+       units ="in", width = 11, height = 5, dpi = 600, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+
+ggsave("fig3.png", 
+       plot = fig3,
+       units ="in", width = 11, height = 5, dpi = 600,
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
 
 # MANTEL TEST

@@ -149,35 +149,37 @@ mean_rel_cov_df <- mean_rel_cov_df %>%                               # Replacing
 
 mean_rel_cov_df$Site<-ordered(mean_rel_cov_df$Site,levels=c("HI", "S1", "S2", "ZP", "ZA", "YO", "MI","SK", "SN", "AW", "G1", "G2"))
 
-ggplot(mean_rel_cov_df, 
-       aes(fill=Category, y=Mean_rel_cov, x=Depth, label=Mean_rel_cov)) + 
-  geom_bar(position="fill", stat="identity",alpha=.8, color = "black")+
-  facet_grid(~ Site)+
-  theme_classic()+
-  labs(x="Depth",
-       y="Mean relative benthic cover",
-       title= "Stacked bar chart of mean relative benthic cover \n by depth within site")+
-  theme(plot.title = element_text(hjust = 0.5))+
-  scale_fill_manual(labels = c("algae",
-                                "boulder",
-                                "hard coral",
-                                "other",
-                                "rubble",
-                                "sand",
-                                "soft coral",
-                                "unknown",
-                                "zoantharians"), values=relcovPalette)+
+
+# install.packages("ggh4x")
+library(ggh4x) # needed for nested faceting
+
+relcov_stacked <- ggplot(mean_rel_cov_df, 
+       aes(fill = Category, y = Mean_rel_cov, x = Depth, label = Mean_rel_cov)) + 
+  geom_bar(position = "fill", stat = "identity", alpha = .8, color = "black") +
+  facet_nested(~ Pressure + Site, scales = "free_x", space = "free_x") +  # Nested facet with brackets
+  theme_classic() +
+  labs(x = "Depth",
+       y = "Mean relative benthic cover") +
+  theme(plot.title = element_text(hjust = 0.5),
+        strip.background = element_rect(color = "black", size = 0.5)) +
+  scale_fill_manual(labels = c("algae", "boulder", "hard coral", "other",
+                               "rubble", "sand", "soft coral", "unknown", "zoantharians"), 
+                    values = relcovPalette) +
   scale_y_continuous(limits = c(0, 1), 
-                     breaks = c(0, 0.25, 0.50, 0.75,1),
-                     labels = c(0, 25, 50, 75,100))
+                     breaks = c(0, 0.25, 0.50, 0.75, 1),
+                     labels = c(0, 25, 50, 75, 100))
+
+relcov_stacked
 ```
 
 ```{r, eval= F}
 ggsave("relcov_stacked.tiff", 
+       plot = relcov_stacked, 
        units ="in", width = 5, height = 4, dpi = 300, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 
-ggsave("relcov_stacked.png", 
+ggsave("relcov_stacked.png",
+       plot = relcov_stacked, 
        units ="in", width = 5, height = 4, dpi = 300,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
@@ -516,7 +518,7 @@ rm(pal12)
 ```{r}
 pal_fabian <- c("#8400CD","#00C2F9","#FFB2FD","#009F81","#FFC33B","#FF6E3A","#008DF9","#A40122","#E20134","#9F0162","#FF5AAF","#00FCCF")
 
-ggplot(nmds_df, aes(NMDS1, NMDS2))+
+ndms_relcov_pressure <- ggplot(nmds_df, aes(NMDS1, NMDS2))+
   stat_ellipse(geom = "polygon", aes(fill = Pressure), alpha = 0.2) +
   geom_point(data=nmds_df, aes(NMDS1, NMDS2, color=Site, shape=Depth),size=2.5, alpha = 0.8)+##separates overlapping points+
   scale_fill_manual(values= c("#009F81", "#FFB331","#9F1111"))+
@@ -532,15 +534,43 @@ ggplot(nmds_df, aes(NMDS1, NMDS2))+
            label=bquote(atop(Stress == .(round(cov_nmds_br$stress,3)),
                              'Non-metric fit,'~ R^2~"= 0.993")),
            size=3) #add goodness of fit to plot
+
+ndms_relcov_pressure
 ```
 
 ```{r, eval = F}
 ggsave("ndms_relcov_pressure.tiff", 
+       plot = ndms_relcov_pressure,
        units ="in", width = 5, height = 5, dpi = 300, compression = 'lzw',
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 
 ggsave("ndms_relcov_pressure.png", 
+       plot = ndms_relcov_pressure,
        units ="in", width = 5, height = 5, dpi = 300,
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+```
+
+## Figure 2 output
+
+```{r}
+fig2 <- cowplot::  ggdraw() +
+  draw_plot(relcov_stacked, x = 0, y = 0, width = .6, height = 1) +
+  draw_plot(ndms_relcov_pressure, x = .6, y = 0, width = 0.4, height = 1) +
+  draw_plot_label(label = c("a)", "b)"), size = 14,
+                  x = c(0, 0.6), y = c(1, 1))
+
+fig2
+```
+
+```{r, eval = F}
+ggsave("fig2.tiff", 
+       plot = fig2,
+       units ="in", width = 11, height = 5, dpi = 600, compression = 'lzw',
+       path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
+
+ggsave("fig2.png", 
+       plot = fig2,
+       units ="in", width = 11, height = 5, dpi = 600,
        path = here("Multi-taxa_data","PLITs","4-Visualization_outputs"))
 ```
 
