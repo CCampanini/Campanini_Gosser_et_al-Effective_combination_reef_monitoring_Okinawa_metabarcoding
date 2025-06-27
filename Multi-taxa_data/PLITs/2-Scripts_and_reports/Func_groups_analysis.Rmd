@@ -486,6 +486,7 @@ library(ggplot2)
 ```
 
 Load distance file and create distance matrix 
+
 ```{r load distance file}
 Ok_dist_69 <- read.csv(file=here("Multi-taxa_data","Ok_dist_69.csv"), row.names=1 )
 head(Ok_dist_69)
