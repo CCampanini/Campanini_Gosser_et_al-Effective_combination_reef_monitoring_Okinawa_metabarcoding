@@ -1,6 +1,5 @@
-# UPGRADE NEEDED | Observer-based and eDNA metabarcoding techniques to survey reefs exposed to different levels of anthropogenic pressure around Okinawa, Japan 
+# An effective combination for reef monitoring: Observer-based and eDNA metabarcoding techniques to survey reefs exposed to different levels of anthropogenic pressure around Okinawa, Japan 
 
-The data in this repository were collected during a monitoring campaign in may-june 2022 along Okinawajima's and Akajima's coastline, Japan, and resulted from Claudia Campanini's MSc thesis project for the International Master of Science in Marine Biological resources (IMBRSea), entitled *"VISIBLE DISTRESS ON THE REEF | Benthic multi-taxa survey for reef monitoring and impact assessment in Okinawa (Japan)"*, which included only a subset of the current data. 
 The project was carried out under the supervision of Professor James Davis Reimer, Molecular Invertebrate Systematics and Ecology (MISE) lab, University of the Ryukyus, Okinawa, Japan. 
 For further information on the monitoring protocol see [Field data collection protocol](/Campanini-Field-data_collection_protocol.pdf))
 
@@ -36,6 +35,6 @@ The monitoring protocol was relatively inexpensive, fast, and could be utilized 
 **No data can be taken out of this work without prior approval of Professor James Davis Reimer.**
 Original pictures/videos of PLIT, fish, mollusks, and echinoderms were not uploaded due to high cloud storage requirements (>>100 GB). Example picture per dataset (PLIT, mollusks, echinoderms) are given below. Pictures/videos from the survey and/or for further information avaialable on request.
 
-**Contact info:** claudiacampanini@hotmail.it, or [GitHub](https://github.com/CCampanini)/[Twitter](https://twitter.com/claudcampanini)/[ResearchGate](https://www.researchgate.net/profile/Claudia-Campanini).
+**Contact info:** claudiacampanini@hotmail.it, or [GitHub](https://github.com/CCampanini)/[ResearchGate](https://www.researchgate.net/profile/Claudia-Campanini).
 
  
