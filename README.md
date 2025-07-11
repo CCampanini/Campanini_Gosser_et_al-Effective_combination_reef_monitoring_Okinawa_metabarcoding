@@ -28,13 +28,6 @@ In this study, a benthic multi-taxa survey coupled with eDNA sampling was tested
 Each site was characterized with environmental variables from satellite data. Cumulative exposure to anthropogenic pressures was estimated using a scores-based scale. Of the 12 locations, 7 were classified as impacted and 5 as pristine.
 The monitoring protocol was relatively inexpensive, fast, and could be utilized by volunteers. Consequently, this method could be adopted in large-scale monitoring campaigns, improving the knowledge on reefs’ status. Monitoring is essential for the implementation of evidence-based management and conservation, which are high-priority especially for the degraded reefs along Okinawajima Island. Thus, this project have four main objectives: 1) characterize differences in community composition and functions among impacted and pristine sites; 2) observe the differences in community composition and impacts at different depths; 3) assess whether the eDNA signal is localized and how it changes with distance among different sites; and 4) test a protocol that combines metazoan metabarcoding from eDNA with observer-based techniques for an eventual implementation of current monitoring protocols.
 
-## Survey locations
-![This is an image](/env_data/Okinawa_survey_sites.png)
-
-## DATA AVAILABILITY 
-**No data can be taken out of this work without prior approval of Professor James Davis Reimer.**
-Original pictures/videos of PLIT, fish, mollusks, and echinoderms were not uploaded due to high cloud storage requirements (>>100 GB). Example picture per dataset (PLIT, mollusks, echinoderms) are given below. Pictures/videos from the survey and/or for further information avaialable on request.
-
 **Contact info:** claudiacampanini@hotmail.it, or [GitHub](https://github.com/CCampanini)/[ResearchGate](https://www.researchgate.net/profile/Claudia-Campanini).
 
  
