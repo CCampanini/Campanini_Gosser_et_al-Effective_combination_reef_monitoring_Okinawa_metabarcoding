@@ -36,6 +36,7 @@ library(viridisLite)
 library(circlize)
 library(ggrepel)
 library(here)
+library(dplyr)
 ```
 
 # Load read abundance data and environmental variable data
@@ -137,7 +138,7 @@ Create a stacked bar chart
 
 ```{r total counts stacked bar chart}
 # 
-ggplot(combined_counts, aes(x = `Taxonomic rank`)) +
+combined_counts_bar <- ggplot(combined_counts, aes(x = `Taxonomic rank`)) +
      geom_bar(aes(y = Count.x, fill = "Total Counts"), stat = "identity", alpha = 0.5) +
      geom_bar(aes(y = Count.y, fill = "Unique Counts"), stat = "identity") +
      geom_text(aes(y = Count.x, label = Count.x), vjust = -0.5, size = 4, fontface = "bold") +
@@ -145,13 +146,15 @@ ggplot(combined_counts, aes(x = `Taxonomic rank`)) +
      scale_fill_manual(values = c("Total Counts" = "#19a483", "Unique Counts" = "#19a483")) +
      labs(x = "Taxonomic rank", y = "Count") +
      theme_classic()
+combined_counts_bar
 ```
 
 Export combined_counts bar plot
 
 ```{r}
 ggsave("combined_counts_bar.png", 
-       units ="in", width = 8, height = 6, dpi = 300,
+       plot = combined_counts_bar, 
+       units ="in", width = 8, height = 6, dpi = 600,
        path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
 ```
 
@@ -253,7 +256,7 @@ Ok2 <- psmelt(Okrel)
 
 ggplot(Ok2, aes(x = Sample, y = Abundance, fill = Phylum)) +
   geom_bar(stat = "identity") +
-  scale_fill_viridis_d() +  # Using viridis color palette
+  paletteer:: scale_fill_paletteer_d("ggthemes::Tableau_20") +  # Using viridis color palette
   labs(x = "Sample", y = "Abundance", fill = "Phylum") + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
@@ -269,7 +272,7 @@ esv_counts <- Ok2 %>%
 # Create the bar plot
 ggplot(esv_counts, aes(x = reorder(Phylum, -ESV_Count), y = ESV_Count, fill = Phylum)) +
   geom_bar(stat = "identity") +
-  scale_fill_viridis_d(guide = "none") +  # Viridis palette, hiding legend if many phyla
+  paletteer:: scale_fill_paletteer_d("ggthemes::Tableau_20") +  
   labs(x = "Phylum", y = "Count of ESVs", title = "Count of ESVs within Phyla") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
@@ -295,7 +298,7 @@ esv_counts_per_sample <- esv_counts_per_sample %>% # add column for sample
 # Bar chart for ESV counts per sample and phylum
 ggplot(esv_counts_per_sample, aes(x = Location, y = ESV_Count, fill = Phylum)) +
   geom_bar(stat = "identity", position = "stack") +
-  scale_fill_viridis_d() +
+  paletteer:: scale_fill_paletteer_d("ggthemes::Tableau_20") +
   labs(x = "Sample", y = "Count of Unique ESVs", fill = "Phylum", 
        title = "Unique ESVs per Sample and Phylum") +
   theme_classic() +
@@ -320,18 +323,6 @@ esv_counts_per_sample$Location <- reorder(esv_counts_per_sample$Location, as.num
 
 ## Bar chart with samples sorted by impact
 
-```{r}
-# Bar chart with samples sorted by impact
-ggplot(esv_counts_per_sample, aes(x = Location, y = ESV_Count, fill = Phylum)) +
-  geom_bar(stat = "identity", position = "stack") +
-  scale_fill_viridis_d() +
-  labs(y = "Count of Unique ESVs",fill = "Phylum") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-```
-
-## Bar chart with samples sorted by impact
-
 ```{r Bar chart with samples sorted by impact}
 # Count unique ESVs per sample and phylum, grouped by impact
 esv_counts_per_site <- Ok2 %>%
@@ -344,13 +335,36 @@ esv_counts_per_site$Location<-ordered(esv_counts_per_site$Location,levels=c("Hiz
 # Bar chart with samples sorted by impact
 unique_ESVs_site_bar <- ggplot(esv_counts_per_site, aes(x = Location, y = ESV_Count, fill = Phylum)) +
   geom_bar(stat = "identity", position = "stack") +
-  scale_fill_viridis_d() +
+  paletteer:: scale_fill_paletteer_d("ggthemes::Tableau_20") +
   labs(y = "Count of Unique ESVs",fill = "Phylum") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
 unique_ESVs_site_bar
 ```
+
+Add faceting by impact
+
+```{r}
+esv_counts_per_site$impact <- ordered(esv_counts_per_site$impact, levels = c( "low", "medium", "high"))
+levels(esv_counts_per_site$impact )
+
+
+# Bar chart with samples sorted by impact
+unique_ESVs_site_bar <- ggplot(esv_counts_per_site, aes(x = Location, y = ESV_Count, fill = Phylum)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_grid( ~ impact, scales = "free")+
+  paletteer:: scale_fill_paletteer_d("ggthemes::Tableau_20") +
+  labs(y = "Count of Unique ESVs",fill = "Phylum", x= "Site") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 12),
+        strip.text = element_text(
+    size = 16),
+    axis.title = element_text(size = 16))
+
+unique_ESVs_site_bar
+```
+
 
 Export bar plot of counts of unique ESVs per sampling sit
 
@@ -382,6 +396,7 @@ name_list <- c("Annelida","Arthropoda","Bacillariophyta","Bryozoa","Cercozoa","C
                            "Chordata","Cnidaria","Amoebozoa","Echinodermata","Haptophyta","Mollusca","Nemertea",
    "Picozoa","Platyhelminthes","Porifera","Rhodophyta","Ochrophyta","Dinophyceae")
 
+
 # Filter the dataframe
 filtered_Ok_tree_df <- Ok_tree_df[Ok_tree_df$label %in% name_list, ]
 #change manually if necessary
@@ -391,20 +406,32 @@ filtered_Ok_tree_df <- Ok_tree_df[Ok_tree_df$label %in% name_list, ]
 Plot the phylogenetic tree
 
 ```{r}
+#tableau_20_palette <- paletteer::paletteer_d("ggthemes::Tableau_20")
+
 edna_phylo_tree <- ggtree(Ok_tree, branch.length = 'none', layout = "circular") + 
-  geom_tiplab(size = 3, aes(angle = angle)) 
+  geom_tiplab(size = 5, aes(angle = angle)) 
 
 #add labels from your label dataframe
+
 edna_phylo_tree <- edna_phylo_tree +  geom_cladelab(data = filtered_Ok_tree_df, mapping = aes(node = node, label = label), 
-                      fontsize = 3, angle = 'auto', barsize = 5,
-                      offset = 15, offset.text = 1, barcolor = viridis(20))
+                      fontsize = 4,
+                      angle = 'auto', 
+                      barsize = 5,
+                      offset = 22, 
+                      extend = 0.3,
+                      offset.text = 1, 
+                      barcolor = c("#FF9D9AFF","#BAB0ACFF","#4E79A7FF","#B07AA1FF","#499894FF","#E15759FF","#F28E2BFF", "#8CD17DFF","#A0CBE8FF", "#59A14FFF","#79706EFF", "#D37295FF", "#D4A6C8FF","#86BCB6FF", "#9D7660FF", "#D7B5A6FF",  "#B6992DFF", "#FABFD2FF", "#FFBE7DFF", "#F1CE63FF" ))
+
+edna_phylo_tree
 ```
-Export combined_counts bar plot
+
+
+Export phylogenetic tree
 
 ```{r}
 ggsave("edna_phylo_tree.png", 
        plot = edna_phylo_tree,
-       units ="in", width = 8, height = 6, dpi = 300,
+       units ="in", width = 9, height = 9, dpi = 600,
        path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
 ```
 
@@ -496,6 +523,7 @@ Kruskal-Wallis test for all components
 kw_richness <- kruskal.test(richness ~ Location, data = alpha)
 kw_richness
 ```
+
 Post-hoc Dunn test for pairwise comparisons 
 ```{r Post hoc tests (Dunn test) for pairwise comparisons}
 library(dunn.test)
@@ -514,6 +542,7 @@ print(alpha$richness)
 print(kw_richness)
 print(posthoc_richness)
 ```
+
 Extract relevant statistics and export results
 
 ```{r}
@@ -538,69 +567,7 @@ write.csv(df_div_stat, file = here("Multi-taxa_data",
                                    "Stat_test_adiversity_Ok.csv"))
 ```
 
-## Violin plots of alpha diversity  
 
-Violin plots of alpha diversity by impact
-
-```{r Plot alpha diversity as violin plots based on impact}
-alpha$impact <- factor(alpha$impact, levels = c("low", "medium", "high"))
-
-violin_rich_pressure <- ggplot(alpha, aes(x = impact, y = richness, 
-                                   fill = impact,
-                                   color = impact)) +
-  geom_violin(alpha = 0.5, trim = F, draw_quantiles = T) +
-  geom_jitter(width = 0.2, height = 0, size = 2,  alpha = 0.6) +
-  ylab("Species Richness (#ESV)") +
-  scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81"))+
-  scale_color_manual(values= c(medium = "#FFB331",high = "#9F1111", low = "#009F81"))+
-  theme_classic()+
-  theme(axis.text = element_text(size = 12),
-        axis.title = element_text(size = 15))+
-  guides(fill = "none",
-         color = "none")
-
-violin_rich_pressure
-```
-
-Export violin_rich_pressure violin plot
-
-```{r}
-ggsave("violin_rich_pressure.png",
-       plot = violin_rich_pressure, 
-       units ="in", width = 8, height = 6, dpi = 300,
-       path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
-```
-
-Violin plots of alpha diversity by depth
-
-```{r}
-violin_rich_pressure_depth <- ggplot(alpha, aes(x = depth, y = richness, 
-                                         fill = impact,
-                                         color = impact)) +
-  geom_violin(alpha = 0.5, trim = F, draw_quantiles = F) +
-  geom_jitter(width = 0.2, height = 0, size = 2, alpha = 0.6) +
-  facet_grid(~ impact)+
-  ylab("Species Richness (#ESV)") +
-  xlab("Depth within pressure level") +
-  scale_x_discrete(label = c("Deep", "Shallow"))+
-  scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
-  scale_color_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
-  scale_alpha_manual(values=c(1,.6))+
-  theme_classic()+
-  theme(axis.text = element_text(size = 12),
-        axis.title = element_text(size = 15))
-
-violin_rich_pressure_depth
-```
-
-Export violin_rich_pressure_depth violin plot
-
-```{r}
-ggsave("violin_rich_pressure.png",
-       plot = violin_rich_pressure_depth, 
-       units ="in", width = 8, height = 6, dpi = 300,
-       path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
-```
 
 ## Boxplots of alpha diversity by impact
 
@@ -610,7 +577,7 @@ plot.shan_impact <- ggplot(alpha, aes(x = impact, y = shannon, fill = impact)) +
   geom_jitter(width = 0.2, height = 0, color = "black", size = 2) +
   scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
   ylab("Shannon index") +
-  xlab("Impact level") +
+  xlab("Pressure level") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4))
 
@@ -619,7 +586,7 @@ plot.rich_impact <- ggplot(alpha, aes(x = impact, y = richness, fill = impact)) 
   geom_jitter(width = 0.2, height = 0, color = "black", size = 2) +
   scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
   ylab("Species Richness") +
-  xlab("Impact level") +
+  xlab("Pressure level") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4))
 
@@ -628,7 +595,7 @@ plot.even_impact <- ggplot(alpha, aes(x = impact, y = pielou, fill = impact)) +
   geom_jitter(width = 0.2, height = 0, color = "black", size = 2) +
   scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
   ylab("Pielou's Evenness") +
-  xlab("Impact level") +
+  xlab("Pressure level") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4))
 
@@ -641,8 +608,7 @@ plot_grid(plot.shan_impact + theme(legend.position = "none"), plot.rich_impact +
 Export violin_rich_pressure violin plot
 
 ```{r}
-ggsave("a_diversity_impact_box.png",
-       plot = violin_rich_pressure, 
+ggsave("a_diversity_impact_box.png", 
        units ="in", width = 8, height = 6, dpi = 300,
        path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
 ```
@@ -716,6 +682,70 @@ dunn_result <- dunn.test(alpha$richness, alpha$depth_impact, method = "bonferron
 dunn_result_df <- bind_rows(dunn_result)
 # Print the dataframe
 print(dunn_result_df)
+```
+
+## Violin plots of alpha diversity  
+
+Violin plots of alpha diversity by impact
+
+```{r Plot alpha diversity as violin plots based on impact}
+alpha$impact <- factor(alpha$impact, levels = c("low", "medium", "high"))
+
+violin_rich_pressure <- ggplot(alpha, aes(x = impact, y = richness, 
+                                   fill = impact,
+                                   color = impact)) +
+  geom_violin(alpha = 0.5, trim = F, draw_quantiles = T) +
+  geom_jitter(width = 0.2, height = 0, size = 2,  alpha = 0.6) +
+  ylab("Species Richness (#ESV)") +
+  scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81"))+
+  scale_color_manual(values= c(medium = "#FFB331",high = "#9F1111", low = "#009F81"))+
+  xlab("Pressure")+
+  theme_classic()+
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 15))+
+  guides(fill = "none",
+         color = "none")
+
+violin_rich_pressure
+```
+Export violin_rich_pressure violin plot
+
+```{r}
+ggsave("violin_rich_pressure.png",
+       plot = violin_rich_pressure, 
+       units ="in", width = 8, height = 5, dpi = 300,
+       path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
+```
+
+Violin plots of alpha diversity by depth
+
+```{r}
+violin_rich_pressure_depth <- ggplot(alpha, aes(x = depth, y = richness, 
+                                         fill = impact,
+                                         color = impact)) +
+  geom_violin(alpha = 0.5, trim = F, draw_quantiles = F) +
+  geom_jitter(width = 0.2, height = 0, size = 2, alpha = 0.6) +
+  facet_grid(~ impact)+
+  ylab("Species Richness (#ESV)") +
+  xlab("Depth within pressure level") +
+  scale_x_discrete(label = c("Deep", "Shallow"))+
+  scale_fill_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
+  scale_color_manual(values = c(medium = "#FFB331",high = "#9F1111", low = "#009F81")) +
+  scale_alpha_manual(values=c(1,.6))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 15))
+
+violin_rich_pressure_depth
+```
+
+Export violin_rich_pressure_depth violin plot
+
+```{r}
+ggsave("violin_rich_pressure.png",
+       plot = violin_rich_pressure_depth, 
+       units ="in", width = 8, height = 6, dpi = 600,
+       path = here::here("Multi-taxa_data","eDNA","4-Visualization_outputs"))
 ```
 
 # Beta diversity
@@ -1085,7 +1115,7 @@ pie_chart_total <- ggplot(family_counts_phylum,
   geom_bar(stat = "identity", colour = "black", size = 1) +  # Borders for Phylum
   coord_polar("y", start = 0) +
   ggtitle("Total Dataset by Phylum") +
-  scale_fill_manual(values = colours) +  # Specify the color palette
+  paletteer:: scale_fill_paletteer_d("ggthemes::Tableau_20")+  # Specify the color palette
   theme_void()
   theme_void()
   
@@ -1133,7 +1163,7 @@ pie_charts <- family_counts %>%
                 x = 1.5, y = max(site_data$TotalFamilies.x) / 2, vjust = -2, size = 4) +  # Adjusted text position
       coord_polar("y", start = 0) +
       ggtitle(unique(site_data$Sample)) +
-      scale_fill_manual(values = ifelse(site_data$TotalFamilies.x > site_data$Threshold, colours, "grey50")) +
+      scale_fill_manual(values = ifelse(site_data$TotalFamilies.x > site_data$Threshold, c("#4E79A7FF", "#A0CBE8FF", "#F28E2BFF", "#FFBE7DFF", "#59A14FFF", "#8CD17DFF", "#B6992DFF", "#F1CE63FF", "#499894FF", "#86BCB6FF", "#E15759FF", "#FF9D9AFF", "#79706EFF", "#BAB0ACFF", "#D37295FF", "#FABFD2FF", "#B07AA1FF", "#D4A6C8FF", "#9D7660FF", "#D7B5A6FF"), "grey50")) +
       theme_void() +
       theme(legend.position = "none", plot.margin = margin(2, 2, 2, 2, "cm"))
   })
@@ -1272,11 +1302,15 @@ BiocManager::install(version = "3.21")
 BiocManager::install("ANCOMBC")
 
 devtools::install_github("FrederickHuangLin/ANCOMBC")
+
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ANCOMBC")
 ```
 
 Run ANCOM-BC2
-```{r Run ANCOM-BC2, warning = F}
 
+```{r Run ANCOM-BC2, warning = F}
 library(ANCOMBC)
 
 out = ancombc2(Ok, 
@@ -1358,7 +1392,7 @@ df_ancom_impact$taxon <- factor(df_ancom_impact$taxon,levels = rev(rownames(PG_m
 Extract taxonomy information from phyloseq object and merge it the data frame
 
 ```{r Extract taxonomy information from phyloseq object}
-taxonomy <- as.data.frame(tax_table(Ok))
+taxonomy <- as.data.frame(phyloseq::tax_table(Ok))
 taxonomy$ESVs <- rownames(taxonomy)
 
 # Merge taxonomy with dataframe
@@ -1442,7 +1476,7 @@ out_esv = ancombc2(Ok, tax_level = "Family", pseudo_sens = FALSE, fix_formula = 
                    p_adj_method = "holm", s0_perc = 0.05, prv_cut = 0.10, lib_cut = 0,
                    group = "impact", alpha = 0.05, verbose = TRUE, global = TRUE, pairwise = TRUE)
 
-res_prim_esv = out_esv$res
+res_prim_esv = out_esv$re
 res_global_esv = out_esv$res_global
 res_pair_esv = out_esv$res_pair
 row.names(res_pair_esv)<-res_prim_esv$taxon
